@@ -8,8 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -45,7 +43,6 @@
     <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-30 shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <!-- Logo & Brand -->
                 <div class="flex items-center space-x-3">
                     <div class="p-2 bg-brand-600 rounded-lg text-white shadow-sm">
                         <i data-lucide="stethoscope" class="w-6 h-6"></i>
@@ -59,7 +56,6 @@
                     </div>
                 </div>
 
-                <!-- Right Actions & Role Status -->
                 <div class="flex items-center space-x-3">
                     <div id="roleBadge" class="flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
                         <i data-lucide="user" class="w-3.5 h-3.5"></i>
@@ -81,12 +77,12 @@
             <div class="flex items-center space-x-2">
                 <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
                 <span class="font-semibold text-emerald-300">Administrator Privileges Active</span>
-                <span class="text-emerald-400/60">| Full Access Enabled</span>
+                <span class="text-emerald-400/60">| Cloud REST API Sync Active</span>
             </div>
             <div class="flex items-center space-x-3">
                 <button onclick="openChangePasscodeModal()" class="hover:text-white underline flex items-center space-x-1">
                     <i data-lucide="key-round" class="w-3.5 h-3.5"></i>
-                    <span>Change Admin Passcode</span>
+                    <span>Change Passcode</span>
                 </button>
             </div>
         </div>
@@ -130,9 +126,7 @@
                 </div>
             </div>
 
-            <div id="quizList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Dynamic quiz cards rendered via JS -->
-            </div>
+            <div id="quizList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </section>
 
         <!-- VIEW 2: EXAM HISTORY & REVIEWS -->
@@ -144,7 +138,7 @@
                             <span>Attempt Records & Review Hub</span>
                             <span id="historyCountBadge" class="text-xs bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full font-semibold border border-slate-200">0 Attempts</span>
                         </h2>
-                        <p class="text-sm text-slate-500">All submitted student assessment attempts are preserved in the cloud database.</p>
+                        <p class="text-sm text-slate-500">All submitted student assessment attempts synchronized via cloud database.</p>
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2">
@@ -173,9 +167,7 @@
                                 <th class="py-3.5 px-4 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="historyTableBody" class="divide-y divide-slate-100">
-                            <!-- Dynamic history rows -->
-                        </tbody>
+                        <tbody id="historyTableBody" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
             </div>
@@ -194,9 +186,7 @@
                             <i data-lucide="folder-plus" class="w-4 h-4"></i>
                         </button>
                     </div>
-                    <div id="folderList" class="space-y-1">
-                        <!-- Dynamic folder items -->
-                    </div>
+                    <div id="folderList" class="space-y-1"></div>
                 </div>
 
                 <div class="lg:col-span-3 space-y-4">
@@ -220,9 +210,7 @@
                         </div>
                     </div>
 
-                    <div id="questionBankList" class="space-y-3">
-                        <!-- Dynamic Question Cards -->
-                    </div>
+                    <div id="questionBankList" class="space-y-3"></div>
                 </div>
             </div>
         </section>
@@ -279,9 +267,7 @@
                             </div>
                         </div>
 
-                        <div id="quizQuestionSelector" class="space-y-2 max-h-80 overflow-y-auto custom-scrollbar border border-slate-200 rounded-lg p-3 bg-slate-50">
-                            <!-- Dynamic Checkbox items -->
-                        </div>
+                        <div id="quizQuestionSelector" class="space-y-2 max-h-80 overflow-y-auto custom-scrollbar border border-slate-200 rounded-lg p-3 bg-slate-50"></div>
                     </div>
 
                     <div class="flex justify-end space-x-3 pt-4 border-t border-slate-200">
@@ -322,13 +308,9 @@
                         <span id="examQuestionCategory" class="bg-slate-100 px-2.5 py-1 rounded-md text-slate-600">Folder</span>
                     </div>
 
-                    <h3 id="examQuestionText" class="text-lg font-bold text-slate-900 mb-6 leading-relaxed">
-                        Question text goes here?
-                    </h3>
+                    <h3 id="examQuestionText" class="text-lg font-bold text-slate-900 mb-6 leading-relaxed"></h3>
 
-                    <div id="examOptionsList" class="space-y-3">
-                        <!-- Options radio list -->
-                    </div>
+                    <div id="examOptionsList" class="space-y-3"></div>
                 </div>
 
                 <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex items-center justify-between">
@@ -346,9 +328,7 @@
             <div class="w-full md:w-72 bg-slate-800 text-white rounded-2xl p-5 flex flex-col justify-between shrink-0">
                 <div>
                     <h4 class="font-bold text-sm text-slate-300 uppercase tracking-wider mb-4 border-b border-slate-700 pb-2">Question Palette</h4>
-                    <div id="examPaletteGrid" class="grid grid-cols-5 gap-2 max-h-60 overflow-y-auto custom-scrollbar pr-1">
-                        <!-- Grid squares -->
-                    </div>
+                    <div id="examPaletteGrid" class="grid grid-cols-5 gap-2 max-h-60 overflow-y-auto custom-scrollbar pr-1"></div>
                 </div>
                 <div class="pt-4 border-t border-slate-700 space-y-2 text-xs text-slate-400">
                     <div class="flex items-center gap-2">
@@ -570,20 +550,10 @@
         </div>
     </footer>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- JAVASCRIPT LOGIC VIA DIRECT SUPABASE REST API -->
     <script>
-        // SUPABASE CONFIGURATION: Includes mandatory authorization headers for the publishable key format
         const SUPABASE_URL = 'https://ddeukafnnlkbnsfsmuxn.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_GBQet5zyPXwmbXZ-Z513qA_nPuIf_';
-        
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-            global: {
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                }
-            }
-        });
 
         const DEFAULT_PASSCODE = 'admin123';
         const SEED_FOLDERS = ["Pathology", "Anatomy", "Pharmacology", "General Practice"];
@@ -624,7 +594,7 @@
         let activeExam = null;
 
         window.onload = async function() {
-            await loadStorageFromCloud();
+            await loadDataFromSupabase();
             lucide.createIcons();
             updateRoleUI();
             renderQuizzes();
@@ -633,70 +603,102 @@
             renderHistoryTable();
         };
 
-        async function loadStorageFromCloud() {
+        async function restApiFetch(endpoint, options = {}) {
+            const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
+            const headers = {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation',
+                ...options.headers
+            };
+            try {
+                const response = await fetch(url, { ...options, headers });
+                if (!response.ok) {
+                    throw new Error(`REST Error: ${response.status} ${response.statusText}`);
+                }
+                const text = await response.text();
+                return text ? JSON.parse(text) : null;
+            } catch (err) {
+                console.warn('REST API Warning:', err);
+                return null;
+            }
+        }
+
+        async function loadDataFromSupabase() {
             adminPasscode = localStorage.getItem('medstud_admin_passcode') || DEFAULT_PASSCODE;
 
-            try {
-                const { data, error } = await supabaseClient.from('app_state').select('*').eq('id', 1);
-                if(!error && data && data.length > 0) {
-                    folderList = data[0].folders || SEED_FOLDERS;
-                    questionBank = data[0].questions || SEED_QUESTIONS;
-                    publishedQuizzes = data[0].quizzes || SEED_QUIZZES;
-                } else {
-                    folderList = JSON.parse(localStorage.getItem('med_stud_folders')) || SEED_FOLDERS;
-                    questionBank = JSON.parse(localStorage.getItem('med_stud_questions')) || SEED_QUESTIONS;
-                    publishedQuizzes = JSON.parse(localStorage.getItem('med_stud_quizzes')) || SEED_QUIZZES;
-                }
-            } catch (err) {
+            // Load App State (Folders, Questions, Quizzes)
+            const stateData = await restApiFetch('app_state?id=eq.1');
+            if(stateData && stateData.length > 0) {
+                folderList = stateData[0].folders || SEED_FOLDERS;
+                questionBank = stateData[0].questions || SEED_QUESTIONS;
+                publishedQuizzes = stateData[0].quizzes || SEED_QUIZZES;
+            } else {
                 folderList = JSON.parse(localStorage.getItem('med_stud_folders')) || SEED_FOLDERS;
                 questionBank = JSON.parse(localStorage.getItem('med_stud_questions')) || SEED_QUESTIONS;
                 publishedQuizzes = JSON.parse(localStorage.getItem('med_stud_quizzes')) || SEED_QUIZZES;
             }
 
-            try {
-                const { data: historyData, error: historyError } = await supabaseClient
-                    .from('exam_attempts')
-                    .select('*')
-                    .order('submitted_at', { ascending: false });
-
-                if(!historyError && historyData) {
-                    examHistory = historyData.map(row => ({
-                        id: row.id,
-                        quizId: row.quiz_id,
-                        quizTitle: row.quiz_title,
-                        studentName: row.student_name,
-                        studentId: row.student_id,
-                        submittedAt: row.submitted_at,
-                        score: row.score,
-                        total: row.total,
-                        percentage: row.percentage,
-                        breakdown: row.breakdown
-                    }));
-                } else {
-                    examHistory = [];
-                }
-            } catch (err) {
-                examHistory = [];
+            // Load Exam History Attempts
+            const historyData = await restApiFetch('exam_attempts?select=*&order=submitted_at.desc');
+            if(historyData && Array.isArray(historyData)) {
+                examHistory = historyData.map(row => ({
+                    id: row.id,
+                    quizId: row.quiz_id,
+                    quizTitle: row.quiz_title,
+                    studentName: row.student_name,
+                    studentId: row.student_id,
+                    submittedAt: row.submitted_at,
+                    score: row.score,
+                    total: row.total,
+                    percentage: row.percentage,
+                    breakdown: row.breakdown
+                }));
+            } else {
+                examHistory = JSON.parse(localStorage.getItem('med_stud_history')) || [];
             }
         }
 
-        async function saveQuestionBankOrQuizzes() {
+        async function saveAppData() {
             localStorage.setItem('medstud_admin_passcode', adminPasscode);
             localStorage.setItem('med_stud_folders', JSON.stringify(folderList));
             localStorage.setItem('med_stud_questions', JSON.stringify(questionBank));
             localStorage.setItem('med_stud_quizzes', JSON.stringify(publishedQuizzes));
 
-            try {
-                await supabaseClient.from('app_state').upsert({
+            // Upsert to Supabase app_state table via REST API
+            await restApiFetch('app_state', {
+                method: 'POST',
+                headers: { 'Prefer': 'resolution=merge-duplicates' },
+                body: JSON.stringify({
                     id: 1,
                     folders: folderList,
                     questions: questionBank,
                     quizzes: publishedQuizzes,
                     updated_at: new Date().toISOString()
-                });
-            } catch (err) {
-                console.warn('Admin config sync notice:', err);
-            }
+                })
+            });
+        }
+
+        async function saveExamAttemptToCloud(attemptRecord) {
+            examHistory.unshift(attemptRecord);
+            localStorage.setItem('med_stud_history', JSON.stringify(examHistory));
+
+            await restApiFetch('exam_attempts', {
+                method: 'POST',
+                body: JSON.stringify({
+                    id: attemptRecord.id,
+                    quiz_id: attemptRecord.quizId,
+                    quiz_title: attemptRecord.quizTitle,
+                    student_name: attemptRecord.studentName,
+                    student_id: attemptRecord.studentId,
+                    submitted_at: attemptRecord.submittedAt,
+                    score: attemptRecord.score,
+                    total: attemptRecord.total,
+                    percentage: attemptRecord.percentage,
+                    breakdown: attemptRecord.breakdown
+                })
+            });
         }
 
         function switchTab(tabId) {
@@ -889,10 +891,10 @@
             lucide.createIcons();
         }
 
-        function deleteQuiz(quizId) {
+        async function deleteQuiz(quizId) {
             if(!confirm('Delete this published assessment?')) return;
             publishedQuizzes = publishedQuizzes.filter(q => q.id !== quizId);
-            saveQuestionBankOrQuizzes();
+            await saveAppData();
             renderQuizzes();
             showToast('Assessment deleted successfully.');
         }
@@ -1088,24 +1090,8 @@
                 breakdown: breakdown
             };
 
-            try {
-                await supabaseClient.from('exam_attempts').insert([{
-                    id: attemptRecord.id,
-                    quiz_id: attemptRecord.quizId,
-                    quiz_title: attemptRecord.quizTitle,
-                    student_name: attemptRecord.studentName,
-                    student_id: attemptRecord.studentId,
-                    submitted_at: attemptRecord.submittedAt,
-                    score: attemptRecord.score,
-                    total: attemptRecord.total,
-                    percentage: attemptRecord.percentage,
-                    breakdown: attemptRecord.breakdown
-                }]);
-            } catch (err) {
-                console.warn('Exam submit sync notice:', err);
-            }
+            await saveExamAttemptToCloud(attemptRecord);
 
-            examHistory.unshift(attemptRecord);
             document.getElementById('examModal').classList.add('hidden');
             activeExam = null;
 
@@ -1174,14 +1160,10 @@
 
         async function clearHistoryRecords() {
             if(!confirm('Are you sure you want to clear ALL student attempt records?')) return;
-            try {
-                await supabaseClient.from('exam_attempts').delete().neq('id', '0'); 
-                examHistory = [];
-                renderHistoryTable();
-                showToast('All attempt history cleared.');
-            } catch (err) {
-                showToast('Failed to clear records: ' + err.message, true);
-            }
+            await restApiFetch('exam_attempts?id=not.is.null', { method: 'DELETE' });
+            examHistory = [];
+            renderHistoryTable();
+            showToast('All attempt history cleared.');
         }
 
         function openReviewModal(attemptId) {
@@ -1285,13 +1267,13 @@
             document.getElementById('folderModal').classList.add('hidden');
         }
 
-        function handleCreateFolder(e) {
+        async function handleCreateFolder(e) {
             e.preventDefault();
             const val = document.getElementById('folderNameInput').value.trim();
             if(!val) return;
             if(!folderList.includes(val)) {
                 folderList.push(val);
-                saveQuestionBankOrQuizzes();
+                await saveAppData();
                 renderFolders();
                 showToast(`Folder "${val}" created.`);
             }
@@ -1382,7 +1364,7 @@
             document.getElementById('questionModal').classList.add('hidden');
         }
 
-        function handleSaveQuestion(e) {
+        async function handleSaveQuestion(e) {
             e.preventDefault();
             const editId = document.getElementById('editQuestionId').value;
             const folder = document.getElementById('qFolderSelect').value;
@@ -1421,17 +1403,17 @@
                 });
             }
 
-            saveQuestionBankOrQuizzes();
+            await saveAppData();
             closeQuestionModal();
             renderFolders();
             renderQuestionBank();
             showToast('Question saved successfully.');
         }
 
-        function deleteQuestion(qId) {
+        async function deleteQuestion(qId) {
             if(!confirm('Delete this question from bank?')) return;
             questionBank = questionBank.filter(q => q.id !== qId);
-            saveQuestionBankOrQuizzes();
+            await saveAppData();
             renderFolders();
             renderQuestionBank();
             showToast('Question deleted.');
@@ -1463,7 +1445,7 @@
             }
 
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = async function(e) {
                 try {
                     const content = e.target.result;
                     let imported = file.name.endsWith('.json') ? JSON.parse(content) : [];
@@ -1478,7 +1460,7 @@
                                 rationale: item.rationale || 'Imported rationale.'
                             });
                         });
-                        saveQuestionBankOrQuizzes();
+                        await saveAppData();
                         renderFolders();
                         renderQuestionBank();
                         closeImportModal();
@@ -1532,7 +1514,7 @@
             checkboxes.forEach(cb => cb.checked = check);
         }
 
-        function handleCreateQuiz(e) {
+        async function handleCreateQuiz(e) {
             e.preventDefault();
             const title = document.getElementById('quizTitle').value.trim();
             const desc = document.getElementById('quizDesc').value.trim();
@@ -1562,7 +1544,7 @@
             };
 
             publishedQuizzes.unshift(newQuiz);
-            saveQuestionBankOrQuizzes();
+            await saveAppData();
             document.getElementById('createQuizForm').reset();
             showToast('Assessment published successfully!');
             switchTab('quizzes');
