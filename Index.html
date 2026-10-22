@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Med~Stud Portal - COMAHS Assessment Platform</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="h-full text-slate-800 antialiased flex flex-col min-h-screen">
+
+    <!-- TOP HEADER / NAVBAR -->
+    <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-30 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Brand -->
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-brand-600 rounded-lg text-white shadow-sm">
+                        <i data-lucide="stethoscope" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="font-bold text-lg tracking-tight text-white">Med~Stud Portal</span>
+                            <span class="text-xs bg-slate-800 text-brand-400 font-semibold px-2 py-0.5 rounded-full border border-slate-700">COMAHS</span>
+                        </div>
+                        <p class="text-xs text-slate-400 hidden sm:block">Medical Student Self-Assessment & Exam System</p>
+                    </div>
+                </div>
+
+                <!-- Right Actions & Role Status -->
+                <div class="flex items-center space-x-3">
+                    <div id="roleBadge" class="flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
+                        <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                        <span id="roleText">Student Mode</span>
+                    </div>
+
+                    <button id="roleSwitchBtn" onclick="toggleRoleModal()" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors border border-slate-700">
+                        <i data-lucide="shield" class="w-3.5 h-3.5 text-brand-400"></i>
+                        <span id="roleSwitchBtnText">Switch Role</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ADMIN CONTROL STRIP (Shown when Admin) -->
+    <div id="adminControlBar" class="hidden bg-emerald-950 text-emerald-200 text-xs py-2 px-4 border-b border-emerald-800/50">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+                <span class="font-semibold text-emerald-300">Administrator Privileges Active</span>
+                <span class="text-emerald-400/60">| Full Access Enabled</span>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button onclick="openChangePasscodeModal()" class="hover:text-white underline flex items-center space-x-1">
+                    <i data-lucide="key-round" class="w-3.5 h-3.5"></i>
+                    <span>Change Admin Passcode</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP WRAPPER -->
+    <div class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col">
+
+        <!-- NAV TABS -->
+        <nav class="flex space-x-1 bg-slate-200 p-1 rounded-xl mb-6 shadow-inner text-sm font-medium overflow-x-auto custom-scrollbar">
+            <button onclick="switchTab('quizzes')" id="tab-quizzes" class="nav-tab flex items-center space-x-2 px-4 py-2.5 rounded-lg text-slate-700 hover:text-slate-900 transition-all font-medium whitespace-nowrap">
+                <i data-lucide="book-open" class="w-4 h-4"></i>
+                <span>Available Quizzes</span>
+            </button>
+            <button onclick="switchTab('history')" id="tab-history" class="nav-tab flex items-center space-x-2 px-4 py-2.5 rounded-lg text-slate-700 hover:text-slate-900 transition-all font-medium whitespace-nowrap">
+                <i data-lucide="history" class="w-4 h-4"></i>
+                <span>Exam History & Reviews</span>
+            </button>
+            <button onclick="switchTab('bank')" id="tab-bank" class="nav-tab admin-only hidden flex items-center space-x-2 px-4 py-2.5 rounded-lg text-slate-700 hover:text-slate-900 transition-all font-medium whitespace-nowrap">
+                <i data-lucide="database" class="w-4 h-4"></i>
+                <span>Question Bank & Folders</span>
+            </button>
+            <button onclick="switchTab('create')" id="tab-create" class="nav-tab admin-only hidden flex items-center space-x-2 px-4 py-2.5 rounded-lg text-slate-700 hover:text-slate-900 transition-all font-medium whitespace-nowrap">
+                <i data-lucide="file-plus" class="w-4 h-4"></i>
+                <span>Create/Publish Assessment</span>
+            </button>
+        </nav>
+
+        <!-- VIEW 1: AVAILABLE QUIZZES -->
+        <section id="view-quizzes" class="tab-view flex-grow">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900">Medical Assessments</h1>
+                    <p class="text-sm text-slate-500">Select an active assessment to begin your practice attempt.</p>
+                </div>
+                <div class="flex items-center space-x-2 w-full sm:w-auto">
+                    <div class="relative w-full sm:w-64">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="quizSearchInput" oninput="renderQuizzes()" placeholder="Search active quizzes..." class="w-full pl-9 pr-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <div id="quizList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamic quiz cards rendered via JS -->
+            </div>
+        </section>
+
+        <!-- VIEW 2: EXAM HISTORY & REVIEWS (Multi-user) -->
+        <section id="view-history" class="tab-view hidden flex-grow">
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                            <span>Attempt Records & Review Hub</span>
+                            <span id="historyCountBadge" class="text-xs bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full font-semibold border border-slate-200">0 Attempts</span>
+                        </h2>
+                        <p class="text-sm text-slate-500">All submitted student assessment attempts are preserved in the cloud database.</p>
+                    </div>
+
+                    <!-- History Controls / Filters -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div class="relative min-w-[200px]">
+                            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="historySearchInput" oninput="renderHistoryTable()" placeholder="Search Student Name / ID..." class="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <select id="historyQuizFilter" onchange="renderHistoryTable()" class="py-2 px-3 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                            <option value="ALL">All Assessment Titles</option>
+                        </select>
+                        <button onclick="clearHistoryRecords()" class="admin-only hidden px-3 py-2 text-xs font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 rounded-lg transition-colors flex items-center gap-1.5">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            <span>Clear All History</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Attempts List Table -->
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left text-sm text-slate-600">
+                        <thead class="bg-slate-50 text-slate-700 uppercase font-semibold text-xs border-y border-slate-200">
+                            <tr>
+                                <th class="py-3.5 px-4">Student Details</th>
+                                <th class="py-3.5 px-4">Assessment Title</th>
+                                <th class="py-3.5 px-4">Submitted On</th>
+                                <th class="py-3.5 px-4">Score</th>
+                                <th class="py-3.5 px-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody" class="divide-y divide-slate-100">
+                            <!-- Dynamic history rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 3: QUESTION BANK & FOLDERS (Admin) -->
+        <section id="view-bank" class="tab-view hidden flex-grow">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Folder Sidebar -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 h-fit">
+                    <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+                        <h3 class="font-bold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="folder" class="w-4 h-4 text-brand-600"></i>
+                            <span>Folders</span>
+                        </h3>
+                        <button onclick="openCreateFolderModal()" class="p-1 text-slate-500 hover:text-brand-600 hover:bg-slate-100 rounded-lg transition-colors" title="Add Folder">
+                            <i data-lucide="folder-plus" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <div id="folderList" class="space-y-1">
+                        <!-- Dynamic folder items -->
+                    </div>
+                </div>
+
+                <!-- Main Question List -->
+                <div class="lg:col-span-3 space-y-4">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <h2 class="font-bold text-slate-900 text-lg flex items-center gap-2">
+                                <span id="currentFolderName">All Questions</span>
+                                <span id="questionCountBadge" class="text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full border border-brand-200 font-semibold">0</span>
+                            </h2>
+                            <p class="text-xs text-slate-500">Manage questions, add rationales, or bulk import via JSON/CSV.</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="openImportModal()" class="px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-1.5 border border-slate-200">
+                                <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                                <span>Import JSON/CSV</span>
+                            </button>
+                            <button onclick="openQuestionModal()" class="px-3 py-2 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm transition-colors flex items-center gap-1.5">
+                                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                                <span>Add Question</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="questionBankList" class="space-y-3">
+                        <!-- Dynamic Question Cards -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 4: CREATE / PUBLISH ASSESSMENT (Admin) -->
+        <section id="view-create" class="tab-view hidden flex-grow">
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 max-w-4xl mx-auto">
+                <h2 class="text-xl font-bold text-slate-900 mb-1">Create & Publish Assessment</h2>
+                <p class="text-sm text-slate-500 mb-6">Configure assessment details, time limits, active date ranges, and select questions from your bank.</p>
+
+                <form id="createQuizForm" onsubmit="handleCreateQuiz(event)" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Assessment Title *</label>
+                            <input type="text" id="quizTitle" required placeholder="e.g. Systemic Pathology Mid-Semester Assessment" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Description / Instructions</label>
+                            <textarea id="quizDesc" rows="2" placeholder="Provide instructions for students..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Time Limit (Minutes)</label>
+                            <input type="number" id="quizDuration" min="1" value="30" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Category / Subject</label>
+                            <input type="text" id="quizCategory" placeholder="e.g. Anatomy, Pharmacology" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Start Date & Time *</label>
+                            <input type="datetime-local" id="quizStartDT" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Expiration Date & Time *</label>
+                            <input type="datetime-local" id="quizEndDT" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <!-- Select Questions Section -->
+                    <div class="border-t border-slate-200 pt-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-slate-900 text-sm">Select Questions for Assessment</h3>
+                            <div class="flex items-center space-x-2">
+                                <select id="createQuizFolderFilter" onchange="renderQuizQuestionSelector()" class="text-xs border border-slate-300 rounded-lg px-2.5 py-1 bg-slate-50">
+                                    <option value="ALL">All Folders</option>
+                                </select>
+                                <button type="button" onclick="selectAllQuizQuestions(true)" class="text-xs text-brand-700 hover:underline">Select All</button>
+                                <span class="text-slate-300">|</span>
+                                <button type="button" onclick="selectAllQuizQuestions(false)" class="text-xs text-slate-500 hover:underline">Deselect All</button>
+                            </div>
+                        </div>
+
+                        <div id="quizQuestionSelector" class="space-y-2 max-h-80 overflow-y-auto custom-scrollbar border border-slate-200 rounded-lg p-3 bg-slate-50">
+                            <!-- Dynamic Checkbox items for question bank -->
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4 border-t border-slate-200">
+                        <button type="button" onclick="switchTab('quizzes')" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+                        <button type="submit" class="px-5 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-md transition-all">Publish Assessment</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- IMMERSIVE EXAM / ASSESSMENT MODAL -->
+    <div id="examModal" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-50 hidden flex flex-col">
+        <!-- Exam Header -->
+        <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between text-white">
+            <div class="flex items-center space-x-3">
+                <span class="px-2.5 py-1 bg-brand-600/30 text-brand-400 text-xs font-semibold rounded border border-brand-500/30">Active Assessment</span>
+                <h2 id="examModalTitle" class="font-bold text-lg text-slate-100">Assessment Title</h2>
+            </div>
+            <div class="flex items-center space-x-6">
+                <!-- User Label during Exam -->
+                <div class="hidden sm:flex items-center space-x-2 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 text-xs">
+                    <i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i>
+                    <span id="examUserDisplay" class="font-medium text-slate-200">Candidate</span>
+                </div>
+                <!-- Timer -->
+                <div class="flex items-center space-x-2 bg-slate-800 text-amber-400 font-mono font-bold px-4 py-1.5 rounded-lg border border-slate-700 text-sm">
+                    <i data-lucide="clock" class="w-4 h-4"></i>
+                    <span id="examTimer">00:00</span>
+                </div>
+                <button onclick="confirmSubmitExam()" class="px-4 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors">Submit Exam</button>
+            </div>
+        </header>
+
+        <!-- Exam Content Container -->
+        <div class="flex-grow flex flex-col md:flex-row overflow-hidden max-w-7xl w-full mx-auto p-6 gap-6">
+            <!-- Main Question Area -->
+            <div class="flex-grow bg-white rounded-2xl shadow-xl border border-slate-200 flex flex-col overflow-hidden">
+                <div class="p-6 overflow-y-auto custom-scrollbar flex-grow">
+                    <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                        <span id="examQuestionIndex">Question 1 of 10</span>
+                        <span id="examQuestionCategory" class="bg-slate-100 px-2.5 py-1 rounded-md text-slate-600">Folder</span>
+                    </div>
+
+                    <h3 id="examQuestionText" class="text-lg font-bold text-slate-900 mb-6 leading-relaxed">
+                        Question text goes here?
+                    </h3>
+
+                    <div id="examOptionsList" class="space-y-3">
+                        <!-- Options radio list -->
+                    </div>
+                </div>
+
+                <!-- Footer Navigation -->
+                <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex items-center justify-between">
+                    <button id="examPrevBtn" onclick="navigateExamQuestion(-1)" class="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-1.5 disabled:opacity-50">
+                        <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        <span>Previous</span>
+                    </button>
+                    <button id="examNextBtn" onclick="navigateExamQuestion(1)" class="px-4 py-2 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-lg transition-colors flex items-center gap-1.5">
+                        <span>Next</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question Grid Navigator Sidebar -->
+            <div class="w-full md:w-72 bg-slate-800 text-white rounded-2xl p-5 flex flex-col justify-between shrink-0">
+                <div>
+                    <h4 class="font-bold text-sm text-slate-300 uppercase tracking-wider mb-4 border-b border-slate-700 pb-2">Question Palette</h4>
+                    <div id="examPaletteGrid" class="grid grid-cols-5 gap-2 max-h-60 overflow-y-auto custom-scrollbar pr-1">
+                        <!-- Grid squares -->
+                    </div>
+                </div>
+                <div class="pt-4 border-t border-slate-700 space-y-2 text-xs text-slate-400">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded bg-brand-600 inline-block"></span> Answered
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded bg-slate-700 border border-slate-600 inline-block"></span> Unanswered
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STUDENT IDENTITY PROMPT MODAL (Triggered before starting quiz) -->
+    <div id="identityModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-100">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="p-3 bg-brand-100 text-brand-700 rounded-full">
+                    <i data-lucide="user-check" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900">Student Identification</h3>
+                    <p class="text-xs text-slate-500">Enter your details before beginning this assessment.</p>
+                </div>
+            </div>
+
+            <form onsubmit="confirmStudentIdentity(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Full Name *</label>
+                    <input type="text" id="studentFullName" required placeholder="e.g. John Sesay" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Student ID / Reg No. (Optional)</label>
+                    <input type="text" id="studentIDNo" placeholder="e.g. MED-2026-089" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div class="flex justify-end space-x-3 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeIdentityModal()" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+                    <button type="submit" class="px-5 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm">Begin Assessment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- DETAILED ATTEMPT REVIEW MODAL -->
+    <div id="reviewModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex flex-col">
+        <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm">
+            <div>
+                <span class="text-xs font-semibold uppercase text-brand-700 tracking-wider">Attempt Rationale Review</span>
+                <h2 id="reviewModalTitle" class="font-bold text-lg text-slate-900">Quiz Title</h2>
+                <p id="reviewModalSubtitle" class="text-xs text-slate-500">Candidate details & timestamp</p>
+            </div>
+            <button onclick="closeReviewModal()" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </header>
+
+        <div class="flex-grow overflow-y-auto custom-scrollbar p-6 max-w-5xl w-full mx-auto space-y-6">
+            <!-- Review Summary Card -->
+            <div id="reviewSummaryHeader" class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+                <!-- Summary blocks -->
+            </div>
+
+            <!-- Question Rationale Cards -->
+            <div id="reviewQuestionsContainer" class="space-y-4">
+                <!-- Cards with correct answer highlights & full rationales -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SWITCH ROLE / ADMIN PASSCODE MODAL -->
+    <div id="roleModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-slate-100">
+            <div class="text-center mb-4">
+                <div class="w-12 h-12 bg-slate-100 text-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i data-lucide="shield" class="w-6 h-6 text-brand-600"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900">Administrator Access</h3>
+                <p class="text-xs text-slate-500">Enter passcode to unlock instructor controls.</p>
+            </div>
+
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Passcode</label>
+                    <input type="password" id="adminPassInput" required placeholder="Enter passcode" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div class="flex items-center justify-between pt-2">
+                    <button type="button" onclick="closeRoleModal()" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Back to Student Mode</button>
+                    <button type="submit" class="px-5 py-2 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-lg shadow-sm">Authenticate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CHANGE PASSCODE MODAL -->
+    <div id="changePassModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-slate-100">
+            <h3 class="text-lg font-bold text-slate-900 mb-1">Change Admin Passcode</h3>
+            <p class="text-xs text-slate-500 mb-4">Update your passcode for future sessions.</p>
+
+            <form onsubmit="handleChangePasscode(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Current Passcode</label>
+                    <input type="password" id="currPassInput" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">New Passcode</label>
+                    <input type="password" id="newPassInput" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
+                </div>
+                <div class="flex justify-end space-x-2 pt-3">
+                    <button type="button" onclick="closeChangePassModal()" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADD/EDIT QUESTION MODAL -->
+    <div id="questionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-6 my-8 border border-slate-100">
+            <h3 id="questionModalTitle" class="text-lg font-bold text-slate-900 mb-4">Add New Question</h3>
+
+            <form id="questionForm" onsubmit="handleSaveQuestion(event)" class="space-y-4">
+                <input type="hidden" id="editQuestionId">
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Folder Category *</label>
+                    <select id="qFolderSelect" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
+                        <!-- Dynamic Folder Options -->
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Question Text *</label>
+                    <textarea id="qText" required rows="3" placeholder="Enter clinical stem or question..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg"></textarea>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700">Options (Select Correct Choice) *</label>
+                    <div class="flex items-center space-x-2">
+                        <input type="radio" name="correctOpt" value="0" required class="accent-brand-600">
+                        <input type="text" id="opt0" required placeholder="Option A" class="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-lg">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <input type="radio" name="correctOpt" value="1" class="accent-brand-600">
+                        <input type="text" id="opt1" required placeholder="Option B" class="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-lg">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <input type="radio" name="correctOpt" value="2" class="accent-brand-600">
+                        <input type="text" id="opt2" placeholder="Option C (Optional)" class="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-lg">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <input type="radio" name="correctOpt" value="3" class="accent-brand-600">
+                        <input type="text" id="opt3" placeholder="Option D (Optional)" class="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-lg">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Detailed Rationale / Explanation *</label>
+                    <textarea id="qRationale" required rows="3" placeholder="Explain why the correct answer is right and why others are incorrect..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeQuestionModal()" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+                    <button type="submit" class="px-5 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm">Save Question</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CREATE FOLDER MODAL -->
+    <div id="folderModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-slate-100">
+            <h3 class="text-lg font-bold text-slate-900 mb-3">Create Question Folder</h3>
+            <form onsubmit="handleCreateFolder(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Folder Name *</label>
+                    <input type="text" id="folderNameInput" required placeholder="e.g. Cardiovascular Pathology" class="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-lg">
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeFolderModal()" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- BULK IMPORT MODAL -->
+    <div id="importModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-100">
+            <h3 class="text-lg font-bold text-slate-900 mb-1">Bulk Import Questions</h3>
+            <p class="text-xs text-slate-500 mb-4">Upload a JSON or CSV file containing questions, options, and rationales.</p>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Target Folder</label>
+                    <select id="importFolderSelect" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
+                        <!-- Options -->
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Select File (.json, .csv)</label>
+                    <input type="file" id="importFileInput" accept=".json,.csv" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
+                </div>
+
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-600 space-y-1">
+                    <span class="font-bold">JSON Format Preview:</span>
+                    <pre class="text-[10px] bg-slate-100 p-2 rounded overflow-x-auto">
+[
+  {
+    "text": "Question text?",
+    "options": ["A", "B", "C", "D"],
+    "correctIndex": 0,
+    "rationale": "Explanation here..."
+  }
+]</pre>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeImportModal()" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+                    <button type="button" onclick="executeImport()" class="px-4 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg">Import Questions</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CUSTOM TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none border border-slate-700">
+        <i id="toastIcon" data-lucide="info" class="w-5 h-5 text-brand-400"></i>
+        <span id="toastMsg" class="text-sm font-medium">Notification message</span>
+    </div>
+
+    <!-- IMMUTABLE OWNER FOOTER -->
+    <footer class="mt-auto bg-slate-900 text-slate-400 border-t border-slate-800 text-xs py-4 px-4">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+            <div>
+                <p class="text-slate-300 font-semibold">Med~Stud Portal &bull; Medical Self-Assessment Platform</p>
+                <p class="text-slate-500">College of Medicine and Allied Health Sciences (COMAHS), University of Sierra Leone (USL)</p>
+            </div>
+            <div class="text-slate-400 font-medium">
+                Developed & Maintained By: <span class="text-brand-400 font-bold">Ibrahim Kargbo (Perfectionist)</span>, 2nd Year Medical Student, COMAHS, USL.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // SUPABASE CONFIGURATION
+        const SUPABASE_URL = 'https://ddeukafnnlkbnsfsmuxn.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_GBQet5zyPXwmbXZ-Z513qA_nPuIf_';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // INITIAL DEMO DATA SEEDS
+        const DEFAULT_PASSCODE = 'admin123';
+
+        const SEED_FOLDERS = ["Pathology", "Anatomy", "Pharmacology", "General Practice"];
+
+        const SEED_QUESTIONS = [
+            {
+                id: 'q1',
+                folder: 'Pathology',
+                text: 'A 54-year-old male presents with severe chest pain radiating to his left jaw. Cardiac enzyme panels show elevated Troponin I levels. Which histological feature is characteristic of myocardium 12 to 24 hours post-infarction?',
+                options: ['Dense collagenous scar formation', 'Coagulative necrosis with neutrophil infiltration', 'Granulation tissue with abundant capillaries', 'Normal cardiac myocytes without edema'],
+                correctIndex: 1,
+                rationale: 'At 12-24 hours post-myocardial infarction, early coagulative necrosis occurs, accompanied by contraction bands and the initial arrival of neutrophilic infiltrate.'
+            },
+            {
+                id: 'q2',
+                folder: 'Anatomy',
+                text: 'Which nerve is most vulnerable to injury in fractures of the surgical neck of the humerus?',
+                options: ['Radial nerve', 'Axillary nerve', 'Median nerve', 'Musculocutaneous nerve'],
+                correctIndex: 1,
+                rationale: 'The axillary nerve winds around the surgical neck of the humerus alongside the posterior circumflex humeral artery, rendering it highly susceptible to fractures at this site.'
+            },
+            {
+                id: 'q3',
+                folder: 'Pharmacology',
+                text: 'A patient with persistent hypertension is prescribed Lisinopril. Which mechanism accounts for the development of a dry cough in patients receiving ACE inhibitors?',
+                options: ['Inhibition of Angiotensin II Receptors', 'Accumulation of Bradykinin and Substance P', 'Direct stimulation of bronchial smooth muscle', 'Increased synthesis of renal prostaglandins'],
+                correctIndex: 1,
+                rationale: 'ACE normally breaks down bradykinin and substance P. ACE inhibitors cause an accumulation of these inflammatory peptides in the pulmonary tree, triggering a dry cough.'
+            }
+        ];
+
+        const SEED_QUIZZES = [
+            {
+                id: 'quiz1',
+                title: 'High-Yield Clinical Pathology Review',
+                description: 'Comprehensive mid-semester pathology assessment covering cell injury, necrosis, and ischemia.',
+                category: 'Pathology',
+                duration: 15,
+                startDT: '2025-01-01T00:00',
+                endDT: '2030-12-31T23:59',
+                questionIds: ['q1', 'q2', 'q3']
+            }
+        ];
+
+        // STATE MANAGEMENT
+        let currentRole = 'student'; // 'student' or 'admin'
+        let adminPasscode = DEFAULT_PASSCODE;
+        let activeTab = 'quizzes';
+        let selectedFolder = 'ALL';
+
+        let questionBank = [];
+        let folderList = [];
+        let publishedQuizzes = [];
+        let examHistory = [];
+
+        // EXAM EXECUTION STATE
+        let pendingQuizToStart = null;
+        let activeExam = null; // { quiz, user: {name, id}, currentIdx: 0, userAnswers: {}, timerInterval: null, timeRemaining: 0 }
+
+        // INITIALIZATION
+        window.onload = async function() {
+            await loadStorageFromCloud();
+            lucide.createIcons();
+            updateRoleUI();
+            renderQuizzes();
+            renderFolders();
+            renderQuestionBank();
+            renderHistoryTable();
+        };
+
+        // MULTI-STUDENT CLOUD STORAGE ARCHITECTURE WITH FALLBACKS
+        async function loadStorageFromCloud() {
+            adminPasscode = localStorage.getItem('medstud_admin_passcode') || DEFAULT_PASSCODE;
+
+            // 1. Load Quizzes, Folders, and Question Bank from app_state (row ID: 1)
+            try {
+                const { data, error } = await supabaseClient.from('app_state').select('*').eq('id', 1);
+                if(!error && data && data.length > 0) {
+                    folderList = data[0].folders || SEED_FOLDERS;
+                    questionBank = data[0].questions || SEED_QUESTIONS;
+                    publishedQuizzes = data[0].quizzes || SEED_QUIZZES;
+                } else {
+                    folderList = JSON.parse(localStorage.getItem('med_stud_folders')) || SEED_FOLDERS;
+                    questionBank = JSON.parse(localStorage.getItem('med_stud_questions')) || SEED_QUESTIONS;
+                    publishedQuizzes = JSON.parse(localStorage.getItem('med_stud_quizzes')) || SEED_QUIZZES;
+                }
+            } catch (err) {
+                console.warn('Cloud load config fallback to localStorage:', err);
+                folderList = JSON.parse(localStorage.getItem('med_stud_folders')) || SEED_FOLDERS;
+                questionBank = JSON.parse(localStorage.getItem('med_stud_questions')) || SEED_QUESTIONS;
+                publishedQuizzes = JSON.parse(localStorage.getItem('med_stud_quizzes')) || SEED_QUIZZES;
+            }
+
+            // 2. Load ALL student exam attempts from the dedicated exam_attempts table
+            try {
+                const { data: historyData, error: historyError } = await supabaseClient
+                    .from('exam_attempts')
+                    .select('*')
+                    .order('submitted_at', { ascending: false });
+
+                if(!historyError && historyData) {
+                    examHistory = historyData.map(row => ({
+                        id: row.id,
+                        quizId: row.quiz_id,
+                        quizTitle: row.quiz_title,
+                        studentName: row.student_name,
+                        studentId: row.student_id,
+                        submittedAt: row.submitted_at,
+                        score: row.score,
+                        total: row.total,
+                        percentage: row.percentage,
+                        breakdown: row.breakdown
+                    }));
+                } else {
+                    examHistory = [];
+                }
+            } catch (err) {
+                console.warn('Cloud history load fallback:', err);
+                examHistory = [];
+            }
+        }
+
+        async function saveQuestionBankOrQuizzes() {
+            // Saves admin-managed questions, quizzes, and folders locally and to cloud
+            localStorage.setItem('medstud_admin_passcode', adminPasscode);
+            localStorage.setItem('med_stud_folders', JSON.stringify(folderList));
+            localStorage.setItem('med_stud_questions', JSON.stringify(questionBank));
+            localStorage.setItem('med_stud_quizzes', JSON.stringify(publishedQuizzes));
+
+            try {
+                await supabaseClient.from('app_state').upsert({
+                    id: 1,
+                    folders: folderList,
+                    questions: questionBank,
+                    quizzes: publishedQuizzes,
+                    updated_at: new Date().toISOString()
+                });
+            } catch (err) {
+                console.warn('Admin config sync error (saved locally):', err);
+            }
+        }
+
+        // NAVIGATION & ROLE MANAGERS
+        function switchTab(tabId) {
+            activeTab = tabId;
+            document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-tab').forEach(el => {
+                el.classList.remove('bg-white', 'text-brand-700', 'shadow-sm');
+                el.classList.add('text-slate-700');
+            });
+
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            if(activeBtn) {
+                activeBtn.classList.add('bg-white', 'text-brand-700', 'shadow-sm');
+                activeBtn.classList.remove('text-slate-700');
+            }
+
+            if(tabId === 'quizzes') renderQuizzes();
+            if(tabId === 'history') {
+                populateHistoryQuizDropdown();
+                renderHistoryTable();
+            }
+            if(tabId === 'bank') renderQuestionBank();
+            if(tabId === 'create') renderQuizQuestionSelector();
+
+            lucide.createIcons();
+        }
+
+        function toggleRoleModal() {
+            if(currentRole === 'admin') {
+                currentRole = 'student';
+                updateRoleUI();
+                showToast('Switched to Student view mode.');
+            } else {
+                document.getElementById('adminPassInput').value = '';
+                document.getElementById('roleModal').classList.remove('hidden');
+            }
+        }
+
+        function closeRoleModal() {
+            document.getElementById('roleModal').classList.add('hidden');
+            document.getElementById('adminPassInput').value = '';
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('adminPassInput').value;
+            if(pass === adminPasscode) {
+                currentRole = 'admin';
+                closeRoleModal();
+                updateRoleUI();
+                showToast('Admin authentication successful!');
+            } else {
+                showToast('Incorrect administrator passcode!', true);
+            }
+        }
+
+        function updateRoleUI() {
+            const roleBadge = document.getElementById('roleBadge');
+            const roleText = document.getElementById('roleText');
+            const roleSwitchBtnText = document.getElementById('roleSwitchBtnText');
+            const adminBar = document.getElementById('adminControlBar');
+
+            if(currentRole === 'admin') {
+                roleBadge.className = 'flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-900/80 text-emerald-300 border border-emerald-700';
+                roleText.innerText = 'Administrator Mode';
+                roleSwitchBtnText.innerText = 'Exit Admin';
+                adminBar.classList.remove('hidden');
+                document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+            } else {
+                roleBadge.className = 'flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700';
+                roleText.innerText = 'Student Mode';
+                roleSwitchBtnText.innerText = 'Admin Login';
+                adminBar.classList.add('hidden');
+                document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
+
+                if(activeTab === 'bank' || activeTab === 'create') {
+                    switchTab('quizzes');
+                }
+            }
+            renderHistoryTable();
+            lucide.createIcons();
+        }
+
+        function openChangePasscodeModal() {
+            document.getElementById('currPassInput').value = '';
+            document.getElementById('newPassInput').value = '';
+            document.getElementById('changePassModal').classList.remove('hidden');
+        }
+
+        function closeChangePassModal() {
+            document.getElementById('changePassModal').classList.add('hidden');
+        }
+
+        function handleChangePasscode(e) {
+            e.preventDefault();
+            const curr = document.getElementById('currPassInput').value;
+            const next = document.getElementById('newPassInput').value;
+
+            if(curr !== adminPasscode) {
+                showToast('Current passcode verification failed.', true);
+                return;
+            }
+            if(!next || next.trim().length < 4) {
+                showToast('New passcode must be at least 4 characters long.', true);
+                return;
+            }
+
+            adminPasscode = next.trim();
+            localStorage.setItem('medstud_admin_passcode', adminPasscode);
+            closeChangePassModal();
+            showToast('Admin passcode updated successfully.');
+        }
+
+        // VIEW 1: QUIZZES RENDERING & STATUS
+        function getQuizStatus(quiz) {
+            const now = new Date();
+            const start = new Date(quiz.startDT);
+            const end = new Date(quiz.endDT);
+
+            if (now < start) return { label: 'Scheduled', color: 'bg-blue-50 text-blue-700 border-blue-200', active: false };
+            if (now > end) return { label: 'Expired', color: 'bg-red-50 text-red-700 border-red-200', active: false };
+            return { label: 'Active', color: 'bg-emerald-50 text-emerald-700 border-emerald-200', active: true };
+        }
+
+        function renderQuizzes() {
+            const grid = document.getElementById('quizList');
+            const search = (document.getElementById('quizSearchInput').value || '').toLowerCase();
+
+            grid.innerHTML = '';
+
+            const filtered = publishedQuizzes.filter(q =>
+                q.title.toLowerCase().includes(search) ||
+                (q.category && q.category.toLowerCase().includes(search))
+            );
+
+            if(filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-white rounded-xl border border-slate-200">
+                        <i data-lucide="book-open" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
+                        <h3 class="text-base font-bold text-slate-700">No Assessments Available</h3>
+                        <p class="text-xs text-slate-500">There are no assessments matching your filter or none published yet.</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            filtered.forEach(q => {
+                const status = getQuizStatus(q);
+                const qCount = q.questionIds ? q.questionIds.length : 0;
+
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col justify-between';
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-3">
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${status.color}">
+                                ${status.label}
+                            </span>
+                            <span class="text-xs text-slate-500 font-medium">${q.category || 'General'}</span>
+                        </div>
+                        <h3 class="font-bold text-slate-900 text-base mb-1">${escapeHtml(q.title)}</h3>
+                        <p class="text-xs text-slate-600 mb-4 line-clamp-2">${escapeHtml(q.description || 'No description provided.')}</p>
+
+                        <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-3 mb-4">
+                            <div class="flex items-center justify-between">
+                                <span class="flex items-center gap-1.5"><i data-lucide="help-circle" class="w-3.5 h-3.5 text-slate-400"></i> Questions:</span>
+                                <span class="font-semibold text-slate-700">${qCount} Items</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i> Duration:</span>
+                                <span class="font-semibold text-slate-700">${q.duration} Mins</span>
+                            </div>
+                            <div class="flex items-center justify-between text-[11px]">
+                                <span>Expires:</span>
+                                <span>${new Date(q.endDT).toLocaleString([], {dateStyle:'short', timeStyle:'short'})}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                        <button onclick="promptStudentDetails('${q.id}')" ${!status.active ? 'disabled' : ''} class="flex-grow py-2 px-3 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:bg-slate-300 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                            <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                            <span>Start Assessment</span>
+                        </button>
+                        ${currentRole === 'admin' ? `
+                            <button onclick="deleteQuiz('${q.id}')" class="p-2 text-red-500 hover:bg-red-50 rounded-lg border border-red-200 transition-colors" title="Delete Assessment">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        function deleteQuiz(quizId) {
+            if(!confirm('Are you sure you want to delete this published assessment?')) return;
+            publishedQuizzes = publishedQuizzes.filter(q => q.id !== quizId);
+            saveQuestionBankOrQuizzes();
+            renderQuizzes();
+            showToast('Assessment deleted successfully.');
+        }
+
+        // EXAM FLOW & STUDENT PROMPT
+        function promptStudentDetails(quizId) {
+            const quiz = publishedQuizzes.find(q => q.id === quizId);
+            if(!quiz) return;
+            pendingQuizToStart = quiz;
+
+            document.getElementById('studentFullName').value = '';
+            document.getElementById('studentIDNo').value = '';
+            document.getElementById('identityModal').classList.remove('hidden');
+        }
+
+        function closeIdentityModal() {
+            document.getElementById('identityModal').classList.add('hidden');
+            pendingQuizToStart = null;
+        }
+
+        function confirmStudentIdentity(e) {
+            e.preventDefault();
+            const fullName = document.getElementById('studentFullName').value.trim();
+            const studentId = document.getElementById('studentIDNo').value.trim();
+
+            if(!fullName) {
+                showToast('Please enter your full name.', true);
+                return;
+            }
+
+            const quiz = pendingQuizToStart;
+            closeIdentityModal();
+
+            if(quiz) {
+                launchExam(quiz, { name: fullName, id: studentId || 'N/A' });
+            }
+        }
+
+        function launchExam(quiz, studentInfo) {
+            const questions = questionBank.filter(q => quiz.questionIds.includes(q.id));
+            if(questions.length === 0) {
+                showToast('This assessment has no questions attached.', true);
+                return;
+            }
+
+            activeExam = {
+                quiz: quiz,
+                student: studentInfo,
+                questions: questions,
+                currentIdx: 0,
+                userAnswers: {},
+                timeRemaining: (quiz.duration || 15) * 60,
+                timerInterval: null
+            };
+
+            document.getElementById('examModalTitle').innerText = quiz.title;
+            document.getElementById('examUserDisplay').innerText = `${studentInfo.name} (${studentInfo.id})`;
+            document.getElementById('examModal').classList.remove('hidden');
+
+            renderExamQuestion();
+            renderExamPalette();
+            startExamTimer();
+            lucide.createIcons();
+        }
+
+        function startExamTimer() {
+            updateTimerDisplay();
+            activeExam.timerInterval = setInterval(() => {
+                activeExam.timeRemaining--;
+                updateTimerDisplay();
+
+                if(activeExam.timeRemaining <= 0) {
+                    clearInterval(activeExam.timerInterval);
+                    showToast('Time expired! Submitting assessment automatically.', true);
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(activeExam.timeRemaining / 60);
+            const s = activeExam.timeRemaining % 60;
+            document.getElementById('examTimer').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function renderExamQuestion() {
+            const q = activeExam.questions[activeExam.currentIdx];
+            document.getElementById('examQuestionIndex').innerText = `Question ${activeExam.currentIdx + 1} of ${activeExam.questions.length}`;
+            document.getElementById('examQuestionCategory').innerText = q.folder || 'General';
+            document.getElementById('examQuestionText').innerText = q.text;
+
+            const optsContainer = document.getElementById('examOptionsList');
+            optsContainer.innerHTML = '';
+
+            const selectedOpt = activeExam.userAnswers[activeExam.currentIdx];
+
+            q.options.forEach((optText, idx) => {
+                if(!optText) return;
+                const isSelected = selectedOpt === idx;
+                const optEl = document.createElement('label');
+                optEl.className = `flex items-center p-3.5 rounded-xl border transition-all cursor-pointer ${
+                    isSelected ? 'bg-brand-50 border-brand-500 text-brand-900 font-medium shadow-sm' : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'
+                }`;
+                optEl.innerHTML = `
+                    <input type="radio" name="examOpt" value="${idx}" ${isSelected ? 'checked' : ''} onchange="selectExamOption(${idx})" class="w-4 h-4 text-brand-600 accent-brand-600 focus:ring-brand-500">
+                    <span class="ml-3 text-sm">${escapeHtml(optText)}</span>
+                `;
+                optsContainer.appendChild(optEl);
+            });
+
+            document.getElementById('examPrevBtn').disabled = activeExam.currentIdx === 0;
+            const nextBtn = document.getElementById('examNextBtn');
+            if(activeExam.currentIdx === activeExam.questions.length - 1) {
+                nextBtn.innerHTML = `<span>Review & Finish</span><i data-lucide="check-circle" class="w-4 h-4"></i>`;
+            } else {
+                nextBtn.innerHTML = `<span>Next</span><i data-lucide="chevron-right" class="w-4 h-4"></i>`;
+            }
+            lucide.createIcons();
+        }
+
+        function selectExamOption(optionIdx) {
+            activeExam.userAnswers[activeExam.currentIdx] = optionIdx;
+            renderExamPalette();
+        }
+
+        function navigateExamQuestion(delta) {
+            const target = activeExam.currentIdx + delta;
+            if(target >= 0 && target < activeExam.questions.length) {
+                activeExam.currentIdx = target;
+                renderExamQuestion();
+            }
+        }
+
+        function jumpToExamQuestion(idx) {
+            activeExam.currentIdx = idx;
+            renderExamQuestion();
+        }
+
+        function renderExamPalette() {
+            const palette = document.getElementById('examPaletteGrid');
+            palette.innerHTML = '';
+
+            activeExam.questions.forEach((_, idx) => {
+                const isAnswered = activeExam.userAnswers.hasOwnProperty(idx);
+                const isCurrent = activeExam.currentIdx === idx;
+
+                const btn = document.createElement('button');
+                btn.onclick = () => jumpToExamQuestion(idx);
+                btn.className = `w-10 h-10 rounded-lg text-xs font-bold transition-all flex items-center justify-center ${
+                    isCurrent ? 'ring-2 ring-white ring-offset-2 ring-offset-slate-800' : ''
+                } ${
+                    isAnswered ? 'bg-brand-600 text-white' : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
+                }`;
+                btn.innerText = idx + 1;
+                palette.appendChild(btn);
+            });
+        }
+
+        function confirmSubmitExam() {
+            const total = activeExam.questions.length;
+            const answered = Object.keys(activeExam.userAnswers).length;
+            if(answered < total) {
+                if(!confirm(`You have only answered ${answered} of ${total} questions. Are you sure you want to submit?`)) {
+                    return;
+                }
+            }
+            submitExam();
+        }
+
+        async function submitExam() {
+            if(activeExam.timerInterval) clearInterval(activeExam.timerInterval);
+
+            let score = 0;
+            const total = activeExam.questions.length;
+            const breakdown = [];
+
+            activeExam.questions.forEach((q, idx) => {
+                const chosen = activeExam.userAnswers[idx];
+                const isCorrect = chosen === q.correctIndex;
+                if(isCorrect) score++;
+
+                breakdown.push({
+                    questionId: q.id,
+                    questionText: q.text,
+                    options: q.options,
+                    chosenIndex: chosen !== undefined ? chosen : null,
+                    correctIndex: q.correctIndex,
+                    rationale: q.rationale,
+                    isCorrect: isCorrect
+                });
+            });
+
+            const percent = Math.round((score / total) * 100);
+
+            const attemptRecord = {
+                id: 'att_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                quizId: activeExam.quiz.id,
+                quizTitle: activeExam.quiz.title,
+                studentName: activeExam.student.name,
+                studentId: activeExam.student.id,
+                submittedAt: new Date().toISOString(),
+                score: score,
+                total: total,
+                percentage: percent,
+                breakdown: breakdown
+            };
+
+            // Insert directly into exam_attempts table in Supabase
+            try {
+                const { error } = await supabaseClient.from('exam_attempts').insert([{
+                    id: attemptRecord.id,
+                    quiz_id: attemptRecord.quizId,
+                    quiz_title: attemptRecord.quizTitle,
+                    student_name: attemptRecord.studentName,
+                    student_id: attemptRecord.studentId,
+                    submitted_at: attemptRecord.submittedAt,
+                    score: attemptRecord.score,
+                    total: attemptRecord.total,
+                    percentage: attemptRecord.percentage,
+                    breakdown: attemptRecord.breakdown
+                }]);
+
+                if (error) {
+                    console.warn('Cloud sync insert warning:', error);
+                }
+            } catch (err) {
+                console.warn('Exam submission exception:', err);
+            }
+
+            examHistory.unshift(attemptRecord);
+
+            document.getElementById('examModal').classList.add('hidden');
+            activeExam = null;
+
+            showToast(`Assessment submitted! Score: ${score}/${total} (${percent}%)`);
+            switchTab('history');
+            openReviewModal(attemptRecord.id);
+        }
+
+        // VIEW 2: EXAM HISTORY & MULTI-USER ATTEMPT REVIEW
+        function populateHistoryQuizDropdown() {
+            const dropdown = document.getElementById('historyQuizFilter');
+            dropdown.innerHTML = '<option value="ALL">All Assessment Titles</option>';
+
+            const titles = [...new Set(examHistory.map(h => h.quizTitle))];
+            titles.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t;
+                opt.innerText = t;
+                dropdown.appendChild(opt);
+            });
+        }
+
+        function renderHistoryTable() {
+            const body = document.getElementById('historyTableBody');
+            const search = (document.getElementById('historySearchInput').value || '').toLowerCase();
+            const quizFilter = document.getElementById('historyQuizFilter').value;
+            const countBadge = document.getElementById('historyCountBadge');
+
+            body.innerHTML = '';
+
+            let filtered = examHistory.filter(h => {
+                const matchesSearch = h.studentName.toLowerCase().includes(search) || h.studentId.toLowerCase().includes(search);
+                const matchesQuiz = quizFilter === 'ALL' || h.quizTitle === quizFilter;
+                return matchesSearch && matchesQuiz;
+            });
+
+            countBadge.innerText = `${filtered.length} Attempt${filtered.length === 1 ? '' : 's'}`;
+
+            if(filtered.length === 0) {
+                body.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-slate-400 text-xs">
+                            No attempt records found matching criteria.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            filtered.forEach(h => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition-colors';
+
+                const scoreColor = h.percentage >= 70 ? 'text-emerald-700 bg-emerald-50 border-emerald-200' :
+                                   h.percentage >= 50 ? 'text-amber-700 bg-amber-50 border-amber-200' :
+                                                        'text-red-700 bg-red-50 border-red-200';
+
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 font-medium text-slate-900">
+                        <div class="font-bold text-sm">${escapeHtml(h.studentName)}</div>
+                        <div class="text-xs text-slate-400">ID: ${escapeHtml(h.studentId)}</div>
+                    </td>
+                    <td class="py-3.5 px-4 text-xs font-semibold text-slate-800">
+                        ${escapeHtml(h.quizTitle)}
+                    </td>
+                    <td class="py-3.5 px-4 text-xs text-slate-500">
+                        ${new Date(h.submittedAt).toLocaleString([], {dateStyle:'medium', timeStyle:'short'})}
+                    </td>
+                    <td class="py-3.5 px-4">
+                        <span class="px-2.5 py-1 rounded-md text-xs font-bold border ${scoreColor}">
+                            ${h.score} / ${h.total} (${h.percentage}%)
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-4 text-right">
+                        <button onclick="openReviewModal('${h.id}')" class="px-3 py-1.5 text-xs font-semibold text-brand-700 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 rounded-lg border border-brand-200 transition-colors inline-flex items-center gap-1">
+                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                            <span>Review Rationale</span>
+                        </button>
+                    </td>
+                `;
+                body.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        async function clearHistoryRecords() {
+            if(!confirm('Are you sure you want to clear ALL student attempt records from the cloud database?')) return;
+            try {
+                await supabaseClient.from('exam_attempts').delete().neq('id', '0'); 
+                examHistory = [];
+                renderHistoryTable();
+                showToast('All attempt history cleared from cloud.');
+            } catch (err) {
+                showToast('Failed to clear records: ' + err.message, true);
+            }
+        }
+
+        // DETAILED REVIEW MODAL
+        function openReviewModal(attemptId) {
+            const attempt = examHistory.find(h => h.id === attemptId);
+            if(!attempt) return;
+
+            document.getElementById('reviewModalTitle').innerText = attempt.quizTitle;
+            document.getElementById('reviewModalSubtitle').innerText = `Candidate: ${attempt.studentName} (ID: ${attempt.studentId}) | Submitted: ${new Date(attempt.submittedAt).toLocaleString()}`;
+
+            const summaryContainer = document.getElementById('reviewSummaryHeader');
+            summaryContainer.innerHTML = `
+                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                    <span class="text-xs text-slate-400 uppercase font-semibold">Candidate</span>
+                    <p class="font-bold text-slate-800 text-sm truncate">${escapeHtml(attempt.studentName)}</p>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                    <span class="text-xs text-slate-400 uppercase font-semibold">Score Achieved</span>
+                    <p class="font-bold text-slate-800 text-sm">${attempt.score} / ${attempt.total}</p>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                    <span class="text-xs text-slate-400 uppercase font-semibold">Percentage</span>
+                    <p class="font-bold text-sm ${attempt.percentage >= 50 ? 'text-emerald-600' : 'text-red-600'}">${attempt.percentage}%</p>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                    <span class="text-xs text-slate-400 uppercase font-semibold">Status</span>
+                    <p class="font-bold text-sm ${attempt.percentage >= 50 ? 'text-emerald-600' : 'text-red-600'}">${attempt.percentage >= 50 ? 'PASSED' : 'RETAKE SUGGESTED'}</p>
+                </div>
+            `;
+
+            const qContainer = document.getElementById('reviewQuestionsContainer');
+            qContainer.innerHTML = '';
+
+            attempt.breakdown.forEach((item, idx) => {
+                const card = document.createElement('div');
+                card.className = `p-5 rounded-xl border ${item.isCorrect ? 'bg-white border-slate-200' : 'bg-red-50/20 border-red-200'} shadow-sm space-y-3`;
+
+                let optionsHtml = '';
+                item.options.forEach((optText, oIdx) => {
+                    if(!optText) return;
+                    const isUserChoice = item.chosenIndex === oIdx;
+                    const isCorrectChoice = item.correctIndex === oIdx;
+
+                    let optStyle = 'bg-slate-50 border-slate-200 text-slate-700';
+                    let badge = '';
+
+                    if(isCorrectChoice) {
+                        optStyle = 'bg-emerald-50 border-emerald-400 text-emerald-900 font-semibold';
+                        badge = '<span class="text-[10px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded ml-auto">Correct Answer</span>';
+                    }
+                    if(isUserChoice && !isCorrectChoice) {
+                        optStyle = 'bg-red-50 border-red-400 text-red-900 font-semibold';
+                        badge = '<span class="text-[10px] bg-red-600 text-white font-bold px-2 py-0.5 rounded ml-auto">Your Choice</span>';
+                    } else if(isUserChoice && isCorrectChoice) {
+                        badge = '<span class="text-[10px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded ml-auto">Your Choice (Correct)</span>';
+                    }
+
+                    optionsHtml += `
+                        <div class="p-3 rounded-lg border text-xs flex items-center justify-between ${optStyle}">
+                            <span>${escapeHtml(optText)}</span>
+                            ${badge}
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-2">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Question ${idx + 1}</span>
+                        <span class="text-xs font-bold px-2.5 py-0.5 rounded ${item.isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">
+                            ${item.isCorrect ? 'Correct (+1)' : 'Incorrect (0)'}
+                        </span>
+                    </div>
+
+                    <h4 class="font-bold text-slate-900 text-sm leading-relaxed">${escapeHtml(item.questionText)}</h4>
+
+                    <div class="space-y-2 pt-1">
+                        ${optionsHtml}
+                    </div>
+
+                    <div class="mt-3 p-3.5 bg-brand-50/60 border border-brand-200/80 rounded-lg text-xs space-y-1">
+                        <div class="flex items-center gap-1.5 text-brand-800 font-bold">
+                            <i data-lucide="book-open-check" class="w-4 h-4 text-brand-600"></i>
+                            <span>Clinical Rationale & Explanation:</span>
+                        </div>
+                        <p class="text-slate-700 leading-relaxed">${escapeHtml(item.rationale || 'No explanation provided.')}</p>
+                    </div>
+                `;
+                qContainer.appendChild(card);
+            });
+
+            document.getElementById('reviewModal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeReviewModal() {
+            document.getElementById('reviewModal').classList.add('hidden');
+        }
+
+        // VIEW 3: QUESTION BANK & FOLDERS MANAGERS
+        function renderFolders() {
+            const container = document.getElementById('folderList');
+            container.innerHTML = '';
+
+            const allBtn = document.createElement('button');
+            allBtn.onclick = () => selectFolder('ALL');
+            allBtn.className = `w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors ${
+                selectedFolder === 'ALL' ? 'bg-brand-50 text-brand-700 font-bold border border-brand-200' : 'text-slate-600 hover:bg-slate-100'
+            }`;
+            allBtn.innerHTML = `
+                <span class="flex items-center gap-2"><i data-lucide="folder" class="w-3.5 h-3.5"></i> All Questions</span>
+                <span class="bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-[10px] font-bold">${questionBank.length}</span>
+            `;
+            container.appendChild(allBtn);
+
+            folderList.forEach(f => {
+                const count = questionBank.filter(q => q.folder === f).length;
+                const btn = document.createElement('button');
+                btn.onclick = () => selectFolder(f);
+                btn.className = `w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors ${
+                    selectedFolder === f ? 'bg-brand-50 text-brand-700 font-bold border border-brand-200' : 'text-slate-600 hover:bg-slate-100'
+                }`;
+                btn.innerHTML = `
+                    <span class="flex items-center gap-2 truncate"><i data-lucide="folder" class="w-3.5 h-3.5"></i> ${escapeHtml(f)}</span>
+                    <span class="bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-[10px] font-bold">${count}</span>
+                `;
+                container.appendChild(btn);
+            });
+            lucide.createIcons();
+        }
+
+        function selectFolder(folderName) {
+            selectedFolder = folderName;
+            renderFolders();
+            renderQuestionBank();
+        }
+
+        function openCreateFolderModal() {
+            document.getElementById('folderNameInput').value = '';
+            document.getElementById('folderModal').classList.remove('hidden');
+        }
+
+        function closeFolderModal() {
+            document.getElementById('folderModal').classList.add('hidden');
+        }
+
+        function handleCreateFolder(e) {
+            e.preventDefault();
+            const val = document.getElementById('folderNameInput').value.trim();
+            if(!val) return;
+            if(!folderList.includes(val)) {
+                folderList.push(val);
+                saveQuestionBankOrQuizzes();
+                renderFolders();
+                showToast(`Folder "${val}" created.`);
+            }
+            closeFolderModal();
+        }
+
+        function renderQuestionBank() {
+            const list = document.getElementById('questionBankList');
+            const badge = document.getElementById('questionCountBadge');
+            const title = document.getElementById('currentFolderName');
+
+            title.innerText = selectedFolder === 'ALL' ? 'All Questions' : selectedFolder;
+
+            const filtered = selectedFolder === 'ALL' ? questionBank : questionBank.filter(q => q.folder === selectedFolder);
+            badge.innerText = filtered.length;
+
+            list.innerHTML = '';
+
+            if(filtered.length === 0) {
+                list.innerHTML = `
+                    <div class="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-400 text-xs">
+                        No questions available in this folder. Click 'Add Question' or 'Import' to populate.
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach((q, idx) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl border border-slate-200 shadow-sm p-4 space-y-3';
+
+                let optsHtml = '';
+                q.options.forEach((opt, oIdx) => {
+                    if(!opt) return;
+                    const isCorrect = oIdx === q.correctIndex;
+                    optsHtml += `
+                        <div class="text-xs px-2.5 py-1 rounded border ${isCorrect ? 'bg-emerald-50 border-emerald-300 text-emerald-900 font-bold' : 'bg-slate-50 border-slate-200 text-slate-600'}">
+                            ${escapeHtml(opt)} ${isCorrect ? '(Correct)' : ''}
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">
+                                ${escapeHtml(q.folder || 'General')}
+                            </span>
+                            <h4 class="font-bold text-slate-900 text-sm leading-snug">${escapeHtml(q.text)}</h4>
+                        </div>
+                        <div class="flex items-center space-x-1 shrink-0">
+                            <button onclick="editQuestion('${q.id}')" class="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-slate-100 rounded-lg">
+                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="deleteQuestion('${q.id}')" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">
+                        ${optsHtml}
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200/60 p-2.5 rounded-lg text-xs text-slate-600">
+                        <span class="font-bold text-slate-800">Rationale:</span> ${escapeHtml(q.rationale || 'N/A')}
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        function openQuestionModal(editId = null) {
+            const select = document.getElementById('qFolderSelect');
+            select.innerHTML = '';
+            folderList.forEach(f => {
+                const opt = document.createElement('option');
+                opt.value = f;
+                opt.innerText = f;
+                select.appendChild(opt);
+            });
+
+            const form = document.getElementById('questionForm');
+            form.reset();
+
+            if(editId) {
+                const q = questionBank.find(item => item.id === editId);
+                if(q) {
+                    document.getElementById('editQuestionId').value = q.id;
+                    document.getElementById('qFolderSelect').value = q.folder;
+                    document.getElementById('qText').value = q.text;
+                    document.getElementById('opt0').value = q.options[0] || '';
+                    document.getElementById('opt1').value = q.options[1] || '';
+                    document.getElementById('opt2').value = q.options[2] || '';
+                    document.getElementById('opt3').value = q.options[3] || '';
+                    document.getElementById('qRationale').value = q.rationale || '';
+
+                    const radios = document.getElementsByName('correctOpt');
+                    if(radios[q.correctIndex]) radios[q.correctIndex].checked = true;
+
+                    document.getElementById('questionModalTitle').innerText = 'Edit Question';
+                }
+            } else {
+                document.getElementById('editQuestionId').value = '';
+                document.getElementById('questionModalTitle').innerText = 'Add New Question';
+                if(selectedFolder !== 'ALL') select.value = selectedFolder;
+            }
+
+            document.getElementById('questionModal').classList.remove('hidden');
+        }
+
+        function closeQuestionModal() {
+            document.getElementById('questionModal').classList.add('hidden');
+        }
+
+        function handleSaveQuestion(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editQuestionId').value;
+            const folder = document.getElementById('qFolderSelect').value;
+            const text = document.getElementById('qText').value.trim();
+            const opt0 = document.getElementById('opt0').value.trim();
+            const opt1 = document.getElementById('opt1').value.trim();
+            const opt2 = document.getElementById('opt2').value.trim();
+            const opt3 = document.getElementById('opt3').value.trim();
+            const rationale = document.getElementById('qRationale').value.trim();
+
+            const radios = document.getElementsByName('correctOpt');
+            let correctIdx = 0;
+            for(let i=0; i<radios.length; i++) {
+                if(radios[i].checked) { correctIdx = parseInt(radios[i].value); break; }
+            }
+
+            const options = [opt0, opt1, opt2, opt3].filter(o => o.length > 0);
+
+            if(editId) {
+                const q = questionBank.find(item => item.id === editId);
+                if(q) {
+                    q.folder = folder;
+                    q.text = text;
+                    q.options = options;
+                    q.correctIndex = correctIdx;
+                    q.rationale = rationale;
+                }
+            } else {
+                questionBank.push({
+                    id: 'q_' + Date.now(),
+                    folder: folder,
+                    text: text,
+                    options: options,
+                    correctIndex: correctIdx,
+                    rationale: rationale
+                });
+            }
+
+            saveQuestionBankOrQuizzes();
+            closeQuestionModal();
+            renderFolders();
+            renderQuestionBank();
+            showToast('Question saved successfully.');
+        }
+
+        function editQuestion(qId) {
+            openQuestionModal(qId);
+        }
+
+        function deleteQuestion(qId) {
+            if(!confirm('Delete this question from bank?')) return;
+            questionBank = questionBank.filter(q => q.id !== qId);
+            saveQuestionBankOrQuizzes();
+            renderFolders();
+            renderQuestionBank();
+            showToast('Question deleted.');
+        }
+
+        // BULK IMPORT LOGIC
+        function openImportModal() {
+            const select = document.getElementById('importFolderSelect');
+            select.innerHTML = '';
+            folderList.forEach(f => {
+                const opt = document.createElement('option');
+                opt.value = f;
+                opt.innerText = f;
+                select.appendChild(opt);
+            });
+            document.getElementById('importModal').classList.remove('hidden');
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').classList.add('hidden');
+        }
+
+        function executeImport() {
+            const folder = document.getElementById('importFolderSelect').value;
+            const fileInput = document.getElementById('importFileInput');
+            const file = fileInput.files[0];
+
+            if(!file) {
+                showToast('Please select a file to import.', true);
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    let imported = [];
+
+                    if(file.name.endsWith('.json')) {
+                        imported = JSON.parse(content);
+                    } else if(file.name.endsWith('.csv')) {
+                        imported = parseCSV(content);
+                    }
+
+                    if(Array.isArray(imported) && imported.length > 0) {
+                        imported.forEach(item => {
+                            questionBank.push({
+                                id: 'q_' + Date.now() + '_' + Math.random().toString(36).substr(2,4),
+                                folder: folder,
+                                text: item.text || item.question || 'Untitled Question',
+                                options: item.options || [item.optA, item.optB, item.optC, item.optD].filter(Boolean),
+                                correctIndex: item.correctIndex !== undefined ? parseInt(item.correctIndex) : 0,
+                                rationale: item.rationale || 'Imported rationale.'
+                            });
+                        });
+                        saveQuestionBankOrQuizzes();
+                        renderFolders();
+                        renderQuestionBank();
+                        closeImportModal();
+                        showToast(`Successfully imported ${imported.length} questions.`);
+                    } else {
+                        showToast('File format invalid or empty array.', true);
+                    }
+                } catch(err) {
+                    showToast('Failed to parse file: ' + err.message, true);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n').filter(l => l.trim().length > 0);
+            if(lines.length < 2) return [];
+            const result = [];
+            for(let i=1; i<lines.length; i++) {
+                const cols = lines[i].split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+                if(cols.length >= 6) {
+                    result.push({
+                        text: cols[0],
+                        options: [cols[1], cols[2], cols[3], cols[4]],
+                        correctIndex: parseInt(cols[5]) || 0,
+                        rationale: cols[6] || ''
+                    });
+                }
+            }
+            return result;
+        }
+
+        // VIEW 4: CREATE ASSESSMENT FORM
+        function renderQuizQuestionSelector() {
+            const container = document.getElementById('quizQuestionSelector');
+            const folderFilter = document.getElementById('createQuizFolderFilter');
+
+            folderFilter.innerHTML = '<option value="ALL">All Folders</option>';
+            folderList.forEach(f => {
+                const opt = document.createElement('option');
+                opt.value = f;
+                opt.innerText = f;
+                folderFilter.appendChild(opt);
+            });
+
+            container.innerHTML = '';
+            const selectedFolderVal = folderFilter.value;
+
+            const filtered = selectedFolderVal === 'ALL' ? questionBank : questionBank.filter(q => q.folder === selectedFolderVal);
+
+            if(filtered.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 py-4 text-center">No questions found in question bank.</p>';
+                return;
+            }
+
+            filtered.forEach(q => {
+                const item = document.createElement('label');
+                item.className = 'flex items-start space-x-3 p-2 bg-white rounded border border-slate-200 hover:bg-slate-100 cursor-pointer text-xs';
+                item.innerHTML = `
+                    <input type="checkbox" name="quizQuestionCb" value="${q.id}" class="mt-0.5 accent-brand-600 rounded">
+                    <div>
+                        <span class="font-bold text-slate-800">[${escapeHtml(q.folder)}]</span>
+                        <span class="text-slate-700 ml-1">${escapeHtml(q.text)}</span>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function selectAllQuizQuestions(check) {
+            const checkboxes = document.getElementsByName('quizQuestionCb');
+            checkboxes.forEach(cb => cb.checked = check);
+        }
+
+        function handleCreateQuiz(e) {
+            e.preventDefault();
+            const title = document.getElementById('quizTitle').value.trim();
+            const desc = document.getElementById('quizDesc').value.trim();
+            const duration = parseInt(document.getElementById('quizDuration').value) || 15;
+            const category = document.getElementById('quizCategory').value.trim() || 'General';
+            const startDT = document.getElementById('quizStartDT').value;
+            const endDT = document.getElementById('quizEndDT').value;
+
+            const checkboxes = document.getElementsByName('quizQuestionCb');
+            const selectedQIds = [];
+            checkboxes.forEach(cb => {
+                if(cb.checked) selectedQIds.push(cb.value);
+            });
+
+            if(selectedQIds.length === 0) {
+                showToast('Please select at least one question for the assessment.', true);
+                return;
+            }
+
+            const newQuiz = {
+                id: 'quiz_' + Date.now(),
+                title: title,
+                description: desc,
+                category: category,
+                duration: duration,
+                startDT: startDT,
+                endDT: endDT,
+                questionIds: selectedQIds
+            };
+
+            publishedQuizzes.unshift(newQuiz);
+            saveQuestionBankOrQuizzes();
+
+            document.getElementById('createQuizForm').reset();
+            showToast('Assessment created and published successfully!');
+            switchTab('quizzes');
+        }
+
+        // UTILITY FUNCTIONS
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toastMsg');
+            const icon = document.getElementById('toastIcon');
+
+            msg.innerText = message;
+            if(isError) {
+                toast.className = toast.className.replace('bg-slate-900', 'bg-red-900').replace('border-slate-700', 'border-red-700');
+                icon.setAttribute('data-lucide', 'alert-circle');
+            } else {
+                toast.className = toast.className.replace('bg-red-900', 'bg-slate-900').replace('border-red-700', 'border-slate-700');
+                icon.setAttribute('data-lucide', 'check-circle');
+            }
+
+            lucide.createIcons();
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+            }, 3500);
+        }
+
+        function escapeHtml(str) {
+            if(!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
