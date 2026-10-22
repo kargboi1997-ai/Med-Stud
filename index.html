@@ -684,7 +684,7 @@
             renderHistoryTable();
         };
 
-        // MULTI-STUDENT CLOUD STORAGE ARCHITECTURE
+        // MULTI-STUDENT CLOUD STORAGE ARCHITECTURE WITH FALLBACKS
         async function loadStorageFromCloud() {
             adminPasscode = localStorage.getItem('medstud_admin_passcode') || DEFAULT_PASSCODE;
 
@@ -696,15 +696,15 @@
                     questionBank = data[0].questions || SEED_QUESTIONS;
                     publishedQuizzes = data[0].quizzes || SEED_QUIZZES;
                 } else {
-                    folderList = SEED_FOLDERS;
-                    questionBank = SEED_QUESTIONS;
-                    publishedQuizzes = SEED_QUIZZES;
+                    folderList = JSON.parse(localStorage.getItem('med_stud_folders')) || SEED_FOLDERS;
+                    questionBank = JSON.parse(localStorage.getItem('med_stud_questions')) || SEED_QUESTIONS;
+                    publishedQuizzes = JSON.parse(localStorage.getItem('med_stud_quizzes')) || SEED_QUIZZES;
                 }
             } catch (err) {
-                console.warn('Cloud load config fallback:', err);
-                folderList = SEED_FOLDERS;
-                questionBank = SEED_QUESTIONS;
-                publishedQuizzes = SEED_QUIZZES;
+                console.warn('Cloud load config fallback to localStorage:', err);
+                folderList = JSON.parse(localStorage.getItem('med_stud_folders')) || SEED_FOLDERS;
+                questionBank = JSON.parse(localStorage.getItem('med_stud_questions')) || SEED_QUESTIONS;
+                publishedQuizzes = JSON.parse(localStorage.getItem('med_stud_quizzes')) || SEED_QUIZZES;
             }
 
             // 2. Load ALL student exam attempts from the dedicated exam_attempts table
@@ -737,7 +737,7 @@
         }
 
         async function saveQuestionBankOrQuizzes() {
-            // Saves admin-managed questions, quizzes, and folders to row ID: 1
+            // Saves admin-managed questions, quizzes, and folders locally and to cloud
             localStorage.setItem('medstud_admin_passcode', adminPasscode);
             localStorage.setItem('med_stud_folders', JSON.stringify(folderList));
             localStorage.setItem('med_stud_questions', JSON.stringify(questionBank));
@@ -752,7 +752,7 @@
                     updated_at: new Date().toISOString()
                 });
             } catch (err) {
-                console.warn('Admin config sync error:', err);
+                console.warn('Admin config sync error (saved locally):', err);
             }
         }
 
@@ -1164,7 +1164,7 @@
                 breakdown: breakdown
             };
 
-            // Insert directly as a new unique row into exam_attempts table in Supabase
+            // Insert directly into exam_attempts table in Supabase
             try {
                 const { error } = await supabaseClient.from('exam_attempts').insert([{
                     id: attemptRecord.id,
@@ -1180,11 +1180,10 @@
                 }]);
 
                 if (error) {
-                    console.error('Failed to save exam attempt to cloud:', error);
-                    showToast('Warning: Score saved locally, but cloud sync failed.', true);
+                    console.warn('Cloud sync insert warning:', error);
                 }
             } catch (err) {
-                console.error('Exam submission exception:', err);
+                console.warn('Exam submission exception:', err);
             }
 
             examHistory.unshift(attemptRecord);
@@ -1277,7 +1276,7 @@
         async function clearHistoryRecords() {
             if(!confirm('Are you sure you want to clear ALL student attempt records from the cloud database?')) return;
             try {
-                await supabaseClient.from('exam_attempts').delete().neq('id', '0'); // deletes all rows
+                await supabaseClient.from('exam_attempts').delete().neq('id', '0'); 
                 examHistory = [];
                 renderHistoryTable();
                 showToast('All attempt history cleared from cloud.');
@@ -1710,7 +1709,7 @@
             container.innerHTML = '';
             const selectedFolderVal = folderFilter.value;
 
-            const filtered = selectedFolderVal === 'ALL' ? questionBank : questionBank.key ? questionBank : questionBank.filter(q => q.folder === selectedFolderVal);
+            const filtered = selectedFolderVal === 'ALL' ? questionBank : questionBank.filter(q => q.folder === selectedFolderVal);
 
             if(filtered.length === 0) {
                 container.innerHTML = '<p class="text-xs text-slate-400 py-4 text-center">No questions found in question bank.</p>';
