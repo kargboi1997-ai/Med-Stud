@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -606,6 +608,11 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
+        // SUPABASE CONFIGURATION
+        const SUPABASE_URL = 'https://ddeukafnnlkbnsfsmuxn.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_GBQet5zyPXwmbXZ-Z513qA_nPuIf_';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         // INITIAL DEMO DATA SEEDS
         const DEFAULT_PASSCODE = 'admin123';
 
@@ -667,8 +674,8 @@
         let activeExam = null; // { quiz, user: {name, id}, currentIdx: 0, userAnswers: {}, timerInterval: null, timeRemaining: 0 }
 
         // INITIALIZATION
-        window.onload = function() {
-            loadStorage();
+        window.onload = async function() {
+            await loadStorageFromCloud();
             lucide.createIcons();
             updateRoleUI();
             renderQuizzes();
@@ -677,33 +684,60 @@
             renderHistoryTable();
         };
 
-        function loadStorage() {
-            // Passcode
+        // HYBRID STORAGE (SUPABASE CLOUD + LOCALFALLBACK)
+        async function loadStorageFromCloud() {
             adminPasscode = localStorage.getItem('medstud_admin_passcode') || DEFAULT_PASSCODE;
 
-            // Folders
+            try {
+                // Fetch shared app state from Supabase table 'app_state' if available
+                const { data, error } = await supabaseClient.from('app_state').select('*');
+                if(!error && data && data.length > 0) {
+                    const cloudStore = data[0];
+                    folderList = cloudStore.folders || SEED_FOLDERS;
+                    questionBank = cloudStore.questions || SEED_QUESTIONS;
+                    publishedQuizzes = cloudStore.quizzes || SEED_QUIZZES;
+                    examHistory = cloudStore.history || [];
+                    return;
+                }
+            } catch (err) {
+                console.warn('Cloud load fallback to local storage:', err);
+            }
+
+            // Fallback to localStorage if cloud table is empty or unconfigured
             const savedFolders = localStorage.getItem('med_stud_folders');
             folderList = savedFolders ? JSON.parse(savedFolders) : SEED_FOLDERS;
 
-            // Questions
             const savedQ = localStorage.getItem('med_stud_questions');
             questionBank = savedQ ? JSON.parse(savedQ) : SEED_QUESTIONS;
 
-            // Quizzes
             const savedQuiz = localStorage.getItem('med_stud_quizzes');
             publishedQuizzes = savedQuiz ? JSON.parse(savedQuiz) : SEED_QUIZZES;
 
-            // Multi-user Attempts / History
             const savedHist = localStorage.getItem('med_stud_exam_history');
             examHistory = savedHist ? JSON.parse(savedHist) : [];
         }
 
-        function saveStorage() {
+        async function saveStorage() {
+            // Save locally immediately for snappy responsiveness
             localStorage.setItem('medstud_admin_passcode', adminPasscode);
             localStorage.setItem('med_stud_folders', JSON.stringify(folderList));
             localStorage.setItem('med_stud_questions', JSON.stringify(questionBank));
             localStorage.setItem('med_stud_quizzes', JSON.stringify(publishedQuizzes));
             localStorage.setItem('med_stud_exam_history', JSON.stringify(examHistory));
+
+            try {
+                // Sync to Supabase cloud table for cross-device syncing
+                await supabaseClient.from('app_state').upsert({
+                    id: 1,
+                    folders: folderList,
+                    questions: questionBank,
+                    quizzes: publishedQuizzes,
+                    history: examHistory,
+                    updated_at: new Date().toISOString()
+                });
+            } catch (err) {
+                console.warn('Cloud sync error:', err);
+            }
         }
 
         // NAVIGATION & ROLE MANAGERS
@@ -941,7 +975,6 @@
         }
 
         function launchExam(quiz, studentInfo) {
-            // Load questions
             const questions = questionBank.filter(q => quiz.questionIds.includes(q.id));
             if(questions.length === 0) {
                 showToast('This assessment has no questions attached.', true);
@@ -1013,7 +1046,6 @@
                 optsContainer.appendChild(optEl);
             });
 
-            // Prev/Next buttons status
             document.getElementById('examPrevBtn').disabled = activeExam.currentIdx === 0;
             const nextBtn = document.getElementById('examNextBtn');
             if(activeExam.currentIdx === activeExam.questions.length - 1) {
@@ -1076,7 +1108,6 @@
         function submitExam() {
             if(activeExam.timerInterval) clearInterval(activeExam.timerInterval);
 
-            // Compute score
             let score = 0;
             const total = activeExam.questions.length;
             const breakdown = [];
@@ -1099,7 +1130,6 @@
 
             const percent = Math.round((score / total) * 100);
 
-            // Create persistent attempt record
             const attemptRecord = {
                 id: 'att_' + Date.now(),
                 quizId: activeExam.quiz.id,
@@ -1217,7 +1247,6 @@
             document.getElementById('reviewModalTitle').innerText = attempt.quizTitle;
             document.getElementById('reviewModalSubtitle').innerText = `Candidate: ${attempt.studentName} (ID: ${attempt.studentId}) | Submitted: ${new Date(attempt.submittedAt).toLocaleString()}`;
 
-            // Header summary
             const summaryContainer = document.getElementById('reviewSummaryHeader');
             summaryContainer.innerHTML = `
                 <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
@@ -1238,7 +1267,6 @@
                 </div>
             `;
 
-            // Render Questions
             const qContainer = document.getElementById('reviewQuestionsContainer');
             qContainer.innerHTML = '';
 
@@ -1288,7 +1316,6 @@
                         ${optionsHtml}
                     </div>
 
-                    <!-- Rationale Box -->
                     <div class="mt-3 p-3.5 bg-brand-50/60 border border-brand-200/80 rounded-lg text-xs space-y-1">
                         <div class="flex items-center gap-1.5 text-brand-800 font-bold">
                             <i data-lucide="book-open-check" class="w-4 h-4 text-brand-600"></i>
@@ -1313,7 +1340,6 @@
             const container = document.getElementById('folderList');
             container.innerHTML = '';
 
-            // 'All' item
             const allBtn = document.createElement('button');
             allBtn.onclick = () => selectFolder('ALL');
             allBtn.className = `w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors ${
@@ -1626,7 +1652,6 @@
             const container = document.getElementById('quizQuestionSelector');
             const folderFilter = document.getElementById('createQuizFolderFilter');
 
-            // Populate folder dropdown
             folderFilter.innerHTML = '<option value="ALL">All Folders</option>';
             folderList.forEach(f => {
                 const opt = document.createElement('option');
