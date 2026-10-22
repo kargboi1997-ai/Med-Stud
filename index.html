@@ -55,7 +55,7 @@
                             <span class="font-bold text-lg tracking-tight text-white">Med~Stud Portal</span>
                             <span class="text-xs bg-slate-800 text-brand-400 font-semibold px-2 py-0.5 rounded-full border border-slate-700">COMAHS</span>
                         </div>
-                        <p class="text-xs text-slate-400 hidden sm:block">Medical Student Self-Assessment & Exam System</p>
+                        <p class="text-xs text-slate-400 hidden sm:block">Medical Student Self-Assessment and Exam System</p>
                     </div>
                 </div>
 
@@ -75,7 +75,7 @@
         </div>
     </header>
 
-    <!-- ADMIN CONTROL STRIP (Shown when Admin) -->
+    <!-- ADMIN CONTROL STRIP -->
     <div id="adminControlBar" class="hidden bg-emerald-950 text-emerald-200 text-xs py-2 px-4 border-b border-emerald-800/50">
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center space-x-2">
@@ -135,7 +135,7 @@
             </div>
         </section>
 
-        <!-- VIEW 2: EXAM HISTORY & REVIEWS (Multi-user) -->
+        <!-- VIEW 2: EXAM HISTORY & REVIEWS -->
         <section id="view-history" class="tab-view hidden flex-grow">
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4 border-b border-slate-100 pb-4">
@@ -147,7 +147,6 @@
                         <p class="text-sm text-slate-500">All submitted student assessment attempts are preserved in the cloud database.</p>
                     </div>
 
-                    <!-- History Controls / Filters -->
                     <div class="flex flex-wrap items-center gap-2">
                         <div class="relative min-w-[200px]">
                             <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
@@ -163,7 +162,6 @@
                     </div>
                 </div>
 
-                <!-- Attempts List Table -->
                 <div class="overflow-x-auto custom-scrollbar">
                     <table class="w-full text-left text-sm text-slate-600">
                         <thead class="bg-slate-50 text-slate-700 uppercase font-semibold text-xs border-y border-slate-200">
@@ -183,10 +181,9 @@
             </div>
         </section>
 
-        <!-- VIEW 3: QUESTION BANK & FOLDERS (Admin) -->
+        <!-- VIEW 3: QUESTION BANK & FOLDERS -->
         <section id="view-bank" class="tab-view hidden flex-grow">
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <!-- Folder Sidebar -->
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 h-fit">
                     <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
                         <h3 class="font-bold text-slate-900 flex items-center gap-2">
@@ -202,7 +199,6 @@
                     </div>
                 </div>
 
-                <!-- Main Question List -->
                 <div class="lg:col-span-3 space-y-4">
                     <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div>
@@ -231,7 +227,7 @@
             </div>
         </section>
 
-        <!-- VIEW 4: CREATE / PUBLISH ASSESSMENT (Admin) -->
+        <!-- VIEW 4: CREATE ASSESSMENT -->
         <section id="view-create" class="tab-view hidden flex-grow">
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 max-w-4xl mx-auto">
                 <h2 class="text-xl font-bold text-slate-900 mb-1">Create & Publish Assessment</h2>
@@ -270,7 +266,6 @@
                         </div>
                     </div>
 
-                    <!-- Select Questions Section -->
                     <div class="border-t border-slate-200 pt-6">
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="font-bold text-slate-900 text-sm">Select Questions for Assessment</h3>
@@ -285,7 +280,7 @@
                         </div>
 
                         <div id="quizQuestionSelector" class="space-y-2 max-h-80 overflow-y-auto custom-scrollbar border border-slate-200 rounded-lg p-3 bg-slate-50">
-                            <!-- Dynamic Checkbox items for question bank -->
+                            <!-- Dynamic Checkbox items -->
                         </div>
                     </div>
 
@@ -299,21 +294,18 @@
 
     </div>
 
-    <!-- IMMERSIVE EXAM / ASSESSMENT MODAL -->
+    <!-- IMMERSIVE EXAM MODAL -->
     <div id="examModal" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-50 hidden flex flex-col">
-        <!-- Exam Header -->
         <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between text-white">
             <div class="flex items-center space-x-3">
                 <span class="px-2.5 py-1 bg-brand-600/30 text-brand-400 text-xs font-semibold rounded border border-brand-500/30">Active Assessment</span>
                 <h2 id="examModalTitle" class="font-bold text-lg text-slate-100">Assessment Title</h2>
             </div>
             <div class="flex items-center space-x-6">
-                <!-- User Label during Exam -->
                 <div class="hidden sm:flex items-center space-x-2 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 text-xs">
                     <i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i>
                     <span id="examUserDisplay" class="font-medium text-slate-200">Candidate</span>
                 </div>
-                <!-- Timer -->
                 <div class="flex items-center space-x-2 bg-slate-800 text-amber-400 font-mono font-bold px-4 py-1.5 rounded-lg border border-slate-700 text-sm">
                     <i data-lucide="clock" class="w-4 h-4"></i>
                     <span id="examTimer">00:00</span>
@@ -322,9 +314,7 @@
             </div>
         </header>
 
-        <!-- Exam Content Container -->
         <div class="flex-grow flex flex-col md:flex-row overflow-hidden max-w-7xl w-full mx-auto p-6 gap-6">
-            <!-- Main Question Area -->
             <div class="flex-grow bg-white rounded-2xl shadow-xl border border-slate-200 flex flex-col overflow-hidden">
                 <div class="p-6 overflow-y-auto custom-scrollbar flex-grow">
                     <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
@@ -341,7 +331,6 @@
                     </div>
                 </div>
 
-                <!-- Footer Navigation -->
                 <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex items-center justify-between">
                     <button id="examPrevBtn" onclick="navigateExamQuestion(-1)" class="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-1.5 disabled:opacity-50">
                         <i data-lucide="chevron-left" class="w-4 h-4"></i>
@@ -354,7 +343,6 @@
                 </div>
             </div>
 
-            <!-- Question Grid Navigator Sidebar -->
             <div class="w-full md:w-72 bg-slate-800 text-white rounded-2xl p-5 flex flex-col justify-between shrink-0">
                 <div>
                     <h4 class="font-bold text-sm text-slate-300 uppercase tracking-wider mb-4 border-b border-slate-700 pb-2">Question Palette</h4>
@@ -374,7 +362,7 @@
         </div>
     </div>
 
-    <!-- STUDENT IDENTITY PROMPT MODAL (Triggered before starting quiz) -->
+    <!-- STUDENT IDENTITY PROMPT MODAL -->
     <div id="identityModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-100">
             <div class="flex items-center space-x-3 mb-4">
@@ -418,15 +406,8 @@
         </header>
 
         <div class="flex-grow overflow-y-auto custom-scrollbar p-6 max-w-5xl w-full mx-auto space-y-6">
-            <!-- Review Summary Card -->
-            <div id="reviewSummaryHeader" class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
-                <!-- Summary blocks -->
-            </div>
-
-            <!-- Question Rationale Cards -->
-            <div id="reviewQuestionsContainer" class="space-y-4">
-                <!-- Cards with correct answer highlights & full rationales -->
-            </div>
+            <div id="reviewSummaryHeader" class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4 text-center"></div>
+            <div id="reviewQuestionsContainer" class="space-y-4"></div>
         </div>
     </div>
 
@@ -487,9 +468,7 @@
 
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Folder Category *</label>
-                    <select id="qFolderSelect" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
-                        <!-- Dynamic Folder Options -->
-                    </select>
+                    <select id="qFolderSelect" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg"></select>
                 </div>
 
                 <div>
@@ -519,7 +498,7 @@
 
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Detailed Rationale / Explanation *</label>
-                    <textarea id="qRationale" required rows="3" placeholder="Explain why the correct answer is right and why others are incorrect..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg"></textarea>
+                    <textarea id="qRationale" required rows="3" placeholder="Explain why the correct answer is right..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg"></textarea>
                 </div>
 
                 <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
@@ -556,27 +535,12 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Target Folder</label>
-                    <select id="importFolderSelect" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
-                        <!-- Options -->
-                    </select>
+                    <select id="importFolderSelect" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg"></select>
                 </div>
 
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Select File (.json, .csv)</label>
                     <input type="file" id="importFileInput" accept=".json,.csv" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
-                </div>
-
-                <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-600 space-y-1">
-                    <span class="font-bold">JSON Format Preview:</span>
-                    <pre class="text-[10px] bg-slate-100 p-2 rounded overflow-x-auto">
-[
-  {
-    "text": "Question text?",
-    "options": ["A", "B", "C", "D"],
-    "correctIndex": 0,
-    "rationale": "Explanation here..."
-  }
-]</pre>
                 </div>
 
                 <div class="flex justify-end space-x-2 pt-2">
@@ -593,7 +557,7 @@
         <span id="toastMsg" class="text-sm font-medium">Notification message</span>
     </div>
 
-    <!-- IMMUTABLE OWNER FOOTER -->
+    <!-- FOOTER -->
     <footer class="mt-auto bg-slate-900 text-slate-400 border-t border-slate-800 text-xs py-4 px-4">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
             <div>
@@ -608,11 +572,10 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // SUPABASE CONFIGURATION - WITH MANDATORY HEADERS FOR PUBLISHABLE KEY FORMAT
+        // SUPABASE CONFIGURATION: Includes mandatory authorization headers for the publishable key format
         const SUPABASE_URL = 'https://ddeukafnnlkbnsfsmuxn.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_GBQet5zyPXwmbXZ-Z513qA_nPuIf_';
         
-        // Pass publishable key via headers to authorize browser client requests
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
             global: {
                 headers: {
@@ -622,11 +585,8 @@
             }
         });
 
-        // INITIAL DEMO DATA SEEDS
         const DEFAULT_PASSCODE = 'admin123';
-
         const SEED_FOLDERS = ["Pathology", "Anatomy", "Pharmacology", "General Practice"];
-
         const SEED_QUESTIONS = [
             {
                 id: 'q1',
@@ -635,25 +595,8 @@
                 options: ['Dense collagenous scar formation', 'Coagulative necrosis with neutrophil infiltration', 'Granulation tissue with abundant capillaries', 'Normal cardiac myocytes without edema'],
                 correctIndex: 1,
                 rationale: 'At 12-24 hours post-myocardial infarction, early coagulative necrosis occurs, accompanied by contraction bands and the initial arrival of neutrophilic infiltrate.'
-            },
-            {
-                id: 'q2',
-                folder: 'Anatomy',
-                text: 'Which nerve is most vulnerable to injury in fractures of the surgical neck of the humerus?',
-                options: ['Radial nerve', 'Axillary nerve', 'Median nerve', 'Musculocutaneous nerve'],
-                correctIndex: 1,
-                rationale: 'The axillary nerve winds around the surgical neck of the humerus alongside the posterior circumflex humeral artery, rendering it highly susceptible to fractures at this site.'
-            },
-            {
-                id: 'q3',
-                folder: 'Pharmacology',
-                text: 'A patient with persistent hypertension is prescribed Lisinopril. Which mechanism accounts for the development of a dry cough in patients receiving ACE inhibitors?',
-                options: ['Inhibition of Angiotensin II Receptors', 'Accumulation of Bradykinin and Substance P', 'Direct stimulation of bronchial smooth muscle', 'Increased synthesis of renal prostaglandins'],
-                correctIndex: 1,
-                rationale: 'ACE normally breaks down bradykinin and substance P. ACE inhibitors cause an accumulation of these inflammatory peptides in the pulmonary tree, triggering a dry cough.'
             }
         ];
-
         const SEED_QUIZZES = [
             {
                 id: 'quiz1',
@@ -663,12 +606,11 @@
                 duration: 15,
                 startDT: '2025-01-01T00:00',
                 endDT: '2030-12-31T23:59',
-                questionIds: ['q1', 'q2', 'q3']
+                questionIds: ['q1']
             }
         ];
 
-        // STATE MANAGEMENT
-        let currentRole = 'student'; // 'student' or 'admin'
+        let currentRole = 'student';
         let adminPasscode = DEFAULT_PASSCODE;
         let activeTab = 'quizzes';
         let selectedFolder = 'ALL';
@@ -678,11 +620,9 @@
         let publishedQuizzes = [];
         let examHistory = [];
 
-        // EXAM EXECUTION STATE
         let pendingQuizToStart = null;
-        let activeExam = null; // { quiz, user: {name, id}, currentIdx: 0, userAnswers: {}, timerInterval: null, timeRemaining: 0 }
+        let activeExam = null;
 
-        // INITIALIZATION
         window.onload = async function() {
             await loadStorageFromCloud();
             lucide.createIcons();
@@ -693,11 +633,9 @@
             renderHistoryTable();
         };
 
-        // MULTI-STUDENT CLOUD STORAGE ARCHITECTURE WITH FALLBACKS
         async function loadStorageFromCloud() {
             adminPasscode = localStorage.getItem('medstud_admin_passcode') || DEFAULT_PASSCODE;
 
-            // 1. Load Quizzes, Folders, and Question Bank from app_state (row ID: 1)
             try {
                 const { data, error } = await supabaseClient.from('app_state').select('*').eq('id', 1);
                 if(!error && data && data.length > 0) {
@@ -710,13 +648,11 @@
                     publishedQuizzes = JSON.parse(localStorage.getItem('med_stud_quizzes')) || SEED_QUIZZES;
                 }
             } catch (err) {
-                console.warn('Cloud load config fallback to localStorage:', err);
                 folderList = JSON.parse(localStorage.getItem('med_stud_folders')) || SEED_FOLDERS;
                 questionBank = JSON.parse(localStorage.getItem('med_stud_questions')) || SEED_QUESTIONS;
                 publishedQuizzes = JSON.parse(localStorage.getItem('med_stud_quizzes')) || SEED_QUIZZES;
             }
 
-            // 2. Load ALL student exam attempts from the dedicated exam_attempts table
             try {
                 const { data: historyData, error: historyError } = await supabaseClient
                     .from('exam_attempts')
@@ -740,13 +676,11 @@
                     examHistory = [];
                 }
             } catch (err) {
-                console.warn('Cloud history load fallback:', err);
                 examHistory = [];
             }
         }
 
         async function saveQuestionBankOrQuizzes() {
-            // Saves admin-managed questions, quizzes, and folders locally and to cloud
             localStorage.setItem('medstud_admin_passcode', adminPasscode);
             localStorage.setItem('med_stud_folders', JSON.stringify(folderList));
             localStorage.setItem('med_stud_questions', JSON.stringify(questionBank));
@@ -761,11 +695,10 @@
                     updated_at: new Date().toISOString()
                 });
             } catch (err) {
-                console.warn('Admin config sync error (saved locally):', err);
+                console.warn('Admin config sync notice:', err);
             }
         }
 
-        // NAVIGATION & ROLE MANAGERS
         function switchTab(tabId) {
             activeTab = tabId;
             document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
@@ -878,7 +811,6 @@
             showToast('Admin passcode updated successfully.');
         }
 
-        // VIEW 1: QUIZZES RENDERING & STATUS
         function getQuizStatus(quiz) {
             const now = new Date();
             const start = new Date(quiz.startDT);
@@ -892,7 +824,6 @@
         function renderQuizzes() {
             const grid = document.getElementById('quizList');
             const search = (document.getElementById('quizSearchInput').value || '').toLowerCase();
-
             grid.innerHTML = '';
 
             const filtered = publishedQuizzes.filter(q =>
@@ -938,10 +869,6 @@
                                 <span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i> Duration:</span>
                                 <span class="font-semibold text-slate-700">${q.duration} Mins</span>
                             </div>
-                            <div class="flex items-center justify-between text-[11px]">
-                                <span>Expires:</span>
-                                <span>${new Date(q.endDT).toLocaleString([], {dateStyle:'short', timeStyle:'short'})}</span>
-                            </div>
                         </div>
                     </div>
 
@@ -963,19 +890,17 @@
         }
 
         function deleteQuiz(quizId) {
-            if(!confirm('Are you sure you want to delete this published assessment?')) return;
+            if(!confirm('Delete this published assessment?')) return;
             publishedQuizzes = publishedQuizzes.filter(q => q.id !== quizId);
             saveQuestionBankOrQuizzes();
             renderQuizzes();
             showToast('Assessment deleted successfully.');
         }
 
-        // EXAM FLOW & STUDENT PROMPT
         function promptStudentDetails(quizId) {
             const quiz = publishedQuizzes.find(q => q.id === quizId);
             if(!quiz) return;
             pendingQuizToStart = quiz;
-
             document.getElementById('studentFullName').value = '';
             document.getElementById('studentIDNo').value = '';
             document.getElementById('identityModal').classList.remove('hidden');
@@ -990,15 +915,12 @@
             e.preventDefault();
             const fullName = document.getElementById('studentFullName').value.trim();
             const studentId = document.getElementById('studentIDNo').value.trim();
-
             if(!fullName) {
                 showToast('Please enter your full name.', true);
                 return;
             }
-
             const quiz = pendingQuizToStart;
             closeIdentityModal();
-
             if(quiz) {
                 launchExam(quiz, { name: fullName, id: studentId || 'N/A' });
             }
@@ -1036,7 +958,6 @@
             activeExam.timerInterval = setInterval(() => {
                 activeExam.timeRemaining--;
                 updateTimerDisplay();
-
                 if(activeExam.timeRemaining <= 0) {
                     clearInterval(activeExam.timerInterval);
                     showToast('Time expired! Submitting assessment automatically.', true);
@@ -1059,7 +980,6 @@
 
             const optsContainer = document.getElementById('examOptionsList');
             optsContainer.innerHTML = '';
-
             const selectedOpt = activeExam.userAnswers[activeExam.currentIdx];
 
             q.options.forEach((optText, idx) => {
@@ -1107,11 +1027,9 @@
         function renderExamPalette() {
             const palette = document.getElementById('examPaletteGrid');
             palette.innerHTML = '';
-
             activeExam.questions.forEach((_, idx) => {
                 const isAnswered = activeExam.userAnswers.hasOwnProperty(idx);
                 const isCurrent = activeExam.currentIdx === idx;
-
                 const btn = document.createElement('button');
                 btn.onclick = () => jumpToExamQuestion(idx);
                 btn.className = `w-10 h-10 rounded-lg text-xs font-bold transition-all flex items-center justify-center ${
@@ -1128,9 +1046,7 @@
             const total = activeExam.questions.length;
             const answered = Object.keys(activeExam.userAnswers).length;
             if(answered < total) {
-                if(!confirm(`You have only answered ${answered} of ${total} questions. Are you sure you want to submit?`)) {
-                    return;
-                }
+                if(!confirm(`You have only answered ${answered} of ${total} questions. Are you sure you want to submit?`)) return;
             }
             submitExam();
         }
@@ -1159,7 +1075,6 @@
             });
 
             const percent = Math.round((score / total) * 100);
-
             const attemptRecord = {
                 id: 'att_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
                 quizId: activeExam.quiz.id,
@@ -1173,9 +1088,8 @@
                 breakdown: breakdown
             };
 
-            // Insert directly into exam_attempts table in Supabase
             try {
-                const { error } = await supabaseClient.from('exam_attempts').insert([{
+                await supabaseClient.from('exam_attempts').insert([{
                     id: attemptRecord.id,
                     quiz_id: attemptRecord.quizId,
                     quiz_title: attemptRecord.quizTitle,
@@ -1187,16 +1101,11 @@
                     percentage: attemptRecord.percentage,
                     breakdown: attemptRecord.breakdown
                 }]);
-
-                if (error) {
-                    console.warn('Cloud sync insert warning:', error);
-                }
             } catch (err) {
-                console.warn('Exam submission exception:', err);
+                console.warn('Exam submit sync notice:', err);
             }
 
             examHistory.unshift(attemptRecord);
-
             document.getElementById('examModal').classList.add('hidden');
             activeExam = null;
 
@@ -1205,11 +1114,9 @@
             openReviewModal(attemptRecord.id);
         }
 
-        // VIEW 2: EXAM HISTORY & MULTI-USER ATTEMPT REVIEW
         function populateHistoryQuizDropdown() {
             const dropdown = document.getElementById('historyQuizFilter');
             dropdown.innerHTML = '<option value="ALL">All Assessment Titles</option>';
-
             const titles = [...new Set(examHistory.map(h => h.quizTitle))];
             titles.forEach(t => {
                 const opt = document.createElement('option');
@@ -1224,7 +1131,6 @@
             const search = (document.getElementById('historySearchInput').value || '').toLowerCase();
             const quizFilter = document.getElementById('historyQuizFilter').value;
             const countBadge = document.getElementById('historyCountBadge');
-
             body.innerHTML = '';
 
             let filtered = examHistory.filter(h => {
@@ -1236,40 +1142,24 @@
             countBadge.innerText = `${filtered.length} Attempt${filtered.length === 1 ? '' : 's'}`;
 
             if(filtered.length === 0) {
-                body.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="py-8 text-center text-slate-400 text-xs">
-                            No attempt records found matching criteria.
-                        </td>
-                    </tr>
-                `;
+                body.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-400 text-xs">No attempt records found matching criteria.</td></tr>`;
                 return;
             }
 
             filtered.forEach(h => {
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-slate-50 transition-colors';
-
                 const scoreColor = h.percentage >= 70 ? 'text-emerald-700 bg-emerald-50 border-emerald-200' :
-                                   h.percentage >= 50 ? 'text-amber-700 bg-amber-50 border-amber-200' :
-                                                        'text-red-700 bg-red-50 border-red-200';
+                                   h.percentage >= 50 ? 'text-amber-700 bg-amber-50 border-amber-200' : 'text-red-700 bg-red-50 border-red-200';
 
                 tr.innerHTML = `
                     <td class="py-3.5 px-4 font-medium text-slate-900">
                         <div class="font-bold text-sm">${escapeHtml(h.studentName)}</div>
                         <div class="text-xs text-slate-400">ID: ${escapeHtml(h.studentId)}</div>
                     </td>
-                    <td class="py-3.5 px-4 text-xs font-semibold text-slate-800">
-                        ${escapeHtml(h.quizTitle)}
-                    </td>
-                    <td class="py-3.5 px-4 text-xs text-slate-500">
-                        ${new Date(h.submittedAt).toLocaleString([], {dateStyle:'medium', timeStyle:'short'})}
-                    </td>
-                    <td class="py-3.5 px-4">
-                        <span class="px-2.5 py-1 rounded-md text-xs font-bold border ${scoreColor}">
-                            ${h.score} / ${h.total} (${h.percentage}%)
-                        </span>
-                    </td>
+                    <td class="py-3.5 px-4 text-xs font-semibold text-slate-800">${escapeHtml(h.quizTitle)}</td>
+                    <td class="py-3.5 px-4 text-xs text-slate-500">${new Date(h.submittedAt).toLocaleString([], {dateStyle:'medium', timeStyle:'short'})}</td>
+                    <td class="py-3.5 px-4"><span class="px-2.5 py-1 rounded-md text-xs font-bold border ${scoreColor}">${h.score} / ${h.total} (${h.percentage}%)</span></td>
                     <td class="py-3.5 px-4 text-right">
                         <button onclick="openReviewModal('${h.id}')" class="px-3 py-1.5 text-xs font-semibold text-brand-700 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 rounded-lg border border-brand-200 transition-colors inline-flex items-center gap-1">
                             <i data-lucide="eye" class="w-3.5 h-3.5"></i>
@@ -1283,18 +1173,17 @@
         }
 
         async function clearHistoryRecords() {
-            if(!confirm('Are you sure you want to clear ALL student attempt records from the cloud database?')) return;
+            if(!confirm('Are you sure you want to clear ALL student attempt records?')) return;
             try {
                 await supabaseClient.from('exam_attempts').delete().neq('id', '0'); 
                 examHistory = [];
                 renderHistoryTable();
-                showToast('All attempt history cleared from cloud.');
+                showToast('All attempt history cleared.');
             } catch (err) {
                 showToast('Failed to clear records: ' + err.message, true);
             }
         }
 
-        // DETAILED REVIEW MODAL
         function openReviewModal(attemptId) {
             const attempt = examHistory.find(h => h.id === attemptId);
             if(!attempt) return;
@@ -1304,27 +1193,14 @@
 
             const summaryContainer = document.getElementById('reviewSummaryHeader');
             summaryContainer.innerHTML = `
-                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                    <span class="text-xs text-slate-400 uppercase font-semibold">Candidate</span>
-                    <p class="font-bold text-slate-800 text-sm truncate">${escapeHtml(attempt.studentName)}</p>
-                </div>
-                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                    <span class="text-xs text-slate-400 uppercase font-semibold">Score Achieved</span>
-                    <p class="font-bold text-slate-800 text-sm">${attempt.score} / ${attempt.total}</p>
-                </div>
-                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                    <span class="text-xs text-slate-400 uppercase font-semibold">Percentage</span>
-                    <p class="font-bold text-sm ${attempt.percentage >= 50 ? 'text-emerald-600' : 'text-red-600'}">${attempt.percentage}%</p>
-                </div>
-                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                    <span class="text-xs text-slate-400 uppercase font-semibold">Status</span>
-                    <p class="font-bold text-sm ${attempt.percentage >= 50 ? 'text-emerald-600' : 'text-red-600'}">${attempt.percentage >= 50 ? 'PASSED' : 'RETAKE SUGGESTED'}</p>
-                </div>
+                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100"><span class="text-xs text-slate-400 uppercase font-semibold">Candidate</span><p class="font-bold text-slate-800 text-sm truncate">${escapeHtml(attempt.studentName)}</p></div>
+                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100"><span class="text-xs text-slate-400 uppercase font-semibold">Score Achieved</span><p class="font-bold text-slate-800 text-sm">${attempt.score} / ${attempt.total}</p></div>
+                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100"><span class="text-xs text-slate-400 uppercase font-semibold">Percentage</span><p class="font-bold text-sm ${attempt.percentage >= 50 ? 'text-emerald-600' : 'text-red-600'}">${attempt.percentage}%</p></div>
+                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100"><span class="text-xs text-slate-400 uppercase font-semibold">Status</span><p class="font-bold text-sm ${attempt.percentage >= 50 ? 'text-emerald-600' : 'text-red-600'}">${attempt.percentage >= 50 ? 'PASSED' : 'RETAKE SUGGESTED'}</p></div>
             `;
 
             const qContainer = document.getElementById('reviewQuestionsContainer');
             qContainer.innerHTML = '';
-
             attempt.breakdown.forEach((item, idx) => {
                 const card = document.createElement('div');
                 card.className = `p-5 rounded-xl border ${item.isCorrect ? 'bg-white border-slate-200' : 'bg-red-50/20 border-red-200'} shadow-sm space-y-3`;
@@ -1334,7 +1210,6 @@
                     if(!optText) return;
                     const isUserChoice = item.chosenIndex === oIdx;
                     const isCorrectChoice = item.correctIndex === oIdx;
-
                     let optStyle = 'bg-slate-50 border-slate-200 text-slate-700';
                     let badge = '';
 
@@ -1349,33 +1224,18 @@
                         badge = '<span class="text-[10px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded ml-auto">Your Choice (Correct)</span>';
                     }
 
-                    optionsHtml += `
-                        <div class="p-3 rounded-lg border text-xs flex items-center justify-between ${optStyle}">
-                            <span>${escapeHtml(optText)}</span>
-                            ${badge}
-                        </div>
-                    `;
+                    optionsHtml += `<div class="p-3 rounded-lg border text-xs flex items-center justify-between ${optStyle}"><span>${escapeHtml(optText)}</span>${badge}</div>`;
                 });
 
                 card.innerHTML = `
                     <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-2">
                         <span class="text-xs font-bold text-slate-500 uppercase">Question ${idx + 1}</span>
-                        <span class="text-xs font-bold px-2.5 py-0.5 rounded ${item.isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">
-                            ${item.isCorrect ? 'Correct (+1)' : 'Incorrect (0)'}
-                        </span>
+                        <span class="text-xs font-bold px-2.5 py-0.5 rounded ${item.isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">${item.isCorrect ? 'Correct (+1)' : 'Incorrect (0)'}</span>
                     </div>
-
                     <h4 class="font-bold text-slate-900 text-sm leading-relaxed">${escapeHtml(item.questionText)}</h4>
-
-                    <div class="space-y-2 pt-1">
-                        ${optionsHtml}
-                    </div>
-
+                    <div class="space-y-2 pt-1">${optionsHtml}</div>
                     <div class="mt-3 p-3.5 bg-brand-50/60 border border-brand-200/80 rounded-lg text-xs space-y-1">
-                        <div class="flex items-center gap-1.5 text-brand-800 font-bold">
-                            <i data-lucide="book-open-check" class="w-4 h-4 text-brand-600"></i>
-                            <span>Clinical Rationale & Explanation:</span>
-                        </div>
+                        <div class="flex items-center gap-1.5 text-brand-800 font-bold"><i data-lucide="book-open-check" class="w-4 h-4 text-brand-600"></i><span>Clinical Rationale & Explanation:</span></div>
                         <p class="text-slate-700 leading-relaxed">${escapeHtml(item.rationale || 'No explanation provided.')}</p>
                     </div>
                 `;
@@ -1390,33 +1250,21 @@
             document.getElementById('reviewModal').classList.add('hidden');
         }
 
-        // VIEW 3: QUESTION BANK & FOLDERS MANAGERS
         function renderFolders() {
             const container = document.getElementById('folderList');
             container.innerHTML = '';
-
             const allBtn = document.createElement('button');
             allBtn.onclick = () => selectFolder('ALL');
-            allBtn.className = `w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors ${
-                selectedFolder === 'ALL' ? 'bg-brand-50 text-brand-700 font-bold border border-brand-200' : 'text-slate-600 hover:bg-slate-100'
-            }`;
-            allBtn.innerHTML = `
-                <span class="flex items-center gap-2"><i data-lucide="folder" class="w-3.5 h-3.5"></i> All Questions</span>
-                <span class="bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-[10px] font-bold">${questionBank.length}</span>
-            `;
+            allBtn.className = `w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors ${selectedFolder === 'ALL' ? 'bg-brand-50 text-brand-700 font-bold border border-brand-200' : 'text-slate-600 hover:bg-slate-100'}`;
+            allBtn.innerHTML = `<span class="flex items-center gap-2"><i data-lucide="folder" class="w-3.5 h-3.5"></i> All Questions</span><span class="bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-[10px] font-bold">${questionBank.length}</span>`;
             container.appendChild(allBtn);
 
             folderList.forEach(f => {
                 const count = questionBank.filter(q => q.folder === f).length;
                 const btn = document.createElement('button');
                 btn.onclick = () => selectFolder(f);
-                btn.className = `w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors ${
-                    selectedFolder === f ? 'bg-brand-50 text-brand-700 font-bold border border-brand-200' : 'text-slate-600 hover:bg-slate-100'
-                }`;
-                btn.innerHTML = `
-                    <span class="flex items-center gap-2 truncate"><i data-lucide="folder" class="w-3.5 h-3.5"></i> ${escapeHtml(f)}</span>
-                    <span class="bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-[10px] font-bold">${count}</span>
-                `;
+                btn.className = `w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors ${selectedFolder === f ? 'bg-brand-50 text-brand-700 font-bold border border-brand-200' : 'text-slate-600 hover:bg-slate-100'}`;
+                btn.innerHTML = `<span class="flex items-center gap-2 truncate"><i data-lucide="folder" class="w-3.5 h-3.5"></i> ${escapeHtml(f)}</span><span class="bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-[10px] font-bold">${count}</span>`;
                 container.appendChild(btn);
             });
             lucide.createIcons();
@@ -1454,63 +1302,40 @@
             const list = document.getElementById('questionBankList');
             const badge = document.getElementById('questionCountBadge');
             const title = document.getElementById('currentFolderName');
-
             title.innerText = selectedFolder === 'ALL' ? 'All Questions' : selectedFolder;
 
             const filtered = selectedFolder === 'ALL' ? questionBank : questionBank.filter(q => q.folder === selectedFolder);
             badge.innerText = filtered.length;
-
             list.innerHTML = '';
 
             if(filtered.length === 0) {
-                list.innerHTML = `
-                    <div class="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-400 text-xs">
-                        No questions available in this folder. Click 'Add Question' or 'Import' to populate.
-                    </div>
-                `;
+                list.innerHTML = `<div class="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-400 text-xs">No questions available in this folder.</div>`;
                 return;
             }
 
-            filtered.forEach((q, idx) => {
+            filtered.forEach((q) => {
                 const card = document.createElement('div');
                 card.className = 'bg-white rounded-xl border border-slate-200 shadow-sm p-4 space-y-3';
-
                 let optsHtml = '';
                 q.options.forEach((opt, oIdx) => {
                     if(!opt) return;
                     const isCorrect = oIdx === q.correctIndex;
-                    optsHtml += `
-                        <div class="text-xs px-2.5 py-1 rounded border ${isCorrect ? 'bg-emerald-50 border-emerald-300 text-emerald-900 font-bold' : 'bg-slate-50 border-slate-200 text-slate-600'}">
-                            ${escapeHtml(opt)} ${isCorrect ? '(Correct)' : ''}
-                        </div>
-                    `;
+                    optsHtml += `<div class="text-xs px-2.5 py-1 rounded border ${isCorrect ? 'bg-emerald-50 border-emerald-300 text-emerald-900 font-bold' : 'bg-slate-50 border-slate-200 text-slate-600'}">${escapeHtml(opt)} ${isCorrect ? '(Correct)' : ''}</div>`;
                 });
 
                 card.innerHTML = `
                     <div class="flex items-start justify-between gap-2">
                         <div class="space-y-1">
-                            <span class="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">
-                                ${escapeHtml(q.folder || 'General')}
-                            </span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">${escapeHtml(q.folder || 'General')}</span>
                             <h4 class="font-bold text-slate-900 text-sm leading-snug">${escapeHtml(q.text)}</h4>
                         </div>
                         <div class="flex items-center space-x-1 shrink-0">
-                            <button onclick="editQuestion('${q.id}')" class="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-slate-100 rounded-lg">
-                                <i data-lucide="edit-3" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="deleteQuestion('${q.id}')" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
+                            <button onclick="openQuestionModal('${q.id}')" class="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-slate-100 rounded-lg"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                            <button onclick="deleteQuestion('${q.id}')" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
                     </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">
-                        ${optsHtml}
-                    </div>
-
-                    <div class="bg-slate-50 border border-slate-200/60 p-2.5 rounded-lg text-xs text-slate-600">
-                        <span class="font-bold text-slate-800">Rationale:</span> ${escapeHtml(q.rationale || 'N/A')}
-                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">${optsHtml}</div>
+                    <div class="bg-slate-50 border border-slate-200/60 p-2.5 rounded-lg text-xs text-slate-600"><span class="font-bold text-slate-800">Rationale:</span> ${escapeHtml(q.rationale || 'N/A')}</div>
                 `;
                 list.appendChild(card);
             });
@@ -1541,10 +1366,8 @@
                     document.getElementById('opt2').value = q.options[2] || '';
                     document.getElementById('opt3').value = q.options[3] || '';
                     document.getElementById('qRationale').value = q.rationale || '';
-
                     const radios = document.getElementsByName('correctOpt');
                     if(radios[q.correctIndex]) radios[q.correctIndex].checked = true;
-
                     document.getElementById('questionModalTitle').innerText = 'Edit Question';
                 }
             } else {
@@ -1552,7 +1375,6 @@
                 document.getElementById('questionModalTitle').innerText = 'Add New Question';
                 if(selectedFolder !== 'ALL') select.value = selectedFolder;
             }
-
             document.getElementById('questionModal').classList.remove('hidden');
         }
 
@@ -1606,10 +1428,6 @@
             showToast('Question saved successfully.');
         }
 
-        function editQuestion(qId) {
-            openQuestionModal(qId);
-        }
-
         function deleteQuestion(qId) {
             if(!confirm('Delete this question from bank?')) return;
             questionBank = questionBank.filter(q => q.id !== qId);
@@ -1619,7 +1437,6 @@
             showToast('Question deleted.');
         }
 
-        // BULK IMPORT LOGIC
         function openImportModal() {
             const select = document.getElementById('importFolderSelect');
             select.innerHTML = '';
@@ -1640,7 +1457,6 @@
             const folder = document.getElementById('importFolderSelect').value;
             const fileInput = document.getElementById('importFileInput');
             const file = fileInput.files[0];
-
             if(!file) {
                 showToast('Please select a file to import.', true);
                 return;
@@ -1650,21 +1466,14 @@
             reader.onload = function(e) {
                 try {
                     const content = e.target.result;
-                    let imported = [];
-
-                    if(file.name.endsWith('.json')) {
-                        imported = JSON.parse(content);
-                    } else if(file.name.endsWith('.csv')) {
-                        imported = parseCSV(content);
-                    }
-
+                    let imported = file.name.endsWith('.json') ? JSON.parse(content) : [];
                     if(Array.isArray(imported) && imported.length > 0) {
                         imported.forEach(item => {
                             questionBank.push({
                                 id: 'q_' + Date.now() + '_' + Math.random().toString(36).substr(2,4),
                                 folder: folder,
-                                text: item.text || item.question || 'Untitled Question',
-                                options: item.options || [item.optA, item.optB, item.optC, item.optD].filter(Boolean),
+                                text: item.text || item.question || 'Untitled',
+                                options: item.options || [],
                                 correctIndex: item.correctIndex !== undefined ? parseInt(item.correctIndex) : 0,
                                 rationale: item.rationale || 'Imported rationale.'
                             });
@@ -1675,7 +1484,7 @@
                         closeImportModal();
                         showToast(`Successfully imported ${imported.length} questions.`);
                     } else {
-                        showToast('File format invalid or empty array.', true);
+                        showToast('Invalid file format or empty array.', true);
                     }
                 } catch(err) {
                     showToast('Failed to parse file: ' + err.message, true);
@@ -1684,29 +1493,9 @@
             reader.readAsText(file);
         }
 
-        function parseCSV(csvText) {
-            const lines = csvText.split('\n').filter(l => l.trim().length > 0);
-            if(lines.length < 2) return [];
-            const result = [];
-            for(let i=1; i<lines.length; i++) {
-                const cols = lines[i].split(',').map(c => c.trim().replace(/^"|"$/g, ''));
-                if(cols.length >= 6) {
-                    result.push({
-                        text: cols[0],
-                        options: [cols[1], cols[2], cols[3], cols[4]],
-                        correctIndex: parseInt(cols[5]) || 0,
-                        rationale: cols[6] || ''
-                    });
-                }
-            }
-            return result;
-        }
-
-        // VIEW 4: CREATE ASSESSMENT FORM
         function renderQuizQuestionSelector() {
             const container = document.getElementById('quizQuestionSelector');
             const folderFilter = document.getElementById('createQuizFolderFilter');
-
             folderFilter.innerHTML = '<option value="ALL">All Folders</option>';
             folderList.forEach(f => {
                 const opt = document.createElement('option');
@@ -1717,7 +1506,6 @@
 
             container.innerHTML = '';
             const selectedFolderVal = folderFilter.value;
-
             const filtered = selectedFolderVal === 'ALL' ? questionBank : questionBank.filter(q => q.folder === selectedFolderVal);
 
             if(filtered.length === 0) {
@@ -1755,12 +1543,10 @@
 
             const checkboxes = document.getElementsByName('quizQuestionCb');
             const selectedQIds = [];
-            checkboxes.forEach(cb => {
-                if(cb.checked) selectedQIds.push(cb.value);
-            });
+            checkboxes.forEach(cb => { if(cb.checked) selectedQIds.push(cb.value); });
 
             if(selectedQIds.length === 0) {
-                showToast('Please select at least one question for the assessment.', true);
+                showToast('Please select at least one question.', true);
                 return;
             }
 
@@ -1777,18 +1563,15 @@
 
             publishedQuizzes.unshift(newQuiz);
             saveQuestionBankOrQuizzes();
-
             document.getElementById('createQuizForm').reset();
-            showToast('Assessment created and published successfully!');
+            showToast('Assessment published successfully!');
             switchTab('quizzes');
         }
 
-        // UTILITY FUNCTIONS
         function showToast(message, isError = false) {
             const toast = document.getElementById('toast');
             const msg = document.getElementById('toastMsg');
             const icon = document.getElementById('toastIcon');
-
             msg.innerText = message;
             if(isError) {
                 toast.className = toast.className.replace('bg-slate-900', 'bg-red-900').replace('border-slate-700', 'border-red-700');
@@ -1797,13 +1580,9 @@
                 toast.className = toast.className.replace('bg-red-900', 'bg-slate-900').replace('border-red-700', 'border-slate-700');
                 icon.setAttribute('data-lucide', 'check-circle');
             }
-
             lucide.createIcons();
             toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
-
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
-            }, 3500);
+            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none'); }, 3500);
         }
 
         function escapeHtml(str) {
