@@ -608,10 +608,19 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // SUPABASE CONFIGURATION
+        // SUPABASE CONFIGURATION WITH PUBLISHABLE KEY HEADERS
         const SUPABASE_URL = 'https://ddeukafnnlkbnsfsmuxn.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_GBQet5zyPXwmbXZ-Z513qA_nPuIf_';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // Pass publishable key via headers to authorize browser client requests
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+            global: {
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                }
+            }
+        });
 
         // INITIAL DEMO DATA SEEDS
         const DEFAULT_PASSCODE = 'admin123';
