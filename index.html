@@ -684,7 +684,7 @@
             renderHistoryTable();
         };
 
-        // HYBRID STORAGE (SUPABASE CLOUD + LOCALFALLBACK)
+        // HYBRID STORAGE (SUPABASE CLOUD + LOCAL FALLBACK)
         async function loadStorageFromCloud() {
             adminPasscode = localStorage.getItem('medstud_admin_passcode') || DEFAULT_PASSCODE;
 
@@ -1144,7 +1144,7 @@
             };
 
             examHistory.unshift(attemptRecord);
-            saveStorage();
+            saveStorage(); // Ensures exam history syncs immediately to Supabase
 
             document.getElementById('examModal').classList.add('hidden');
             activeExam = null;
