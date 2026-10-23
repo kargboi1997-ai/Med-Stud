@@ -161,14 +161,14 @@
                 Developed & Maintained By: <span class="text-emerald-400 font-bold">Ibrahim Kargbo (Perfectionist)</span>, 2nd Year Medical Student, COMAHS, USL | Community Health Officer & Clinical Instructor
             </p>
             <p class="text-xs text-slate-500">
-                &copy; <span id="yearSpan"></span> Med~Stud Portal COMAHS. Item-Level Supabase Realtime Synchronization.
+                &copy; <span id="yearSpan"></span> Med~Stud Portal COMAHS. Granular Realtime Synchronization Engine.
             </p>
         </div>
     </footer>
 
     <!-- MODAL CONTAINER (DYNAMIC) -->
     <div id="modalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div id="modalBody" class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 relative border border-slate-100 transform transition-all">
+        <div id="modalBody" class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 relative border border-slate-100 transform transition-all">
             <!-- Modal Content Injected Here -->
         </div>
     </div>
@@ -180,12 +180,12 @@
     <script>
         /**
          * MED~STUD PORTAL (COMAHS) - SINGLE FILE APPLICATION
-         * Item-Level Granular Sync Architecture for Supabase
+         * Item-Level Granular Realtime Sync Engine for Supabase
          */
 
         const DEFAULT_PASSCODE = 'Aamirah2022';
 
-        // Default local initial state
+        // Default local fallback dataset
         const initialFolders = [
             { id: 'f1', name: 'Anatomy & Physiology', description: 'Core basic medical sciences' },
             { id: 'f2', name: 'Community Health', description: 'Public health and epidemiology' },
@@ -240,7 +240,7 @@
                 this.quizzes = [];
                 this.examHistory = [];
 
-                // Active Quiz Execution State
+                // Active Quiz Session State
                 this.activeQuizState = null;
 
                 this.init();
@@ -389,7 +389,7 @@
                 if (table === 'exam_history') localStorage.setItem('coma_exam_history', JSON.stringify(this.examHistory));
             }
 
-            // Granular Upserts (No-Overwrite Logic)
+            // Granular Upserts (No-Overwrite Logic across devices)
             async upsertItem(table, item) {
                 // Update local array first
                 const targetArray = this[table];
@@ -479,7 +479,7 @@
                                 <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-lock text-theme me-2"></i>Instructor Authentication</h3>
                                 <button onclick="app.closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
                             </div>
-                            <p class="text-sm text-slate-600 mb-4">Enter the administrative passcode to unlock question banking, quiz setup, and cross-device synchronization controls.</p>
+                            <p class="text-sm text-slate-600 mb-4">Enter administrative passcode to unlock question banking, quiz publishing, and Supabase synchronization setup.</p>
                             <input type="password" id="passcodeInput" placeholder="Enter Passcode" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus-ring mb-4 text-base" />
                             <div class="flex justify-end space-x-2">
                                 <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border border-slate-300 font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
@@ -621,7 +621,7 @@
                 `;
             }
 
-            // MANDATORY STUDENT VERIFICATION BEFORE QUIZ
+            // STUDENT IDENTIFICATION VERIFICATION
             startQuizVerification(quizId) {
                 const quiz = this.quizzes.find(q => q.id === quizId);
                 if (!quiz) return;
@@ -632,7 +632,7 @@
                             <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-id-card text-theme me-2"></i>Student Identification Verification</h3>
                             <button onclick="app.closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
                         </div>
-                        <p class="text-xs text-slate-500 mb-4">Please provide your verified details before beginning <strong>${quiz.title}</strong>.</p>
+                        <p class="text-xs text-slate-500 mb-4">Please provide your details before starting <strong>${quiz.title}</strong>.</p>
                         
                         <div class="space-y-4 mb-6">
                             <div>
@@ -640,7 +640,7 @@
                                 <input type="text" id="studentNameInput" placeholder="e.g. Ibrahim Kargbo" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus-ring text-sm" />
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Student ID / Registration No. *</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Student ID / Reg No. *</label>
                                 <input type="text" id="studentIdInput" placeholder="e.g. COMAHS-MED-2026-042" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus-ring text-sm" />
                             </div>
                         </div>
@@ -659,7 +659,7 @@
                 const studentId = document.getElementById('studentIdInput')?.value.trim();
 
                 if (!name || !studentId) {
-                    this.toast('Full Name and Student ID are required to start!', 'error');
+                    this.toast('Full Name and Student ID are required!', 'error');
                     return;
                 }
 
@@ -734,7 +734,7 @@
                             <div class="flex items-center space-x-3">
                                 <button onclick="app.confirmEarlySubmit()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow transition flex items-center space-x-1.5">
                                     <i class="fa-solid fa-paper-plane"></i>
-                                    <span>Submit Early</span>
+                                    <span>Submit & Review Early</span>
                                 </button>
                                 <div class="bg-amber-50 border border-amber-200 text-amber-800 font-mono font-bold px-4 py-2 rounded-xl text-lg flex items-center space-x-2">
                                     <i class="fa-solid fa-clock animate-pulse"></i>
@@ -778,7 +778,7 @@
                             ${state.currentIndex === state.questions.length - 1 ? `
                                 <button onclick="app.confirmEarlySubmit()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow transition flex items-center space-x-1.5">
                                     <i class="fa-solid fa-check-circle"></i>
-                                    <span>Submit Exam</span>
+                                    <span>Submit & Review Exam</span>
                                 </button>
                             ` : `
                                 <button onclick="app.nextQuizQuestion()" class="bg-theme hover:bg-theme-dark text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow transition">
@@ -824,7 +824,7 @@
                 const html = `
                     <div class="p-2">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-paper-plane text-theme me-2"></i>Confirm Early Submission</h3>
+                            <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-paper-plane text-theme me-2"></i>Confirm Submission</h3>
                             <button onclick="app.closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
                         </div>
                         <p class="text-sm text-slate-600 mb-4">${msg}</p>
@@ -835,7 +835,7 @@
                         </div>
                         <div class="flex justify-end space-x-2">
                             <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border border-slate-300 font-semibold text-slate-600 hover:bg-slate-50 text-xs">Continue Exam</button>
-                            <button onclick="app.closeModal(); app.submitActiveQuiz();" class="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 text-xs shadow">Yes, Submit Now</button>
+                            <button onclick="app.closeModal(); app.submitActiveQuiz();" class="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 text-xs shadow">Yes, Submit & Review</button>
                         </div>
                     </div>
                 `;
@@ -885,10 +885,10 @@
                 // Clear active quiz state
                 this.activeQuizState = null;
 
-                // Non-overwriting granular insert into exam_history
+                // Sync item to exam_history in Supabase (synced across all devices)
                 await this.upsertItem('exam_history', attemptRecord);
 
-                this.toast('Exam submitted successfully!', 'success');
+                this.toast('Exam submitted successfully! Result synced across devices.', 'success');
                 this.navigate('history');
                 this.openAttemptModal(attemptRecord.id);
             }
@@ -900,9 +900,9 @@
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
                             <div>
                                 <h2 class="text-xl font-bold text-slate-800">Student Exam Attempts</h2>
-                                <p class="text-xs text-slate-500 mt-1">Non-overwriting granular student attempt history.</p>
+                                <p class="text-xs text-slate-500 mt-1">Review attempts submitted across all synced devices.</p>
                             </div>
-                            <input type="text" id="historySearch" oninput="app.renderHistoryList()" placeholder="Search by student or quiz..." class="px-4 py-2 rounded-xl border border-slate-300 text-xs focus-ring w-full sm:w-64" />
+                            <input type="text" id="historySearch" oninput="app.renderHistoryList()" placeholder="Search student or quiz..." class="px-4 py-2 rounded-xl border border-slate-300 text-xs focus-ring w-full sm:w-64" />
                         </div>
 
                         <div id="historyListContainer" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
@@ -927,7 +927,8 @@
                     container.innerHTML = `
                         <div class="text-center py-12 text-slate-400">
                             <i class="fa-solid fa-clock-rotate-left text-4xl mb-3"></i>
-                            <p class="text-base font-semibold">No Exam Attempts Recorded</p>
+                            <p class="text-base font-semibold">No Exam Attempts Found</p>
+                            <p class="text-xs mt-1">Submit an assessment to record your performance.</p>
                         </div>
                     `;
                     return;
@@ -940,7 +941,7 @@
                                 <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase font-bold tracking-wider">
                                     <th class="p-4">Student</th>
                                     <th class="p-4">Quiz Title</th>
-                                    <th class="p-4">Submitted</th>
+                                    <th class="p-4">Submitted At</th>
                                     <th class="p-4">Score</th>
                                     <th class="p-4 text-right">Action</th>
                                 </tr>
@@ -960,7 +961,7 @@
                                             </span>
                                         </td>
                                         <td class="p-4 text-right">
-                                            <button onclick="app.openAttemptModal('${h.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+                                            <button onclick="app.openAttemptModal('${h.id}')" class="bg-theme hover:bg-theme-dark text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition">
                                                 Review Rationale
                                             </button>
                                         </td>
@@ -982,7 +983,7 @@
                     <div class="p-2">
                         <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
                             <div>
-                                <h3 class="text-lg font-bold text-slate-800">Assessment Rationale Review</h3>
+                                <h3 class="text-lg font-bold text-slate-800">Assessment Review & Rationale</h3>
                                 <p class="text-xs text-slate-500">${item.quiz_title} — ${item.student_name} (${item.student_id})</p>
                             </div>
                             <button onclick="app.closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -1034,7 +1035,7 @@
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
                             <div>
                                 <h2 class="text-xl font-bold text-slate-800">Question Bank & Folders</h2>
-                                <p class="text-xs text-slate-500 mt-1">Manage individual items for granular synchronization.</p>
+                                <p class="text-xs text-slate-500 mt-1">Manage individual questions for cross-device synchronization.</p>
                             </div>
                             <div class="flex flex-wrap items-center gap-2">
                                 <button onclick="app.openFolderModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-2 rounded-xl text-xs transition flex items-center space-x-1">
@@ -1077,7 +1078,7 @@
                 `;
             }
 
-            // MODALS FOR CRUD (RESTRICTED TO INSTRUCTOR)
+            // MODALS FOR CRUD (INSTRUCTOR ONLY)
             openFolderModal() {
                 if (this.role !== 'instructor') {
                     this.toast('Admin authorization required', 'error');
@@ -1372,15 +1373,31 @@
                 }
             }
 
-            // 4. SETTINGS & SQL GUIDE VIEW (INSTRUCTOR ONLY)
+            // 4. SETTINGS & SYNC DOCUMENTATION VIEW (INSTRUCTOR ONLY)
             renderSettingsView() {
                 if (this.role !== 'instructor') return '';
                 return `
                     <div class="space-y-6">
+                        <!-- DETAILED STEP-BY-STEP SYNCHRONIZATION GUIDE -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                            <h2 class="text-lg font-bold text-slate-800 flex items-center">
+                                <i class="fa-solid fa-arrows-rotate text-theme me-2"></i>Supabase Synchronization Process (Detailed Explanation)
+                            </h2>
+                            <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-xs text-emerald-900 space-y-2">
+                                <p class="font-bold text-sm">How Automatic Cross-Device Realtime Sync Works:</p>
+                                <ol class="list-decimal list-inside space-y-1.5 leading-relaxed">
+                                    <li><strong>Granular Item Storage:</strong> Every question, folder, quiz, and student attempt is stored as an independent row with a unique primary key in Supabase rather than a monolithic single JSON object.</li>
+                                    <li><strong>Non-Overwriting Upserts:</strong> When a student submits a quiz on Device A, a new record is added to <code>exam_history</code>. It does NOT overwrite other students' attempts.</li>
+                                    <li><strong>Realtime WebSockets:</strong> Once configured, the client subscribes to Supabase Postgres Changes via WebSockets (<code>supabase.channel()</code>).</li>
+                                    <li><strong>Auto-Refresh:</strong> When any device updates the database, Supabase broadcasts an event instantly to all open devices, triggering automatic re-fetches and live UI updates without requiring page reloads.</li>
+                                </ol>
+                            </div>
+                        </div>
+
                         <!-- SUPABASE CONFIG -->
                         <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-                            <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-plug text-theme me-2"></i>Supabase Database Connection</h2>
-                            <p class="text-xs text-slate-500">Configure your Supabase project credentials to enable item-level real-time cross-device synchronization.</p>
+                            <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-plug text-theme me-2"></i>Supabase Connection Settings</h2>
+                            <p class="text-xs text-slate-500">Enter your Supabase Project URL and Anon API Key to activate realtime syncing.</p>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
@@ -1422,12 +1439,12 @@
                         <!-- EXACT SQL SETUP INSTRUCTIONS -->
                         <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
                             <div class="flex items-center justify-between">
-                                <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-database text-theme me-2"></i>Supabase SQL Schema & RLS Instructions</h2>
+                                <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-database text-theme me-2"></i>Supabase SQL Schema & RLS Script</h2>
                                 <button onclick="app.copySqlInstructions()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition flex items-center space-x-1">
                                     <i class="fa-solid fa-copy"></i><span>Copy SQL</span>
                                 </button>
                             </div>
-                            <p class="text-xs text-slate-500">Run this SQL script in your Supabase SQL Editor to create the required tables and allow public read/write access without overwriting whole objects.</p>
+                            <p class="text-xs text-slate-500">Run this SQL script in your Supabase SQL Editor to create tables, enable Realtime, and establish open access policies.</p>
                             
                             <pre id="sqlBlock" class="bg-slate-900 text-emerald-400 p-4 rounded-xl text-[11px] font-mono overflow-x-auto leading-relaxed selection:bg-emerald-800 select-all">
 -- 1. Create Granular Folders Table
@@ -1477,10 +1494,10 @@ CREATE TABLE IF NOT EXISTS public.app_config (
     value TEXT
 );
 
--- Enable Realtime on tables
+-- Enable Realtime on all tables
 ALTER PUBLICATION supabase_realtime ADD TABLE folders, questions, quizzes, exam_history, app_config;
 
--- Enable Row Level Security (RLS) & Allow Anonymous Access
+-- Enable Row Level Security (RLS) & Policies
 ALTER TABLE public.folders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.questions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.quizzes ENABLE ROW LEVEL SECURITY;
@@ -1488,13 +1505,13 @@ ALTER TABLE public.exam_history ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.app_config ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Public Read Folders" ON public.folders FOR SELECT USING (true);
-CREATE POLICY "Public Insert/Update Folders" ON public.folders FOR ALL USING (true);
+CREATE POLICY "Public Write Folders" ON public.folders FOR ALL USING (true);
 
 CREATE POLICY "Public Read Questions" ON public.questions FOR SELECT USING (true);
-CREATE POLICY "Public Insert/Update Questions" ON public.questions FOR ALL USING (true);
+CREATE POLICY "Public Write Questions" ON public.questions FOR ALL USING (true);
 
 CREATE POLICY "Public Read Quizzes" ON public.quizzes FOR SELECT USING (true);
-CREATE POLICY "Public Insert/Update Quizzes" ON public.quizzes FOR ALL USING (true);
+CREATE POLICY "Public Write Quizzes" ON public.quizzes FOR ALL USING (true);
 
 CREATE POLICY "Public Read History" ON public.exam_history FOR SELECT USING (true);
 CREATE POLICY "Public Insert History" ON public.exam_history FOR ALL USING (true);
@@ -1522,7 +1539,7 @@ CREATE POLICY "Public Config Access" ON public.app_config FOR ALL USING (true);
 
                 this.initSupabaseClient();
                 this.loadAllData();
-                this.toast('Supabase settings updated', 'success');
+                this.toast('Supabase settings updated & synced', 'success');
             }
 
             async updatePasscode() {
