@@ -450,6 +450,9 @@
                     if (!confirm("An assessment is currently in progress. Navigating away will cancel your attempt. Proceed?")) {
                         return;
                     }
+                    if (this.activeQuizState.timerInterval) {
+                        clearInterval(this.activeQuizState.timerInterval);
+                    }
                     this.activeQuizState = null;
                 }
                 this.currentView = view;
@@ -530,6 +533,7 @@
                         break;
                     case 'history':
                         container.innerHTML = this.renderHistoryView();
+                        this.renderHistoryList();
                         break;
                     case 'questions':
                         if (this.role !== 'instructor') {
@@ -552,7 +556,6 @@
 
             // 1. QUIZZES VIEW
             renderQuizzesView() {
-                const now = new Date().toISOString();
                 return `
                     <div class="space-y-6">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
@@ -728,9 +731,15 @@
                                     <span><i class="fa-solid fa-id-badge me-1"></i>${state.studentId}</span>
                                 </div>
                             </div>
-                            <div class="bg-amber-50 border border-amber-200 text-amber-800 font-mono font-bold px-4 py-2 rounded-xl text-lg flex items-center space-x-2">
-                                <i class="fa-solid fa-clock animate-pulse"></i>
-                                <span id="activeQuizTimer">${this.formatTime(state.timeRemainingSeconds)}</span>
+                            <div class="flex items-center space-x-3">
+                                <button onclick="app.confirmEarlySubmit()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow transition flex items-center space-x-1.5">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                    <span>Submit Early</span>
+                                </button>
+                                <div class="bg-amber-50 border border-amber-200 text-amber-800 font-mono font-bold px-4 py-2 rounded-xl text-lg flex items-center space-x-2">
+                                    <i class="fa-solid fa-clock animate-pulse"></i>
+                                    <span id="activeQuizTimer">${this.formatTime(state.timeRemainingSeconds)}</span>
+                                </div>
                             </div>
                         </div>
 
@@ -767,8 +776,9 @@
                             </button>
                             
                             ${state.currentIndex === state.questions.length - 1 ? `
-                                <button onclick="app.submitActiveQuiz()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow transition">
-                                    Submit Exam
+                                <button onclick="app.confirmEarlySubmit()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow transition flex items-center space-x-1.5">
+                                    <i class="fa-solid fa-check-circle"></i>
+                                    <span>Submit Exam</span>
                                 </button>
                             ` : `
                                 <button onclick="app.nextQuizQuestion()" class="bg-theme hover:bg-theme-dark text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow transition">
@@ -800,9 +810,43 @@
                 }
             }
 
+            confirmEarlySubmit() {
+                if (!this.activeQuizState) return;
+                const total = this.activeQuizState.questions.length;
+                const answeredCount = Object.keys(this.activeQuizState.answers).length;
+                const unanswered = total - answeredCount;
+
+                let msg = `Are you sure you want to submit your exam now?`;
+                if (unanswered > 0) {
+                    msg = `You have ${unanswered} unanswered question(s) remaining out of ${total}. Are you sure you want to submit early?`;
+                }
+
+                const html = `
+                    <div class="p-2">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-paper-plane text-theme me-2"></i>Confirm Early Submission</h3>
+                            <button onclick="app.closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-4">${msg}</p>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs text-slate-500 mb-6 space-y-1">
+                            <div>• Total Questions: <strong class="text-slate-700">${total}</strong></div>
+                            <div>• Answered: <strong class="text-emerald-600">${answeredCount}</strong></div>
+                            <div>• Unanswered: <strong class="${unanswered > 0 ? 'text-red-600' : 'text-slate-700'}">${unanswered}</strong></div>
+                        </div>
+                        <div class="flex justify-end space-x-2">
+                            <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border border-slate-300 font-semibold text-slate-600 hover:bg-slate-50 text-xs">Continue Exam</button>
+                            <button onclick="app.closeModal(); app.submitActiveQuiz();" class="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 text-xs shadow">Yes, Submit Now</button>
+                        </div>
+                    </div>
+                `;
+                this.showModal(html);
+            }
+
             async submitActiveQuiz() {
                 if (!this.activeQuizState) return;
-                clearInterval(this.activeQuizState.timerInterval);
+                if (this.activeQuizState.timerInterval) {
+                    clearInterval(this.activeQuizState.timerInterval);
+                }
 
                 const state = this.activeQuizState;
                 let score = 0;
