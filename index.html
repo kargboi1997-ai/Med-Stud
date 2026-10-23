@@ -1,1576 +1,1580 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-50">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Med~Stud Portal - COMAHS Assessment Platform</title>
-    <!-- Tailwind CSS -->
+    <title>Med~Stud Portal - COMAHS</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            500: '#22c55e',
-                            600: '#16a34a',
-                            700: '#15803d',
-                            800: '#166534',
-                            900: '#14532d',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase JS Client v2 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* CSS Variable Themes */
+        :root {
+            --primary: #059669;
+            --primary-dark: #047857;
+            --primary-light: #d1fae5;
+            --primary-ring: rgba(5, 150, 105, 0.3);
+            --bg-accent: #f0fdf4;
+        }
+        
+        [data-theme="sapphire"] {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #dbeafe;
+            --primary-ring: rgba(37, 99, 235, 0.3);
+            --bg-accent: #eff6ff;
+        }
+        
+        [data-theme="amethyst"] {
+            --primary: #7c3aed;
+            --primary-dark: #6d28d9;
+            --primary-light: #ede9fe;
+            --primary-ring: rgba(124, 58, 237, 0.3);
+            --bg-accent: #f5f3ff;
+        }
+
+        [data-theme="crimson"] {
+            --primary: #dc2626;
+            --primary-dark: #b91c1c;
+            --primary-light: #fee2e2;
+            --primary-ring: rgba(220, 38, 38, 0.3);
+            --bg-accent: #fef2f2;
+        }
+
+        [data-theme="slate"] {
+            --primary: #475569;
+            --primary-dark: #334155;
+            --primary-light: #f1f5f9;
+            --primary-ring: rgba(71, 85, 105, 0.3);
+            --bg-accent: #f8fafc;
+        }
+
+        [data-theme="amber"] {
+            --primary: #d97706;
+            --primary-dark: #b45309;
+            --primary-light: #fef3c7;
+            --primary-ring: rgba(217, 119, 6, 0.3);
+            --bg-accent: #fffbeb;
+        }
+
+        [data-theme="indigo"] {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #e0e7ff;
+            --primary-ring: rgba(79, 70, 229, 0.3);
+            --bg-accent: #eef2ff;
+        }
+
+        .bg-theme { background-color: var(--primary); }
+        .bg-theme-dark { background-color: var(--primary-dark); }
+        .bg-theme-light { background-color: var(--primary-light); }
+        .bg-theme-accent { background-color: var(--bg-accent); }
+        .text-theme { color: var(--primary); }
+        .border-theme { border-color: var(--primary); }
+        .focus-ring:focus { outline: none; box-shadow: 0 0 0 3px var(--primary-ring); }
+
+        /* Custom scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="h-full text-slate-800 antialiased flex flex-col min-h-screen">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-emerald-200">
 
-    <!-- TOP HEADER / NAVBAR -->
-    <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-30 shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center space-x-3">
-                    <div class="p-2 bg-brand-600 rounded-lg text-white shadow-sm">
-                        <i data-lucide="stethoscope" class="w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-center space-x-2">
-                            <span class="font-bold text-lg tracking-tight text-white">Med~Stud Portal</span>
-                            <span class="text-xs bg-slate-800 text-brand-400 font-semibold px-2 py-0.5 rounded-full border border-slate-700">COMAHS</span>
-                        </div>
-                        <p class="text-xs text-slate-400 hidden sm:block">Medical Student Self-Assessment and Exam System</p>
-                    </div>
+    <!-- TOP INSCRIPTION HEADER -->
+    <header class="bg-theme text-white shadow-lg transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/10 p-2.5 rounded-xl backdrop-blur-md">
+                    <i class="fa-solid me-1 fa-user-md text-2xl text-white"></i>
                 </div>
-
-                <div class="flex items-center space-x-3">
-                    <div id="roleBadge" class="flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
-                        <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                        <span id="roleText">Student Mode</span>
-                    </div>
-
-                    <button id="roleSwitchBtn" onclick="toggleRoleModal()" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors border border-slate-700">
-                        <i data-lucide="shield" class="w-3.5 h-3.5 text-brand-400"></i>
-                        <span id="roleSwitchBtnText">Switch Role</span>
-                    </button>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tight">Med~Stud Portal</h1>
+                    <p class="text-xs text-white/90 font-medium">College of Medicine and Allied Health Sciences (COMAHS)</p>
                 </div>
+            </div>
+
+            <!-- Sync & Role Badges -->
+            <div class="flex items-center space-x-3 text-xs">
+                <div id="syncStatusBadge" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-black/20 text-white border border-white/10" title="Database Syncing State">
+                    <span id="syncDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span id="syncText" class="font-medium">Local Storage Only</span>
+                </div>
+                <div class="flex items-center bg-white/15 px-3 py-1.5 rounded-full border border-white/20">
+                    <i class="fa-solid fa-user-shield me-1.5"></i>
+                    <span id="roleLabel" class="font-semibold">Student Mode</span>
+                </div>
+                <button id="toggleModeBtn" onclick="app.toggleRoleModal()" class="bg-white text-slate-800 hover:bg-slate-100 font-bold px-3 py-1.5 rounded-full shadow transition-all duration-200 active:scale-95">
+                    Switch Mode
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- ADMIN CONTROL STRIP -->
-    <div id="adminControlBar" class="hidden bg-emerald-950 text-emerald-200 text-xs py-2 px-4 border-b border-emerald-800/50">
-        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-            <div class="flex items-center space-x-2">
-                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
-                <span class="font-semibold text-emerald-300">Administrator Privileges Active</span>
-                <span class="text-emerald-400/60">| Cloud REST API Sync Active</span>
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+        <!-- NAV & CONTROLS BAR -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
+            <!-- Navigation Tabs -->
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="app.navigate('quizzes')" id="tab-quizzes" class="nav-tab active bg-theme text-white px-4 py-2 rounded-xl font-semibold text-sm transition flex items-center space-x-2 shadow-sm">
+                    <i class="fa-solid fa-book-open"></i><span>Quizzes & Exams</span>
+                </button>
+                <button onclick="app.navigate('history')" id="tab-history" class="nav-tab bg-slate-100 text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-xl font-semibold text-sm transition flex items-center space-x-2">
+                    <i class="fa-solid fa-clock-rotate-left"></i><span>Attempt History</span>
+                </button>
+                <button onclick="app.navigate('questions')" id="tab-questions" class="nav-tab instructor-only hidden bg-slate-100 text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-xl font-semibold text-sm transition flex items-center space-x-2">
+                    <i class="fa-solid fa-layer-group"></i><span>Question Bank</span>
+                </button>
+                <button onclick="app.navigate('settings')" id="tab-settings" class="nav-tab instructor-only hidden bg-slate-100 text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-xl font-semibold text-sm transition flex items-center space-x-2">
+                    <i class="fa-solid fa-sliders"></i><span>Settings & Sync</span>
+                </button>
             </div>
-            <div class="flex items-center space-x-3">
-                <button onclick="openChangePasscodeModal()" class="hover:text-white underline flex items-center space-x-1">
-                    <i data-lucide="key-round" class="w-3.5 h-3.5"></i>
-                    <span>Change Passcode</span>
+
+            <!-- Global Action Bar -->
+            <div class="flex items-center space-x-2">
+                <button onclick="app.openThemeModal()" class="p-2 text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition" title="Change Visual Theme">
+                    <i class="fa-solid fa-palette text-lg"></i>
                 </button>
             </div>
         </div>
-    </div>
 
-    <!-- MAIN APP WRAPPER -->
-    <div class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col">
-
-        <!-- NAV TABS -->
-        <nav class="flex space-x-1 bg-slate-200 p-1 rounded-xl mb-6 shadow-inner text-sm font-medium overflow-x-auto custom-scrollbar">
-            <button onclick="switchTab('quizzes')" id="tab-quizzes" class="nav-tab flex items-center space-x-2 px-4 py-2.5 rounded-lg text-slate-700 hover:text-slate-900 transition-all font-medium whitespace-nowrap">
-                <i data-lucide="book-open" class="w-4 h-4"></i>
-                <span>Available Quizzes</span>
-            </button>
-            <button onclick="switchTab('history')" id="tab-history" class="nav-tab flex items-center space-x-2 px-4 py-2.5 rounded-lg text-slate-700 hover:text-slate-900 transition-all font-medium whitespace-nowrap">
-                <i data-lucide="history" class="w-4 h-4"></i>
-                <span>Exam History & Reviews</span>
-            </button>
-            <button onclick="switchTab('bank')" id="tab-bank" class="nav-tab admin-only hidden flex items-center space-x-2 px-4 py-2.5 rounded-lg text-slate-700 hover:text-slate-900 transition-all font-medium whitespace-nowrap">
-                <i data-lucide="database" class="w-4 h-4"></i>
-                <span>Question Bank & Folders</span>
-            </button>
-            <button onclick="switchTab('create')" id="tab-create" class="nav-tab admin-only hidden flex items-center space-x-2 px-4 py-2.5 rounded-lg text-slate-700 hover:text-slate-900 transition-all font-medium whitespace-nowrap">
-                <i data-lucide="file-plus" class="w-4 h-4"></i>
-                <span>Create/Publish Assessment</span>
-            </button>
-        </nav>
-
-        <!-- VIEW 1: AVAILABLE QUIZZES -->
-        <section id="view-quizzes" class="tab-view flex-grow">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900">Medical Assessments</h1>
-                    <p class="text-sm text-slate-500">Select an active assessment to begin your practice attempt.</p>
-                </div>
-                <div class="flex items-center space-x-2 w-full sm:w-auto">
-                    <div class="relative w-full sm:w-64">
-                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" id="quizSearchInput" oninput="renderQuizzes()" placeholder="Search active quizzes..." class="w-full pl-9 pr-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                    </div>
-                </div>
-            </div>
-
-            <div id="quizList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-        </section>
-
-        <!-- VIEW 2: EXAM HISTORY & REVIEWS -->
-        <section id="view-history" class="tab-view hidden flex-grow">
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-6">
-                <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4 border-b border-slate-100 pb-4">
-                    <div>
-                        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                            <span>Attempt Records & Review Hub</span>
-                            <span id="historyCountBadge" class="text-xs bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full font-semibold border border-slate-200">0 Attempts</span>
-                        </h2>
-                        <p class="text-sm text-slate-500">All submitted student assessment attempts synchronized via cloud database.</p>
-                    </div>
-
-                    <div class="flex flex-wrap items-center gap-2">
-                        <div class="relative min-w-[200px]">
-                            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <input type="text" id="historySearchInput" oninput="renderHistoryTable()" placeholder="Search Student Name / ID..." class="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                        </div>
-                        <select id="historyQuizFilter" onchange="renderHistoryTable()" class="py-2 px-3 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                            <option value="ALL">All Assessment Titles</option>
-                        </select>
-                        <button onclick="clearHistoryRecords()" class="admin-only hidden px-3 py-2 text-xs font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 rounded-lg transition-colors flex items-center gap-1.5">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                            <span>Clear All History</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left text-sm text-slate-600">
-                        <thead class="bg-slate-50 text-slate-700 uppercase font-semibold text-xs border-y border-slate-200">
-                            <tr>
-                                <th class="py-3.5 px-4">Student Details</th>
-                                <th class="py-3.5 px-4">Assessment Title</th>
-                                <th class="py-3.5 px-4">Submitted On</th>
-                                <th class="py-3.5 px-4">Score</th>
-                                <th class="py-3.5 px-4 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="historyTableBody" class="divide-y divide-slate-100"></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIEW 3: QUESTION BANK & FOLDERS -->
-        <section id="view-bank" class="tab-view hidden flex-grow">
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 h-fit">
-                    <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
-                        <h3 class="font-bold text-slate-900 flex items-center gap-2">
-                            <i data-lucide="folder" class="w-4 h-4 text-brand-600"></i>
-                            <span>Folders</span>
-                        </h3>
-                        <button onclick="openCreateFolderModal()" class="p-1 text-slate-500 hover:text-brand-600 hover:bg-slate-100 rounded-lg transition-colors" title="Add Folder">
-                            <i data-lucide="folder-plus" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                    <div id="folderList" class="space-y-1"></div>
-                </div>
-
-                <div class="lg:col-span-3 space-y-4">
-                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <div>
-                            <h2 class="font-bold text-slate-900 text-lg flex items-center gap-2">
-                                <span id="currentFolderName">All Questions</span>
-                                <span id="questionCountBadge" class="text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full border border-brand-200 font-semibold">0</span>
-                            </h2>
-                            <p class="text-xs text-slate-500">Manage questions, add rationales, or bulk import via JSON/CSV.</p>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <button onclick="openImportModal()" class="px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-1.5 border border-slate-200">
-                                <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-                                <span>Import JSON/CSV</span>
-                            </button>
-                            <button onclick="openQuestionModal()" class="px-3 py-2 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm transition-colors flex items-center gap-1.5">
-                                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                                <span>Add Question</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div id="questionBankList" class="space-y-3"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIEW 4: CREATE ASSESSMENT -->
-        <section id="view-create" class="tab-view hidden flex-grow">
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 max-w-4xl mx-auto">
-                <h2 class="text-xl font-bold text-slate-900 mb-1">Create & Publish Assessment</h2>
-                <p class="text-sm text-slate-500 mb-6">Configure assessment details, time limits, active date ranges, and select questions from your bank.</p>
-
-                <form id="createQuizForm" onsubmit="handleCreateQuiz(event)" class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Assessment Title *</label>
-                            <input type="text" id="quizTitle" required placeholder="e.g. Systemic Pathology Mid-Semester Assessment" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Description / Instructions</label>
-                            <textarea id="quizDesc" rows="2" placeholder="Provide instructions for students..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Time Limit (Minutes)</label>
-                            <input type="number" id="quizDuration" min="1" value="30" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Category / Subject</label>
-                            <input type="text" id="quizCategory" placeholder="e.g. Anatomy, Pharmacology" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Start Date & Time *</label>
-                            <input type="datetime-local" id="quizStartDT" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Expiration Date & Time *</label>
-                            <input type="datetime-local" id="quizEndDT" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                        </div>
-                    </div>
-
-                    <div class="border-t border-slate-200 pt-6">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-bold text-slate-900 text-sm">Select Questions for Assessment</h3>
-                            <div class="flex items-center space-x-2">
-                                <select id="createQuizFolderFilter" onchange="renderQuizQuestionSelector()" class="text-xs border border-slate-300 rounded-lg px-2.5 py-1 bg-slate-50">
-                                    <option value="ALL">All Folders</option>
-                                </select>
-                                <button type="button" onclick="selectAllQuizQuestions(true)" class="text-xs text-brand-700 hover:underline">Select All</button>
-                                <span class="text-slate-300">|</span>
-                                <button type="button" onclick="selectAllQuizQuestions(false)" class="text-xs text-slate-500 hover:underline">Deselect All</button>
-                            </div>
-                        </div>
-
-                        <div id="quizQuestionSelector" class="space-y-2 max-h-80 overflow-y-auto custom-scrollbar border border-slate-200 rounded-lg p-3 bg-slate-50"></div>
-                    </div>
-
-                    <div class="flex justify-end space-x-3 pt-4 border-t border-slate-200">
-                        <button type="button" onclick="switchTab('quizzes')" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
-                        <button type="submit" class="px-5 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-md transition-all">Publish Assessment</button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-    </div>
-
-    <!-- IMMERSIVE EXAM MODAL -->
-    <div id="examModal" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-50 hidden flex flex-col">
-        <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between text-white">
-            <div class="flex items-center space-x-3">
-                <span class="px-2.5 py-1 bg-brand-600/30 text-brand-400 text-xs font-semibold rounded border border-brand-500/30">Active Assessment</span>
-                <h2 id="examModalTitle" class="font-bold text-lg text-slate-100">Assessment Title</h2>
-            </div>
-            <div class="flex items-center space-x-6">
-                <div class="hidden sm:flex items-center space-x-2 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 text-xs">
-                    <i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i>
-                    <span id="examUserDisplay" class="font-medium text-slate-200">Candidate</span>
-                </div>
-                <div class="flex items-center space-x-2 bg-slate-800 text-amber-400 font-mono font-bold px-4 py-1.5 rounded-lg border border-slate-700 text-sm">
-                    <i data-lucide="clock" class="w-4 h-4"></i>
-                    <span id="examTimer">00:00</span>
-                </div>
-                <button onclick="confirmSubmitExam()" class="px-4 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors">Submit Exam</button>
-            </div>
-        </header>
-
-        <div class="flex-grow flex flex-col md:flex-row overflow-hidden max-w-7xl w-full mx-auto p-6 gap-6">
-            <div class="flex-grow bg-white rounded-2xl shadow-xl border border-slate-200 flex flex-col overflow-hidden">
-                <div class="p-6 overflow-y-auto custom-scrollbar flex-grow">
-                    <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
-                        <span id="examQuestionIndex">Question 1 of 10</span>
-                        <span id="examQuestionCategory" class="bg-slate-100 px-2.5 py-1 rounded-md text-slate-600">Folder</span>
-                    </div>
-
-                    <h3 id="examQuestionText" class="text-lg font-bold text-slate-900 mb-6 leading-relaxed"></h3>
-
-                    <div id="examOptionsList" class="space-y-3"></div>
-                </div>
-
-                <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex items-center justify-between">
-                    <button id="examPrevBtn" onclick="navigateExamQuestion(-1)" class="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-1.5 disabled:opacity-50">
-                        <i data-lucide="chevron-left" class="w-4 h-4"></i>
-                        <span>Previous</span>
-                    </button>
-                    <button id="examNextBtn" onclick="navigateExamQuestion(1)" class="px-4 py-2 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-lg transition-colors flex items-center gap-1.5">
-                        <span>Next</span>
-                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="w-full md:w-72 bg-slate-800 text-white rounded-2xl p-5 flex flex-col justify-between shrink-0">
-                <div>
-                    <h4 class="font-bold text-sm text-slate-300 uppercase tracking-wider mb-4 border-b border-slate-700 pb-2">Question Palette</h4>
-                    <div id="examPaletteGrid" class="grid grid-cols-5 gap-2 max-h-60 overflow-y-auto custom-scrollbar pr-1"></div>
-                </div>
-                <div class="pt-4 border-t border-slate-700 space-y-2 text-xs text-slate-400">
-                    <div class="flex items-center gap-2">
-                        <span class="w-3 h-3 rounded bg-brand-600 inline-block"></span> Answered
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="w-3 h-3 rounded bg-slate-700 border border-slate-600 inline-block"></span> Unanswered
-                    </div>
-                </div>
-            </div>
+        <!-- DYNAMIC VIEW CONTAINER -->
+        <div id="viewContainer">
+            <!-- Dynamic Content loaded via JS -->
         </div>
-    </div>
+    </main>
 
-    <!-- STUDENT IDENTITY PROMPT MODAL -->
-    <div id="identityModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-100">
-            <div class="flex items-center space-x-3 mb-4">
-                <div class="p-3 bg-brand-100 text-brand-700 rounded-full">
-                    <i data-lucide="user-check" class="w-6 h-6"></i>
-                </div>
-                <div>
-                    <h3 class="text-lg font-bold text-slate-900">Student Identification</h3>
-                    <p class="text-xs text-slate-500">Enter your details before beginning this assessment.</p>
-                </div>
-            </div>
-
-            <form onsubmit="confirmStudentIdentity(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Full Name *</label>
-                    <input type="text" id="studentFullName" required placeholder="e.g. John Sesay" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Student ID / Reg No. (Optional)</label>
-                    <input type="text" id="studentIDNo" placeholder="e.g. MED-2026-089" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                </div>
-                <div class="flex justify-end space-x-3 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="closeIdentityModal()" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
-                    <button type="submit" class="px-5 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm">Begin Assessment</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- DETAILED ATTEMPT REVIEW MODAL -->
-    <div id="reviewModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex flex-col">
-        <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm">
-            <div>
-                <span class="text-xs font-semibold uppercase text-brand-700 tracking-wider">Attempt Rationale Review</span>
-                <h2 id="reviewModalTitle" class="font-bold text-lg text-slate-900">Quiz Title</h2>
-                <p id="reviewModalSubtitle" class="text-xs text-slate-500">Candidate details & timestamp</p>
-            </div>
-            <button onclick="closeReviewModal()" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-        </header>
-
-        <div class="flex-grow overflow-y-auto custom-scrollbar p-6 max-w-5xl w-full mx-auto space-y-6">
-            <div id="reviewSummaryHeader" class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4 text-center"></div>
-            <div id="reviewQuestionsContainer" class="space-y-4"></div>
-        </div>
-    </div>
-
-    <!-- SWITCH ROLE / ADMIN PASSCODE MODAL -->
-    <div id="roleModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-slate-100">
-            <div class="text-center mb-4">
-                <div class="w-12 h-12 bg-slate-100 text-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <i data-lucide="shield" class="w-6 h-6 text-brand-600"></i>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900">Administrator Access</h3>
-                <p class="text-xs text-slate-500">Enter passcode to unlock instructor controls.</p>
-            </div>
-
-            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Passcode</label>
-                    <input type="password" id="adminPassInput" required placeholder="Enter passcode" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                </div>
-                <div class="flex items-center justify-between pt-2">
-                    <button type="button" onclick="closeRoleModal()" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Back to Student Mode</button>
-                    <button type="submit" class="px-5 py-2 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-lg shadow-sm">Authenticate</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- CHANGE PASSCODE MODAL -->
-    <div id="changePassModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-slate-100">
-            <h3 class="text-lg font-bold text-slate-900 mb-1">Change Admin Passcode</h3>
-            <p class="text-xs text-slate-500 mb-4">Update your passcode for future sessions.</p>
-
-            <form onsubmit="handleChangePasscode(event)" class="space-y-3">
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Current Passcode</label>
-                    <input type="password" id="currPassInput" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">New Passcode</label>
-                    <input type="password" id="newPassInput" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg">
-                </div>
-                <div class="flex justify-end space-x-2 pt-3">
-                    <button type="button" onclick="closeChangePassModal()" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg">Update</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ADD/EDIT QUESTION MODAL -->
-    <div id="questionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-6 my-8 border border-slate-100">
-            <h3 id="questionModalTitle" class="text-lg font-bold text-slate-900 mb-4">Add New Question</h3>
-
-            <form id="questionForm" onsubmit="handleSaveQuestion(event)" class="space-y-4">
-                <input type="hidden" id="editQuestionId">
-
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Folder Category *</label>
-                    <select id="qFolderSelect" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg"></select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Question Text *</label>
-                    <textarea id="qText" required rows="3" placeholder="Enter clinical stem or question..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg"></textarea>
-                </div>
-
-                <div class="space-y-2">
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700">Options (Select Correct Choice) *</label>
-                    <div class="flex items-center space-x-2">
-                        <input type="radio" name="correctOpt" value="0" required class="accent-brand-600">
-                        <input type="text" id="opt0" required placeholder="Option A" class="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-lg">
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <input type="radio" name="correctOpt" value="1" class="accent-brand-600">
-                        <input type="text" id="opt1" required placeholder="Option B" class="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-lg">
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <input type="radio" name="correctOpt" value="2" class="accent-brand-600">
-                        <input type="text" id="opt2" placeholder="Option C (Optional)" class="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-lg">
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <input type="radio" name="correctOpt" value="3" class="accent-brand-600">
-                        <input type="text" id="opt3" placeholder="Option D (Optional)" class="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-lg">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Detailed Rationale / Explanation *</label>
-                    <textarea id="qRationale" required rows="3" placeholder="Explain why the correct answer is right..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg"></textarea>
-                </div>
-
-                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="closeQuestionModal()" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
-                    <button type="submit" class="px-5 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm">Save Question</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- CREATE FOLDER MODAL -->
-    <div id="folderModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-slate-100">
-            <h3 class="text-lg font-bold text-slate-900 mb-3">Create Question Folder</h3>
-            <form onsubmit="handleCreateFolder(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Folder Name *</label>
-                    <input type="text" id="folderNameInput" required placeholder="e.g. Cardiovascular Pathology" class="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-lg">
-                </div>
-                <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closeFolderModal()" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg">Create</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- BULK IMPORT MODAL -->
-    <div id="importModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-100">
-            <h3 class="text-lg font-bold text-slate-900 mb-1">Bulk Import Questions</h3>
-            <p class="text-xs text-slate-500 mb-4">Upload a JSON or CSV file containing questions, options, and rationales.</p>
-
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Target Folder</label>
-                    <select id="importFolderSelect" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg"></select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">Select File (.json, .csv)</label>
-                    <input type="file" id="importFileInput" accept=".json,.csv" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
-                </div>
-
-                <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closeImportModal()" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
-                    <button type="button" onclick="executeImport()" class="px-4 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg">Import Questions</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CUSTOM TOAST NOTIFICATION -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none border border-slate-700">
-        <i id="toastIcon" data-lucide="info" class="w-5 h-5 text-brand-400"></i>
-        <span id="toastMsg" class="text-sm font-medium">Notification message</span>
-    </div>
-
-    <!-- FOOTER -->
-    <footer class="mt-auto bg-slate-900 text-slate-400 border-t border-slate-800 text-xs py-4 px-4">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
-            <div>
-                <p class="text-slate-300 font-semibold">Med~Stud Portal &bull; Medical Self-Assessment Platform</p>
-                <p class="text-slate-500">College of Medicine and Allied Health Sciences (COMAHS), University of Sierra Leone (USL)</p>
-            </div>
-            <div class="text-slate-400 font-medium">
-                Developed & Maintained By: <span class="text-brand-400 font-bold">Ibrahim Kargbo (Perfectionist)</span>, 2nd Year Medical Student, COMAHS, USL.
-            </div>
+    <!-- FOOTER INSCRIPTION -->
+    <footer class="bg-slate-900 text-slate-300 py-6 border-t border-slate-800 mt-10">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="text-sm font-semibold tracking-wide text-slate-200">
+                Developed & Maintained By: <span class="text-emerald-400 font-bold">Ibrahim Kargbo (Perfectionist)</span>, 2nd Year Medical Student, COMAHS, USL | Community Health Officer & Clinical Instructor
+            </p>
+            <p class="text-xs text-slate-500">
+                &copy; <span id="yearSpan"></span> Med~Stud Portal COMAHS. Item-Level Supabase Realtime Synchronization.
+            </p>
         </div>
     </footer>
 
-    <!-- JAVASCRIPT LOGIC VIA DIRECT SUPABASE REST API -->
-    <script>
-        const SUPABASE_URL = 'https://ddeukafnnlkbnsfsmuxn.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_GBQet5zyPXwmbXZ-Z513qA_nPuIf_';
+    <!-- MODAL CONTAINER (DYNAMIC) -->
+    <div id="modalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div id="modalBody" class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 relative border border-slate-100 transform transition-all">
+            <!-- Modal Content Injected Here -->
+        </div>
+    </div>
 
-        const DEFAULT_PASSCODE = 'admin123';
-        const SEED_FOLDERS = ["Pathology", "Anatomy", "Pharmacology", "General Practice"];
-        const SEED_QUESTIONS = [
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- APPLICATION JAVASCRIPT -->
+    <script>
+        /**
+         * MED~STUD PORTAL (COMAHS) - SINGLE FILE APPLICATION
+         * Item-Level Granular Sync Architecture for Supabase
+         */
+
+        const DEFAULT_PASSCODE = 'Aamirah2022';
+
+        // Default local initial state
+        const initialFolders = [
+            { id: 'f1', name: 'Anatomy & Physiology', description: 'Core basic medical sciences' },
+            { id: 'f2', name: 'Community Health', description: 'Public health and epidemiology' },
+            { id: 'f3', name: 'Clinical Medicine', description: 'Pathology & Pharmacology' }
+        ];
+
+        const initialQuestions = [
             {
                 id: 'q1',
-                folder: 'Pathology',
-                text: 'A 54-year-old male presents with severe chest pain radiating to his left jaw. Cardiac enzyme panels show elevated Troponin I levels. Which histological feature is characteristic of myocardium 12 to 24 hours post-infarction?',
-                options: ['Dense collagenous scar formation', 'Coagulative necrosis with neutrophil infiltration', 'Granulation tissue with abundant capillaries', 'Normal cardiac myocytes without edema'],
-                correctIndex: 1,
-                rationale: 'At 12-24 hours post-myocardial infarction, early coagulative necrosis occurs, accompanied by contraction bands and the initial arrival of neutrophilic infiltrate.'
+                folder_id: 'f1',
+                question: 'Which valve prevents backflow of blood into the right atrium during ventricular contraction?',
+                options: ['Tricuspid Valve', 'Bicuspid (Mitral) Valve', 'Aortic Valve', 'Pulmonary Valve'],
+                correct_index: 0,
+                rationale: 'The tricuspid valve is situated between the right atrium and right ventricle, preventing backflow into the right atrium during ventricular systole.'
+            },
+            {
+                id: 'q2',
+                folder_id: 'f2',
+                question: 'What is the primary mode of transmission for Mycobacterium tuberculosis?',
+                options: ['Airborne Droplet Nuclei', 'Direct Blood Contact', 'Vector-borne Transmission', 'Fecal-Oral Route'],
+                correct_index: 0,
+                rationale: 'TB is spread through airborne droplet nuclei generated when persons with pulmonary or laryngeal TB cough, sneeze, or speak.'
             }
         ];
-        const SEED_QUIZZES = [
+
+        const initialQuizzes = [
             {
                 id: 'quiz1',
-                title: 'High-Yield Clinical Pathology Review',
-                description: 'Comprehensive mid-semester pathology assessment covering cell injury, necrosis, and ischemia.',
-                category: 'Pathology',
-                duration: 15,
-                startDT: '2025-01-01T00:00',
-                endDT: '2030-12-31T23:59',
-                questionIds: ['q1']
+                title: 'General Medical Science Self-Assessment',
+                folder_id: 'f1',
+                time_limit_mins: 15,
+                expires_at: new Date(Date.now() + 86400000 * 30).toISOString(),
+                question_ids: ['q1', 'q2']
             }
         ];
 
-        let currentRole = 'student';
-        let adminPasscode = DEFAULT_PASSCODE;
-        let activeTab = 'quizzes';
-        let selectedFolder = 'ALL';
+        class MedPortalApp {
+            constructor() {
+                this.role = 'student'; // 'student' or 'instructor'
+                this.passcode = localStorage.getItem('coma_passcode') || DEFAULT_PASSCODE;
+                this.currentTheme = localStorage.getItem('coma_theme') || 'emerald';
+                this.supabaseUrl = localStorage.getItem('coma_sb_url') || '';
+                this.supabaseKey = localStorage.getItem('coma_sb_key') || '';
+                this.supabase = null;
+                
+                // Active View
+                this.currentView = 'quizzes';
 
-        let questionBank = [];
-        let folderList = [];
-        let publishedQuizzes = [];
-        let examHistory = [];
+                // App State Data
+                this.folders = [];
+                this.questions = [];
+                this.quizzes = [];
+                this.examHistory = [];
 
-        let pendingQuizToStart = null;
-        let activeExam = null;
+                // Active Quiz Execution State
+                this.activeQuizState = null;
 
-        window.onload = async function() {
-            await loadDataFromSupabase();
-            lucide.createIcons();
-            updateRoleUI();
-            renderQuizzes();
-            renderFolders();
-            renderQuestionBank();
-            renderHistoryTable();
-        };
-
-        async function restApiFetch(endpoint, options = {}) {
-            const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
-            const headers = {
-                'apikey': SUPABASE_KEY,
-                'Authorization': `Bearer ${SUPABASE_KEY}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=representation',
-                ...options.headers
-            };
-            try {
-                const response = await fetch(url, { ...options, headers });
-                if (!response.ok) {
-                    throw new Error(`REST Error: ${response.status} ${response.statusText}`);
-                }
-                const text = await response.text();
-                return text ? JSON.parse(text) : null;
-            } catch (err) {
-                console.warn('REST API Warning:', err);
-                return null;
-            }
-        }
-
-        async function loadDataFromSupabase() {
-            adminPasscode = localStorage.getItem('medstud_admin_passcode') || DEFAULT_PASSCODE;
-
-            // Load App State (Folders, Questions, Quizzes)
-            const stateData = await restApiFetch('app_state?id=eq.1');
-            if(stateData && stateData.length > 0) {
-                folderList = stateData[0].folders || SEED_FOLDERS;
-                questionBank = stateData[0].questions || SEED_QUESTIONS;
-                publishedQuizzes = stateData[0].quizzes || SEED_QUIZZES;
-            } else {
-                folderList = JSON.parse(localStorage.getItem('med_stud_folders')) || SEED_FOLDERS;
-                questionBank = JSON.parse(localStorage.getItem('med_stud_questions')) || SEED_QUESTIONS;
-                publishedQuizzes = JSON.parse(localStorage.getItem('med_stud_quizzes')) || SEED_QUIZZES;
+                this.init();
             }
 
-            // Load Exam History Attempts
-            const historyData = await restApiFetch('exam_attempts?select=*&order=submitted_at.desc');
-            if(historyData && Array.isArray(historyData)) {
-                examHistory = historyData.map(row => ({
-                    id: row.id,
-                    quizId: row.quiz_id,
-                    quizTitle: row.quiz_title,
-                    studentName: row.student_name,
-                    studentId: row.student_id,
-                    submittedAt: row.submitted_at,
-                    score: row.score,
-                    total: row.total,
-                    percentage: row.percentage,
-                    breakdown: row.breakdown
-                }));
-            } else {
-                examHistory = JSON.parse(localStorage.getItem('med_stud_history')) || [];
-            }
-        }
-
-        async function saveAppData() {
-            localStorage.setItem('medstud_admin_passcode', adminPasscode);
-            localStorage.setItem('med_stud_folders', JSON.stringify(folderList));
-            localStorage.setItem('med_stud_questions', JSON.stringify(questionBank));
-            localStorage.setItem('med_stud_quizzes', JSON.stringify(publishedQuizzes));
-
-            // Upsert to Supabase app_state table via REST API
-            await restApiFetch('app_state', {
-                method: 'POST',
-                headers: { 'Prefer': 'resolution=merge-duplicates' },
-                body: JSON.stringify({
-                    id: 1,
-                    folders: folderList,
-                    questions: questionBank,
-                    quizzes: publishedQuizzes,
-                    updated_at: new Date().toISOString()
-                })
-            });
-        }
-
-        async function saveExamAttemptToCloud(attemptRecord) {
-            examHistory.unshift(attemptRecord);
-            localStorage.setItem('med_stud_history', JSON.stringify(examHistory));
-
-            await restApiFetch('exam_attempts', {
-                method: 'POST',
-                body: JSON.stringify({
-                    id: attemptRecord.id,
-                    quiz_id: attemptRecord.quizId,
-                    quiz_title: attemptRecord.quizTitle,
-                    student_name: attemptRecord.studentName,
-                    student_id: attemptRecord.studentId,
-                    submitted_at: attemptRecord.submittedAt,
-                    score: attemptRecord.score,
-                    total: attemptRecord.total,
-                    percentage: attemptRecord.percentage,
-                    breakdown: attemptRecord.breakdown
-                })
-            });
-        }
-
-        function switchTab(tabId) {
-            activeTab = tabId;
-            document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.nav-tab').forEach(el => {
-                el.classList.remove('bg-white', 'text-brand-700', 'shadow-sm');
-                el.classList.add('text-slate-700');
-            });
-
-            document.getElementById(`view-${tabId}`).classList.remove('hidden');
-            const activeBtn = document.getElementById(`tab-${tabId}`);
-            if(activeBtn) {
-                activeBtn.classList.add('bg-white', 'text-brand-700', 'shadow-sm');
-                activeBtn.classList.remove('text-slate-700');
+            async init() {
+                document.getElementById('yearSpan').textContent = new Date().getFullYear();
+                this.applyTheme(this.currentTheme);
+                this.initSupabaseClient();
+                await this.loadAllData();
+                this.render();
             }
 
-            if(tabId === 'quizzes') renderQuizzes();
-            if(tabId === 'history') {
-                populateHistoryQuizDropdown();
-                renderHistoryTable();
-            }
-            if(tabId === 'bank') renderQuestionBank();
-            if(tabId === 'create') renderQuizQuestionSelector();
-
-            lucide.createIcons();
-        }
-
-        function toggleRoleModal() {
-            if(currentRole === 'admin') {
-                currentRole = 'student';
-                updateRoleUI();
-                showToast('Switched to Student view mode.');
-            } else {
-                document.getElementById('adminPassInput').value = '';
-                document.getElementById('roleModal').classList.remove('hidden');
-            }
-        }
-
-        function closeRoleModal() {
-            document.getElementById('roleModal').classList.add('hidden');
-            document.getElementById('adminPassInput').value = '';
-        }
-
-        function handleAdminLogin(e) {
-            e.preventDefault();
-            const pass = document.getElementById('adminPassInput').value;
-            if(pass === adminPasscode) {
-                currentRole = 'admin';
-                closeRoleModal();
-                updateRoleUI();
-                showToast('Admin authentication successful!');
-            } else {
-                showToast('Incorrect administrator passcode!', true);
-            }
-        }
-
-        function updateRoleUI() {
-            const roleBadge = document.getElementById('roleBadge');
-            const roleText = document.getElementById('roleText');
-            const roleSwitchBtnText = document.getElementById('roleSwitchBtnText');
-            const adminBar = document.getElementById('adminControlBar');
-
-            if(currentRole === 'admin') {
-                roleBadge.className = 'flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-900/80 text-emerald-300 border border-emerald-700';
-                roleText.innerText = 'Administrator Mode';
-                roleSwitchBtnText.innerText = 'Exit Admin';
-                adminBar.classList.remove('hidden');
-                document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
-            } else {
-                roleBadge.className = 'flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700';
-                roleText.innerText = 'Student Mode';
-                roleSwitchBtnText.innerText = 'Admin Login';
-                adminBar.classList.add('hidden');
-                document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
-
-                if(activeTab === 'bank' || activeTab === 'create') {
-                    switchTab('quizzes');
+            // Theme Management
+            applyTheme(themeName) {
+                this.currentTheme = themeName;
+                localStorage.setItem('coma_theme', themeName);
+                if (themeName === 'emerald') {
+                    document.documentElement.removeAttribute('data-theme');
+                } else {
+                    document.documentElement.setAttribute('data-theme', themeName);
                 }
             }
-            renderHistoryTable();
-            lucide.createIcons();
-        }
 
-        function openChangePasscodeModal() {
-            document.getElementById('currPassInput').value = '';
-            document.getElementById('newPassInput').value = '';
-            document.getElementById('changePassModal').classList.remove('hidden');
-        }
-
-        function closeChangePassModal() {
-            document.getElementById('changePassModal').classList.add('hidden');
-        }
-
-        function handleChangePasscode(e) {
-            e.preventDefault();
-            const curr = document.getElementById('currPassInput').value;
-            const next = document.getElementById('newPassInput').value;
-
-            if(curr !== adminPasscode) {
-                showToast('Current passcode verification failed.', true);
-                return;
-            }
-            if(!next || next.trim().length < 4) {
-                showToast('New passcode must be at least 4 characters long.', true);
-                return;
-            }
-
-            adminPasscode = next.trim();
-            localStorage.setItem('medstud_admin_passcode', adminPasscode);
-            closeChangePassModal();
-            showToast('Admin passcode updated successfully.');
-        }
-
-        function getQuizStatus(quiz) {
-            const now = new Date();
-            const start = new Date(quiz.startDT);
-            const end = new Date(quiz.endDT);
-
-            if (now < start) return { label: 'Scheduled', color: 'bg-blue-50 text-blue-700 border-blue-200', active: false };
-            if (now > end) return { label: 'Expired', color: 'bg-red-50 text-red-700 border-red-200', active: false };
-            return { label: 'Active', color: 'bg-emerald-50 text-emerald-700 border-emerald-200', active: true };
-        }
-
-        function renderQuizzes() {
-            const grid = document.getElementById('quizList');
-            const search = (document.getElementById('quizSearchInput').value || '').toLowerCase();
-            grid.innerHTML = '';
-
-            const filtered = publishedQuizzes.filter(q =>
-                q.title.toLowerCase().includes(search) ||
-                (q.category && q.category.toLowerCase().includes(search))
-            );
-
-            if(filtered.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full text-center py-12 bg-white rounded-xl border border-slate-200">
-                        <i data-lucide="book-open" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
-                        <h3 class="text-base font-bold text-slate-700">No Assessments Available</h3>
-                        <p class="text-xs text-slate-500">There are no assessments matching your filter or none published yet.</p>
+            openThemeModal() {
+                const themes = ['emerald', 'sapphire', 'amethyst', 'crimson', 'slate', 'amber', 'indigo'];
+                const html = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-palette text-theme me-2"></i>Select Color Theme</h3>
+                        <button onclick="app.closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
                     </div>
-                `;
-                lucide.createIcons();
-                return;
-            }
-
-            filtered.forEach(q => {
-                const status = getQuizStatus(q);
-                const qCount = q.questionIds ? q.questionIds.length : 0;
-
-                const card = document.createElement('div');
-                card.className = 'bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col justify-between';
-                card.innerHTML = `
-                    <div>
-                        <div class="flex items-center justify-between gap-2 mb-3">
-                            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${status.color}">
-                                ${status.label}
-                            </span>
-                            <span class="text-xs text-slate-500 font-medium">${q.category || 'General'}</span>
-                        </div>
-                        <h3 class="font-bold text-slate-900 text-base mb-1">${escapeHtml(q.title)}</h3>
-                        <p class="text-xs text-slate-600 mb-4 line-clamp-2">${escapeHtml(q.description || 'No description provided.')}</p>
-
-                        <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-3 mb-4">
-                            <div class="flex items-center justify-between">
-                                <span class="flex items-center gap-1.5"><i data-lucide="help-circle" class="w-3.5 h-3.5 text-slate-400"></i> Questions:</span>
-                                <span class="font-semibold text-slate-700">${qCount} Items</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i> Duration:</span>
-                                <span class="font-semibold text-slate-700">${q.duration} Mins</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
-                        <button onclick="promptStudentDetails('${q.id}')" ${!status.active ? 'disabled' : ''} class="flex-grow py-2 px-3 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:bg-slate-300 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm">
-                            <i data-lucide="play" class="w-3.5 h-3.5"></i>
-                            <span>Start Assessment</span>
-                        </button>
-                        ${currentRole === 'admin' ? `
-                            <button onclick="deleteQuiz('${q.id}')" class="p-2 text-red-500 hover:bg-red-50 rounded-lg border border-red-200 transition-colors" title="Delete Assessment">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        ${themes.map(t => `
+                            <button onclick="app.applyTheme('${t}'); app.closeModal();" class="p-3 rounded-xl border border-slate-200 hover:border-slate-400 flex items-center space-x-3 capitalize text-sm font-semibold transition">
+                                <span class="w-5 h-5 rounded-full ${this.getThemeColorBgClass(t)}"></span>
+                                <span>${t}</span>
                             </button>
-                        ` : ''}
+                        `).join('')}
                     </div>
                 `;
-                grid.appendChild(card);
-            });
-            lucide.createIcons();
-        }
-
-        async function deleteQuiz(quizId) {
-            if(!confirm('Delete this published assessment?')) return;
-            publishedQuizzes = publishedQuizzes.filter(q => q.id !== quizId);
-            await saveAppData();
-            renderQuizzes();
-            showToast('Assessment deleted successfully.');
-        }
-
-        function promptStudentDetails(quizId) {
-            const quiz = publishedQuizzes.find(q => q.id === quizId);
-            if(!quiz) return;
-            pendingQuizToStart = quiz;
-            document.getElementById('studentFullName').value = '';
-            document.getElementById('studentIDNo').value = '';
-            document.getElementById('identityModal').classList.remove('hidden');
-        }
-
-        function closeIdentityModal() {
-            document.getElementById('identityModal').classList.add('hidden');
-            pendingQuizToStart = null;
-        }
-
-        function confirmStudentIdentity(e) {
-            e.preventDefault();
-            const fullName = document.getElementById('studentFullName').value.trim();
-            const studentId = document.getElementById('studentIDNo').value.trim();
-            if(!fullName) {
-                showToast('Please enter your full name.', true);
-                return;
-            }
-            const quiz = pendingQuizToStart;
-            closeIdentityModal();
-            if(quiz) {
-                launchExam(quiz, { name: fullName, id: studentId || 'N/A' });
-            }
-        }
-
-        function launchExam(quiz, studentInfo) {
-            const questions = questionBank.filter(q => quiz.questionIds.includes(q.id));
-            if(questions.length === 0) {
-                showToast('This assessment has no questions attached.', true);
-                return;
+                this.showModal(html);
             }
 
-            activeExam = {
-                quiz: quiz,
-                student: studentInfo,
-                questions: questions,
-                currentIdx: 0,
-                userAnswers: {},
-                timeRemaining: (quiz.duration || 15) * 60,
-                timerInterval: null
-            };
-
-            document.getElementById('examModalTitle').innerText = quiz.title;
-            document.getElementById('examUserDisplay').innerText = `${studentInfo.name} (${studentInfo.id})`;
-            document.getElementById('examModal').classList.remove('hidden');
-
-            renderExamQuestion();
-            renderExamPalette();
-            startExamTimer();
-            lucide.createIcons();
-        }
-
-        function startExamTimer() {
-            updateTimerDisplay();
-            activeExam.timerInterval = setInterval(() => {
-                activeExam.timeRemaining--;
-                updateTimerDisplay();
-                if(activeExam.timeRemaining <= 0) {
-                    clearInterval(activeExam.timerInterval);
-                    showToast('Time expired! Submitting assessment automatically.', true);
-                    submitExam();
-                }
-            }, 1000);
-        }
-
-        function updateTimerDisplay() {
-            const m = Math.floor(activeExam.timeRemaining / 60);
-            const s = activeExam.timeRemaining % 60;
-            document.getElementById('examTimer').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
-
-        function renderExamQuestion() {
-            const q = activeExam.questions[activeExam.currentIdx];
-            document.getElementById('examQuestionIndex').innerText = `Question ${activeExam.currentIdx + 1} of ${activeExam.questions.length}`;
-            document.getElementById('examQuestionCategory').innerText = q.folder || 'General';
-            document.getElementById('examQuestionText').innerText = q.text;
-
-            const optsContainer = document.getElementById('examOptionsList');
-            optsContainer.innerHTML = '';
-            const selectedOpt = activeExam.userAnswers[activeExam.currentIdx];
-
-            q.options.forEach((optText, idx) => {
-                if(!optText) return;
-                const isSelected = selectedOpt === idx;
-                const optEl = document.createElement('label');
-                optEl.className = `flex items-center p-3.5 rounded-xl border transition-all cursor-pointer ${
-                    isSelected ? 'bg-brand-50 border-brand-500 text-brand-900 font-medium shadow-sm' : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'
-                }`;
-                optEl.innerHTML = `
-                    <input type="radio" name="examOpt" value="${idx}" ${isSelected ? 'checked' : ''} onchange="selectExamOption(${idx})" class="w-4 h-4 text-brand-600 accent-brand-600 focus:ring-brand-500">
-                    <span class="ml-3 text-sm">${escapeHtml(optText)}</span>
-                `;
-                optsContainer.appendChild(optEl);
-            });
-
-            document.getElementById('examPrevBtn').disabled = activeExam.currentIdx === 0;
-            const nextBtn = document.getElementById('examNextBtn');
-            if(activeExam.currentIdx === activeExam.questions.length - 1) {
-                nextBtn.innerHTML = `<span>Review & Finish</span><i data-lucide="check-circle" class="w-4 h-4"></i>`;
-            } else {
-                nextBtn.innerHTML = `<span>Next</span><i data-lucide="chevron-right" class="w-4 h-4"></i>`;
-            }
-            lucide.createIcons();
-        }
-
-        function selectExamOption(optionIdx) {
-            activeExam.userAnswers[activeExam.currentIdx] = optionIdx;
-            renderExamPalette();
-        }
-
-        function navigateExamQuestion(delta) {
-            const target = activeExam.currentIdx + delta;
-            if(target >= 0 && target < activeExam.questions.length) {
-                activeExam.currentIdx = target;
-                renderExamQuestion();
-            }
-        }
-
-        function jumpToExamQuestion(idx) {
-            activeExam.currentIdx = idx;
-            renderExamQuestion();
-        }
-
-        function renderExamPalette() {
-            const palette = document.getElementById('examPaletteGrid');
-            palette.innerHTML = '';
-            activeExam.questions.forEach((_, idx) => {
-                const isAnswered = activeExam.userAnswers.hasOwnProperty(idx);
-                const isCurrent = activeExam.currentIdx === idx;
-                const btn = document.createElement('button');
-                btn.onclick = () => jumpToExamQuestion(idx);
-                btn.className = `w-10 h-10 rounded-lg text-xs font-bold transition-all flex items-center justify-center ${
-                    isCurrent ? 'ring-2 ring-white ring-offset-2 ring-offset-slate-800' : ''
-                } ${
-                    isAnswered ? 'bg-brand-600 text-white' : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
-                }`;
-                btn.innerText = idx + 1;
-                palette.appendChild(btn);
-            });
-        }
-
-        function confirmSubmitExam() {
-            const total = activeExam.questions.length;
-            const answered = Object.keys(activeExam.userAnswers).length;
-            if(answered < total) {
-                if(!confirm(`You have only answered ${answered} of ${total} questions. Are you sure you want to submit?`)) return;
-            }
-            submitExam();
-        }
-
-        async function submitExam() {
-            if(activeExam.timerInterval) clearInterval(activeExam.timerInterval);
-
-            let score = 0;
-            const total = activeExam.questions.length;
-            const breakdown = [];
-
-            activeExam.questions.forEach((q, idx) => {
-                const chosen = activeExam.userAnswers[idx];
-                const isCorrect = chosen === q.correctIndex;
-                if(isCorrect) score++;
-
-                breakdown.push({
-                    questionId: q.id,
-                    questionText: q.text,
-                    options: q.options,
-                    chosenIndex: chosen !== undefined ? chosen : null,
-                    correctIndex: q.correctIndex,
-                    rationale: q.rationale,
-                    isCorrect: isCorrect
-                });
-            });
-
-            const percent = Math.round((score / total) * 100);
-            const attemptRecord = {
-                id: 'att_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-                quizId: activeExam.quiz.id,
-                quizTitle: activeExam.quiz.title,
-                studentName: activeExam.student.name,
-                studentId: activeExam.student.id,
-                submittedAt: new Date().toISOString(),
-                score: score,
-                total: total,
-                percentage: percent,
-                breakdown: breakdown
-            };
-
-            await saveExamAttemptToCloud(attemptRecord);
-
-            document.getElementById('examModal').classList.add('hidden');
-            activeExam = null;
-
-            showToast(`Assessment submitted! Score: ${score}/${total} (${percent}%)`);
-            switchTab('history');
-            openReviewModal(attemptRecord.id);
-        }
-
-        function populateHistoryQuizDropdown() {
-            const dropdown = document.getElementById('historyQuizFilter');
-            dropdown.innerHTML = '<option value="ALL">All Assessment Titles</option>';
-            const titles = [...new Set(examHistory.map(h => h.quizTitle))];
-            titles.forEach(t => {
-                const opt = document.createElement('option');
-                opt.value = t;
-                opt.innerText = t;
-                dropdown.appendChild(opt);
-            });
-        }
-
-        function renderHistoryTable() {
-            const body = document.getElementById('historyTableBody');
-            const search = (document.getElementById('historySearchInput').value || '').toLowerCase();
-            const quizFilter = document.getElementById('historyQuizFilter').value;
-            const countBadge = document.getElementById('historyCountBadge');
-            body.innerHTML = '';
-
-            let filtered = examHistory.filter(h => {
-                const matchesSearch = h.studentName.toLowerCase().includes(search) || h.studentId.toLowerCase().includes(search);
-                const matchesQuiz = quizFilter === 'ALL' || h.quizTitle === quizFilter;
-                return matchesSearch && matchesQuiz;
-            });
-
-            countBadge.innerText = `${filtered.length} Attempt${filtered.length === 1 ? '' : 's'}`;
-
-            if(filtered.length === 0) {
-                body.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-400 text-xs">No attempt records found matching criteria.</td></tr>`;
-                return;
+            getThemeColorBgClass(t) {
+                const map = {
+                    emerald: 'bg-emerald-600',
+                    sapphire: 'bg-blue-600',
+                    amethyst: 'bg-purple-600',
+                    crimson: 'bg-red-600',
+                    slate: 'bg-slate-600',
+                    amber: 'bg-amber-600',
+                    indigo: 'bg-indigo-600'
+                };
+                return map[t] || 'bg-emerald-600';
             }
 
-            filtered.forEach(h => {
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-50 transition-colors';
-                const scoreColor = h.percentage >= 70 ? 'text-emerald-700 bg-emerald-50 border-emerald-200' :
-                                   h.percentage >= 50 ? 'text-amber-700 bg-amber-50 border-amber-200' : 'text-red-700 bg-red-50 border-red-200';
+            // Supabase Client Setup
+            initSupabaseClient() {
+                const badge = document.getElementById('syncStatusBadge');
+                const dot = document.getElementById('syncDot');
+                const text = document.getElementById('syncText');
 
-                tr.innerHTML = `
-                    <td class="py-3.5 px-4 font-medium text-slate-900">
-                        <div class="font-bold text-sm">${escapeHtml(h.studentName)}</div>
-                        <div class="text-xs text-slate-400">ID: ${escapeHtml(h.studentId)}</div>
-                    </td>
-                    <td class="py-3.5 px-4 text-xs font-semibold text-slate-800">${escapeHtml(h.quizTitle)}</td>
-                    <td class="py-3.5 px-4 text-xs text-slate-500">${new Date(h.submittedAt).toLocaleString([], {dateStyle:'medium', timeStyle:'short'})}</td>
-                    <td class="py-3.5 px-4"><span class="px-2.5 py-1 rounded-md text-xs font-bold border ${scoreColor}">${h.score} / ${h.total} (${h.percentage}%)</span></td>
-                    <td class="py-3.5 px-4 text-right">
-                        <button onclick="openReviewModal('${h.id}')" class="px-3 py-1.5 text-xs font-semibold text-brand-700 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 rounded-lg border border-brand-200 transition-colors inline-flex items-center gap-1">
-                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                            <span>Review Rationale</span>
-                        </button>
-                    </td>
-                `;
-                body.appendChild(tr);
-            });
-            lucide.createIcons();
-        }
-
-        async function clearHistoryRecords() {
-            if(!confirm('Are you sure you want to clear ALL student attempt records?')) return;
-            await restApiFetch('exam_attempts?id=not.is.null', { method: 'DELETE' });
-            examHistory = [];
-            renderHistoryTable();
-            showToast('All attempt history cleared.');
-        }
-
-        function openReviewModal(attemptId) {
-            const attempt = examHistory.find(h => h.id === attemptId);
-            if(!attempt) return;
-
-            document.getElementById('reviewModalTitle').innerText = attempt.quizTitle;
-            document.getElementById('reviewModalSubtitle').innerText = `Candidate: ${attempt.studentName} (ID: ${attempt.studentId}) | Submitted: ${new Date(attempt.submittedAt).toLocaleString()}`;
-
-            const summaryContainer = document.getElementById('reviewSummaryHeader');
-            summaryContainer.innerHTML = `
-                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100"><span class="text-xs text-slate-400 uppercase font-semibold">Candidate</span><p class="font-bold text-slate-800 text-sm truncate">${escapeHtml(attempt.studentName)}</p></div>
-                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100"><span class="text-xs text-slate-400 uppercase font-semibold">Score Achieved</span><p class="font-bold text-slate-800 text-sm">${attempt.score} / ${attempt.total}</p></div>
-                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100"><span class="text-xs text-slate-400 uppercase font-semibold">Percentage</span><p class="font-bold text-sm ${attempt.percentage >= 50 ? 'text-emerald-600' : 'text-red-600'}">${attempt.percentage}%</p></div>
-                <div class="p-3 bg-slate-50 rounded-lg border border-slate-100"><span class="text-xs text-slate-400 uppercase font-semibold">Status</span><p class="font-bold text-sm ${attempt.percentage >= 50 ? 'text-emerald-600' : 'text-red-600'}">${attempt.percentage >= 50 ? 'PASSED' : 'RETAKE SUGGESTED'}</p></div>
-            `;
-
-            const qContainer = document.getElementById('reviewQuestionsContainer');
-            qContainer.innerHTML = '';
-            attempt.breakdown.forEach((item, idx) => {
-                const card = document.createElement('div');
-                card.className = `p-5 rounded-xl border ${item.isCorrect ? 'bg-white border-slate-200' : 'bg-red-50/20 border-red-200'} shadow-sm space-y-3`;
-
-                let optionsHtml = '';
-                item.options.forEach((optText, oIdx) => {
-                    if(!optText) return;
-                    const isUserChoice = item.chosenIndex === oIdx;
-                    const isCorrectChoice = item.correctIndex === oIdx;
-                    let optStyle = 'bg-slate-50 border-slate-200 text-slate-700';
-                    let badge = '';
-
-                    if(isCorrectChoice) {
-                        optStyle = 'bg-emerald-50 border-emerald-400 text-emerald-900 font-semibold';
-                        badge = '<span class="text-[10px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded ml-auto">Correct Answer</span>';
+                if (this.supabaseUrl && this.supabaseKey) {
+                    try {
+                        this.supabase = supabase.createClient(this.supabaseUrl, this.supabaseKey);
+                        dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
+                        text.textContent = 'Supabase Connected';
+                        this.setupRealtimeListeners();
+                    } catch (e) {
+                        console.error('Supabase Initialization Error:', e);
+                        dot.className = 'w-2 h-2 rounded-full bg-red-500';
+                        text.textContent = 'Sync Config Error';
                     }
-                    if(isUserChoice && !isCorrectChoice) {
-                        optStyle = 'bg-red-50 border-red-400 text-red-900 font-semibold';
-                        badge = '<span class="text-[10px] bg-red-600 text-white font-bold px-2 py-0.5 rounded ml-auto">Your Choice</span>';
-                    } else if(isUserChoice && isCorrectChoice) {
-                        badge = '<span class="text-[10px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded ml-auto">Your Choice (Correct)</span>';
-                    }
-
-                    optionsHtml += `<div class="p-3 rounded-lg border text-xs flex items-center justify-between ${optStyle}"><span>${escapeHtml(optText)}</span>${badge}</div>`;
-                });
-
-                card.innerHTML = `
-                    <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-2">
-                        <span class="text-xs font-bold text-slate-500 uppercase">Question ${idx + 1}</span>
-                        <span class="text-xs font-bold px-2.5 py-0.5 rounded ${item.isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">${item.isCorrect ? 'Correct (+1)' : 'Incorrect (0)'}</span>
-                    </div>
-                    <h4 class="font-bold text-slate-900 text-sm leading-relaxed">${escapeHtml(item.questionText)}</h4>
-                    <div class="space-y-2 pt-1">${optionsHtml}</div>
-                    <div class="mt-3 p-3.5 bg-brand-50/60 border border-brand-200/80 rounded-lg text-xs space-y-1">
-                        <div class="flex items-center gap-1.5 text-brand-800 font-bold"><i data-lucide="book-open-check" class="w-4 h-4 text-brand-600"></i><span>Clinical Rationale & Explanation:</span></div>
-                        <p class="text-slate-700 leading-relaxed">${escapeHtml(item.rationale || 'No explanation provided.')}</p>
-                    </div>
-                `;
-                qContainer.appendChild(card);
-            });
-
-            document.getElementById('reviewModal').classList.remove('hidden');
-            lucide.createIcons();
-        }
-
-        function closeReviewModal() {
-            document.getElementById('reviewModal').classList.add('hidden');
-        }
-
-        function renderFolders() {
-            const container = document.getElementById('folderList');
-            container.innerHTML = '';
-            const allBtn = document.createElement('button');
-            allBtn.onclick = () => selectFolder('ALL');
-            allBtn.className = `w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors ${selectedFolder === 'ALL' ? 'bg-brand-50 text-brand-700 font-bold border border-brand-200' : 'text-slate-600 hover:bg-slate-100'}`;
-            allBtn.innerHTML = `<span class="flex items-center gap-2"><i data-lucide="folder" class="w-3.5 h-3.5"></i> All Questions</span><span class="bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-[10px] font-bold">${questionBank.length}</span>`;
-            container.appendChild(allBtn);
-
-            folderList.forEach(f => {
-                const count = questionBank.filter(q => q.folder === f).length;
-                const btn = document.createElement('button');
-                btn.onclick = () => selectFolder(f);
-                btn.className = `w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors ${selectedFolder === f ? 'bg-brand-50 text-brand-700 font-bold border border-brand-200' : 'text-slate-600 hover:bg-slate-100'}`;
-                btn.innerHTML = `<span class="flex items-center gap-2 truncate"><i data-lucide="folder" class="w-3.5 h-3.5"></i> ${escapeHtml(f)}</span><span class="bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-[10px] font-bold">${count}</span>`;
-                container.appendChild(btn);
-            });
-            lucide.createIcons();
-        }
-
-        function selectFolder(folderName) {
-            selectedFolder = folderName;
-            renderFolders();
-            renderQuestionBank();
-        }
-
-        function openCreateFolderModal() {
-            document.getElementById('folderNameInput').value = '';
-            document.getElementById('folderModal').classList.remove('hidden');
-        }
-
-        function closeFolderModal() {
-            document.getElementById('folderModal').classList.add('hidden');
-        }
-
-        async function handleCreateFolder(e) {
-            e.preventDefault();
-            const val = document.getElementById('folderNameInput').value.trim();
-            if(!val) return;
-            if(!folderList.includes(val)) {
-                folderList.push(val);
-                await saveAppData();
-                renderFolders();
-                showToast(`Folder "${val}" created.`);
-            }
-            closeFolderModal();
-        }
-
-        function renderQuestionBank() {
-            const list = document.getElementById('questionBankList');
-            const badge = document.getElementById('questionCountBadge');
-            const title = document.getElementById('currentFolderName');
-            title.innerText = selectedFolder === 'ALL' ? 'All Questions' : selectedFolder;
-
-            const filtered = selectedFolder === 'ALL' ? questionBank : questionBank.filter(q => q.folder === selectedFolder);
-            badge.innerText = filtered.length;
-            list.innerHTML = '';
-
-            if(filtered.length === 0) {
-                list.innerHTML = `<div class="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-400 text-xs">No questions available in this folder.</div>`;
-                return;
-            }
-
-            filtered.forEach((q) => {
-                const card = document.createElement('div');
-                card.className = 'bg-white rounded-xl border border-slate-200 shadow-sm p-4 space-y-3';
-                let optsHtml = '';
-                q.options.forEach((opt, oIdx) => {
-                    if(!opt) return;
-                    const isCorrect = oIdx === q.correctIndex;
-                    optsHtml += `<div class="text-xs px-2.5 py-1 rounded border ${isCorrect ? 'bg-emerald-50 border-emerald-300 text-emerald-900 font-bold' : 'bg-slate-50 border-slate-200 text-slate-600'}">${escapeHtml(opt)} ${isCorrect ? '(Correct)' : ''}</div>`;
-                });
-
-                card.innerHTML = `
-                    <div class="flex items-start justify-between gap-2">
-                        <div class="space-y-1">
-                            <span class="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">${escapeHtml(q.folder || 'General')}</span>
-                            <h4 class="font-bold text-slate-900 text-sm leading-snug">${escapeHtml(q.text)}</h4>
-                        </div>
-                        <div class="flex items-center space-x-1 shrink-0">
-                            <button onclick="openQuestionModal('${q.id}')" class="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-slate-100 rounded-lg"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                            <button onclick="deleteQuestion('${q.id}')" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">${optsHtml}</div>
-                    <div class="bg-slate-50 border border-slate-200/60 p-2.5 rounded-lg text-xs text-slate-600"><span class="font-bold text-slate-800">Rationale:</span> ${escapeHtml(q.rationale || 'N/A')}</div>
-                `;
-                list.appendChild(card);
-            });
-            lucide.createIcons();
-        }
-
-        function openQuestionModal(editId = null) {
-            const select = document.getElementById('qFolderSelect');
-            select.innerHTML = '';
-            folderList.forEach(f => {
-                const opt = document.createElement('option');
-                opt.value = f;
-                opt.innerText = f;
-                select.appendChild(opt);
-            });
-
-            const form = document.getElementById('questionForm');
-            form.reset();
-
-            if(editId) {
-                const q = questionBank.find(item => item.id === editId);
-                if(q) {
-                    document.getElementById('editQuestionId').value = q.id;
-                    document.getElementById('qFolderSelect').value = q.folder;
-                    document.getElementById('qText').value = q.text;
-                    document.getElementById('opt0').value = q.options[0] || '';
-                    document.getElementById('opt1').value = q.options[1] || '';
-                    document.getElementById('opt2').value = q.options[2] || '';
-                    document.getElementById('opt3').value = q.options[3] || '';
-                    document.getElementById('qRationale').value = q.rationale || '';
-                    const radios = document.getElementsByName('correctOpt');
-                    if(radios[q.correctIndex]) radios[q.correctIndex].checked = true;
-                    document.getElementById('questionModalTitle').innerText = 'Edit Question';
+                } else {
+                    dot.className = 'w-2 h-2 rounded-full bg-amber-400';
+                    text.textContent = 'Local Storage Only';
                 }
-            } else {
-                document.getElementById('editQuestionId').value = '';
-                document.getElementById('questionModalTitle').innerText = 'Add New Question';
-                if(selectedFolder !== 'ALL') select.value = selectedFolder;
-            }
-            document.getElementById('questionModal').classList.remove('hidden');
-        }
-
-        function closeQuestionModal() {
-            document.getElementById('questionModal').classList.add('hidden');
-        }
-
-        async function handleSaveQuestion(e) {
-            e.preventDefault();
-            const editId = document.getElementById('editQuestionId').value;
-            const folder = document.getElementById('qFolderSelect').value;
-            const text = document.getElementById('qText').value.trim();
-            const opt0 = document.getElementById('opt0').value.trim();
-            const opt1 = document.getElementById('opt1').value.trim();
-            const opt2 = document.getElementById('opt2').value.trim();
-            const opt3 = document.getElementById('opt3').value.trim();
-            const rationale = document.getElementById('qRationale').value.trim();
-
-            const radios = document.getElementsByName('correctOpt');
-            let correctIdx = 0;
-            for(let i=0; i<radios.length; i++) {
-                if(radios[i].checked) { correctIdx = parseInt(radios[i].value); break; }
             }
 
-            const options = [opt0, opt1, opt2, opt3].filter(o => o.length > 0);
+            setupRealtimeListeners() {
+                if (!this.supabase) return;
 
-            if(editId) {
-                const q = questionBank.find(item => item.id === editId);
-                if(q) {
-                    q.folder = folder;
-                    q.text = text;
-                    q.options = options;
-                    q.correctIndex = correctIdx;
-                    q.rationale = rationale;
-                }
-            } else {
-                questionBank.push({
-                    id: 'q_' + Date.now(),
-                    folder: folder,
-                    text: text,
-                    options: options,
-                    correctIndex: correctIdx,
-                    rationale: rationale
+                // Subscribe to real-time changes on granular tables
+                const tables = ['folders', 'questions', 'quizzes', 'exam_history'];
+                tables.forEach(table => {
+                    this.supabase
+                        .channel(`public:${table}`)
+                        .on('postgres_changes', { event: '*', schema: 'public', table: table }, () => {
+                            this.loadTableData(table);
+                        })
+                        .subscribe();
                 });
             }
 
-            await saveAppData();
-            closeQuestionModal();
-            renderFolders();
-            renderQuestionBank();
-            showToast('Question saved successfully.');
-        }
-
-        async function deleteQuestion(qId) {
-            if(!confirm('Delete this question from bank?')) return;
-            questionBank = questionBank.filter(q => q.id !== qId);
-            await saveAppData();
-            renderFolders();
-            renderQuestionBank();
-            showToast('Question deleted.');
-        }
-
-        function openImportModal() {
-            const select = document.getElementById('importFolderSelect');
-            select.innerHTML = '';
-            folderList.forEach(f => {
-                const opt = document.createElement('option');
-                opt.value = f;
-                opt.innerText = f;
-                select.appendChild(opt);
-            });
-            document.getElementById('importModal').classList.remove('hidden');
-        }
-
-        function closeImportModal() {
-            document.getElementById('importModal').classList.add('hidden');
-        }
-
-        function executeImport() {
-            const folder = document.getElementById('importFolderSelect').value;
-            const fileInput = document.getElementById('importFileInput');
-            const file = fileInput.files[0];
-            if(!file) {
-                showToast('Please select a file to import.', true);
-                return;
+            // Granular Loaders & Local Fallbacks
+            async loadAllData() {
+                if (this.supabase) {
+                    await Promise.all([
+                        this.loadTableData('folders'),
+                        this.loadTableData('questions'),
+                        this.loadTableData('quizzes'),
+                        this.loadTableData('exam_history'),
+                        this.loadAppConfig()
+                    ]);
+                } else {
+                    this.folders = JSON.parse(localStorage.getItem('coma_folders')) || initialFolders;
+                    this.questions = JSON.parse(localStorage.getItem('coma_questions')) || initialQuestions;
+                    this.quizzes = JSON.parse(localStorage.getItem('coma_quizzes')) || initialQuizzes;
+                    this.examHistory = JSON.parse(localStorage.getItem('coma_exam_history')) || [];
+                }
             }
 
-            const reader = new FileReader();
-            reader.onload = async function(e) {
+            async loadTableData(table) {
+                if (!this.supabase) return;
                 try {
-                    const content = e.target.result;
-                    let imported = file.name.endsWith('.json') ? JSON.parse(content) : [];
-                    if(Array.isArray(imported) && imported.length > 0) {
-                        imported.forEach(item => {
-                            questionBank.push({
-                                id: 'q_' + Date.now() + '_' + Math.random().toString(36).substr(2,4),
-                                folder: folder,
-                                text: item.text || item.question || 'Untitled',
-                                options: item.options || [],
-                                correctIndex: item.correctIndex !== undefined ? parseInt(item.correctIndex) : 0,
-                                rationale: item.rationale || 'Imported rationale.'
-                            });
-                        });
-                        await saveAppData();
-                        renderFolders();
-                        renderQuestionBank();
-                        closeImportModal();
-                        showToast(`Successfully imported ${imported.length} questions.`);
-                    } else {
-                        showToast('Invalid file format or empty array.', true);
+                    const { data, error } = await this.supabase.from(table).select('*');
+                    if (!error && data) {
+                        if (table === 'folders') this.folders = data;
+                        if (table === 'questions') this.questions = data;
+                        if (table === 'quizzes') this.quizzes = data;
+                        if (table === 'exam_history') this.examHistory = data;
+                        this.render();
                     }
-                } catch(err) {
-                    showToast('Failed to parse file: ' + err.message, true);
+                } catch (e) {
+                    console.error(`Error loading ${table}:`, e);
                 }
-            };
-            reader.readAsText(file);
-        }
-
-        function renderQuizQuestionSelector() {
-            const container = document.getElementById('quizQuestionSelector');
-            const folderFilter = document.getElementById('createQuizFolderFilter');
-            folderFilter.innerHTML = '<option value="ALL">All Folders</option>';
-            folderList.forEach(f => {
-                const opt = document.createElement('option');
-                opt.value = f;
-                opt.innerText = f;
-                folderFilter.appendChild(opt);
-            });
-
-            container.innerHTML = '';
-            const selectedFolderVal = folderFilter.value;
-            const filtered = selectedFolderVal === 'ALL' ? questionBank : questionBank.filter(q => q.folder === selectedFolderVal);
-
-            if(filtered.length === 0) {
-                container.innerHTML = '<p class="text-xs text-slate-400 py-4 text-center">No questions found in question bank.</p>';
-                return;
             }
 
-            filtered.forEach(q => {
-                const item = document.createElement('label');
-                item.className = 'flex items-start space-x-3 p-2 bg-white rounded border border-slate-200 hover:bg-slate-100 cursor-pointer text-xs';
-                item.innerHTML = `
-                    <input type="checkbox" name="quizQuestionCb" value="${q.id}" class="mt-0.5 accent-brand-600 rounded">
-                    <div>
-                        <span class="font-bold text-slate-800">[${escapeHtml(q.folder)}]</span>
-                        <span class="text-slate-700 ml-1">${escapeHtml(q.text)}</span>
+            async loadAppConfig() {
+                if (!this.supabase) return;
+                try {
+                    const { data } = await this.supabase.from('app_config').select('*').eq('key', 'passcode').single();
+                    if (data && data.value) {
+                        this.passcode = data.value;
+                    }
+                } catch (e) {
+                    // Config might not exist yet
+                }
+            }
+
+            // LocalStorage Save Helpers
+            saveLocal(table) {
+                if (table === 'folders') localStorage.setItem('coma_folders', JSON.stringify(this.folders));
+                if (table === 'questions') localStorage.setItem('coma_questions', JSON.stringify(this.questions));
+                if (table === 'quizzes') localStorage.setItem('coma_quizzes', JSON.stringify(this.quizzes));
+                if (table === 'exam_history') localStorage.setItem('coma_exam_history', JSON.stringify(this.examHistory));
+            }
+
+            // Granular Upserts (No-Overwrite Logic)
+            async upsertItem(table, item) {
+                // Update local array first
+                const targetArray = this[table];
+                const existingIndex = targetArray.findIndex(x => x.id === item.id);
+                if (existingIndex >= 0) {
+                    targetArray[existingIndex] = item;
+                } else {
+                    targetArray.push(item);
+                }
+                this.saveLocal(table);
+
+                if (this.supabase) {
+                    try {
+                        const { error } = await this.supabase.from(table).upsert(item);
+                        if (error) throw error;
+                        this.toast('Sync completed successfully', 'success');
+                    } catch (err) {
+                        console.error(`Supabase upsert error on ${table}:`, err);
+                        this.toast('Saved locally (Supabase Sync Error)', 'warning');
+                    }
+                } else {
+                    this.toast('Saved locally', 'info');
+                }
+                this.render();
+            }
+
+            async deleteItem(table, id) {
+                if (this.role !== 'instructor') {
+                    this.toast('Admin authorization required', 'error');
+                    return;
+                }
+                this[table] = this[table].filter(x => x.id !== id);
+                this.saveLocal(table);
+
+                if (this.supabase) {
+                    try {
+                        const { error } = await this.supabase.from(table).delete().eq('id', id);
+                        if (error) throw error;
+                        this.toast('Deleted from database', 'success');
+                    } catch (err) {
+                        console.error(`Supabase delete error on ${table}:`, err);
+                        this.toast('Deleted locally', 'warning');
+                    }
+                } else {
+                    this.toast('Deleted locally', 'info');
+                }
+                this.render();
+            }
+
+            // Navigation & Mode Switching
+            navigate(view) {
+                if ((view === 'settings' || view === 'questions') && this.role !== 'instructor') {
+                    this.toast('Admin Mode required to access this section', 'error');
+                    return;
+                }
+
+                if (this.activeQuizState && view !== 'quizzes') {
+                    if (!confirm("An assessment is currently in progress. Navigating away will cancel your attempt. Proceed?")) {
+                        return;
+                    }
+                    this.activeQuizState = null;
+                }
+                this.currentView = view;
+                document.querySelectorAll('.nav-tab').forEach(btn => {
+                    btn.className = 'nav-tab bg-slate-100 text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-xl font-semibold text-sm transition flex items-center space-x-2';
+                });
+                const activeTab = document.getElementById(`tab-${view}`);
+                if (activeTab) {
+                    activeTab.className = 'nav-tab active bg-theme text-white px-4 py-2 rounded-xl font-semibold text-sm transition flex items-center space-x-2 shadow-sm';
+                }
+                this.render();
+            }
+
+            toggleRoleModal() {
+                if (this.role === 'instructor') {
+                    this.role = 'student';
+                    this.toast('Switched to Student Mode', 'info');
+                    this.updateRoleUI();
+                    this.navigate('quizzes');
+                } else {
+                    const html = `
+                        <div class="p-2">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-lock text-theme me-2"></i>Instructor Authentication</h3>
+                                <button onclick="app.closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                            </div>
+                            <p class="text-sm text-slate-600 mb-4">Enter the administrative passcode to unlock question banking, quiz setup, and cross-device synchronization controls.</p>
+                            <input type="password" id="passcodeInput" placeholder="Enter Passcode" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus-ring mb-4 text-base" />
+                            <div class="flex justify-end space-x-2">
+                                <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border border-slate-300 font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
+                                <button onclick="app.verifyPasscode()" class="px-4 py-2 rounded-xl bg-theme text-white font-bold hover:bg-theme-dark">Authenticate</button>
+                            </div>
+                        </div>
+                    `;
+                    this.showModal(html);
+                    setTimeout(() => document.getElementById('passcodeInput')?.focus(), 100);
+                }
+            }
+
+            verifyPasscode() {
+                const entered = document.getElementById('passcodeInput')?.value;
+                if (entered === this.passcode) {
+                    this.role = 'instructor';
+                    this.closeModal();
+                    this.toast('Instructor Access Granted', 'success');
+                    this.updateRoleUI();
+                } else {
+                    this.toast('Incorrect Passcode. Returning to Student Mode.', 'error');
+                    this.role = 'student';
+                    this.updateRoleUI();
+                    this.closeModal();
+                }
+            }
+
+            updateRoleUI() {
+                document.getElementById('roleLabel').textContent = this.role === 'instructor' ? 'Instructor Mode' : 'Student Mode';
+                const instructorOnlyEls = document.querySelectorAll('.instructor-only');
+                instructorOnlyEls.forEach(el => {
+                    if (this.role === 'instructor') el.classList.remove('hidden');
+                    else el.classList.add('hidden');
+                });
+            }
+
+            // View Renderers
+            render() {
+                this.updateRoleUI();
+                const container = document.getElementById('viewContainer');
+                if (!container) return;
+
+                if (this.activeQuizState) {
+                    container.innerHTML = this.renderActiveQuizView();
+                    return;
+                }
+
+                switch (this.currentView) {
+                    case 'quizzes':
+                        container.innerHTML = this.renderQuizzesView();
+                        break;
+                    case 'history':
+                        container.innerHTML = this.renderHistoryView();
+                        break;
+                    case 'questions':
+                        if (this.role !== 'instructor') {
+                            this.navigate('quizzes');
+                            return;
+                        }
+                        container.innerHTML = this.renderQuestionsView();
+                        break;
+                    case 'settings':
+                        if (this.role !== 'instructor') {
+                            this.navigate('quizzes');
+                            return;
+                        }
+                        container.innerHTML = this.renderSettingsView();
+                        break;
+                    default:
+                        container.innerHTML = this.renderQuizzesView();
+                }
+            }
+
+            // 1. QUIZZES VIEW
+            renderQuizzesView() {
+                const now = new Date().toISOString();
+                return `
+                    <div class="space-y-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800">Available Assessments</h2>
+                                <p class="text-xs text-slate-500 mt-1">Select an active quiz to start your exam session.</p>
+                            </div>
+                            ${this.role === 'instructor' ? `
+                                <button onclick="app.openQuizModal()" class="bg-theme text-white font-bold px-4 py-2.5 rounded-xl shadow hover:bg-theme-dark transition flex items-center space-x-2 text-sm">
+                                    <i class="fa-solid fa-plus"></i><span>Create New Quiz</span>
+                                </button>
+                            ` : ''}
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            ${this.quizzes.length === 0 ? `
+                                <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300 text-slate-400">
+                                    <i class="fa-solid fa-file-pen text-4xl mb-3"></i>
+                                    <p class="text-base font-semibold">No Quizzes Configured</p>
+                                    <p class="text-xs">Instructors can create quizzes from the Question Bank.</p>
+                                </div>
+                            ` : this.quizzes.map(q => {
+                                const isExpired = q.expires_at && new Date(q.expires_at) < new Date();
+                                const folder = this.folders.find(f => f.id === q.folder_id);
+                                const qCount = (q.question_ids || []).length;
+                                return `
+                                    <div class="bg-white rounded-2xl border ${isExpired ? 'border-red-200 bg-red-50/20' : 'border-slate-200/80'} p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+                                        <div>
+                                            <div class="flex items-center justify-between mb-2">
+                                                <span class="text-xs font-bold px-2.5 py-1 rounded-full ${isExpired ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-800'}">
+                                                    ${isExpired ? 'Expired' : 'Active'}
+                                                </span>
+                                                <span class="text-xs text-slate-500 font-medium"><i class="fa-solid fa-folder me-1"></i>${folder ? folder.name : 'General'}</span>
+                                            </div>
+                                            <h3 class="text-lg font-bold text-slate-800 leading-snug mb-2">${q.title}</h3>
+                                            <div class="flex items-center space-x-4 text-xs text-slate-500 mb-4">
+                                                <span><i class="fa-solid fa-circle-question me-1"></i>${qCount} Questions</span>
+                                                <span><i class="fa-solid fa-clock me-1"></i>${q.time_limit_mins} Mins</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                                            ${this.role === 'instructor' ? `
+                                                <div class="flex space-x-2">
+                                                    <button onclick="app.openReactivateModal('${q.id}')" class="p-2 text-slate-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Reactivate / Extend Deadline">
+                                                        <i class="fa-solid fa-calendar-plus"></i>
+                                                    </button>
+                                                    <button onclick="app.deleteItem('quizzes', '${q.id}')" class="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete Quiz">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            ` : '<div></div>'}
+
+                                            <button onclick="app.startQuizVerification('${q.id}')" ${isExpired ? 'disabled' : ''} class="${isExpired ? 'bg-slate-300 cursor-not-allowed text-slate-500' : 'bg-theme hover:bg-theme-dark text-white'} px-4 py-2 rounded-xl text-xs font-bold shadow transition">
+                                                ${isExpired ? 'Closed' : 'Start Assessment'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
                     </div>
                 `;
-                container.appendChild(item);
-            });
-        }
-
-        function selectAllQuizQuestions(check) {
-            const checkboxes = document.getElementsByName('quizQuestionCb');
-            checkboxes.forEach(cb => cb.checked = check);
-        }
-
-        async function handleCreateQuiz(e) {
-            e.preventDefault();
-            const title = document.getElementById('quizTitle').value.trim();
-            const desc = document.getElementById('quizDesc').value.trim();
-            const duration = parseInt(document.getElementById('quizDuration').value) || 15;
-            const category = document.getElementById('quizCategory').value.trim() || 'General';
-            const startDT = document.getElementById('quizStartDT').value;
-            const endDT = document.getElementById('quizEndDT').value;
-
-            const checkboxes = document.getElementsByName('quizQuestionCb');
-            const selectedQIds = [];
-            checkboxes.forEach(cb => { if(cb.checked) selectedQIds.push(cb.value); });
-
-            if(selectedQIds.length === 0) {
-                showToast('Please select at least one question.', true);
-                return;
             }
 
-            const newQuiz = {
-                id: 'quiz_' + Date.now(),
-                title: title,
-                description: desc,
-                category: category,
-                duration: duration,
-                startDT: startDT,
-                endDT: endDT,
-                questionIds: selectedQIds
+            // MANDATORY STUDENT VERIFICATION BEFORE QUIZ
+            startQuizVerification(quizId) {
+                const quiz = this.quizzes.find(q => q.id === quizId);
+                if (!quiz) return;
+
+                const html = `
+                    <div class="p-2">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-id-card text-theme me-2"></i>Student Identification Verification</h3>
+                            <button onclick="app.closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4">Please provide your verified details before beginning <strong>${quiz.title}</strong>.</p>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Full Name *</label>
+                                <input type="text" id="studentNameInput" placeholder="e.g. Ibrahim Kargbo" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus-ring text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Student ID / Registration No. *</label>
+                                <input type="text" id="studentIdInput" placeholder="e.g. COMAHS-MED-2026-042" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus-ring text-sm" />
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end space-x-2">
+                            <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border border-slate-300 font-semibold text-slate-600 hover:bg-slate-50 text-xs">Cancel</button>
+                            <button onclick="app.launchQuiz('${quizId}')" class="px-5 py-2.5 rounded-xl bg-theme text-white font-bold hover:bg-theme-dark text-xs shadow">Begin Assessment</button>
+                        </div>
+                    </div>
+                `;
+                this.showModal(html);
+            }
+
+            launchQuiz(quizId) {
+                const name = document.getElementById('studentNameInput')?.value.trim();
+                const studentId = document.getElementById('studentIdInput')?.value.trim();
+
+                if (!name || !studentId) {
+                    this.toast('Full Name and Student ID are required to start!', 'error');
+                    return;
+                }
+
+                const quiz = this.quizzes.find(q => q.id === quizId);
+                if (!quiz) return;
+
+                const qList = (quiz.question_ids || []).map(qid => this.questions.find(q => q.id === qid)).filter(Boolean);
+
+                if (qList.length === 0) {
+                    this.toast('This quiz contains no questions yet.', 'warning');
+                    this.closeModal();
+                    return;
+                }
+
+                this.activeQuizState = {
+                    quizId: quiz.id,
+                    quizTitle: quiz.title,
+                    studentName: name,
+                    studentId: studentId,
+                    questions: qList,
+                    answers: {}, // questionId -> selectedIndex
+                    currentIndex: 0,
+                    timeRemainingSeconds: (quiz.time_limit_mins || 10) * 60,
+                    timerInterval: null
+                };
+
+                this.closeModal();
+                this.startQuizTimer();
+                this.render();
+            }
+
+            startQuizTimer() {
+                if (!this.activeQuizState) return;
+                this.activeQuizState.timerInterval = setInterval(() => {
+                    if (!this.activeQuizState) return;
+                    this.activeQuizState.timeRemainingSeconds--;
+                    const timerEl = document.getElementById('activeQuizTimer');
+                    if (timerEl) {
+                        timerEl.textContent = this.formatTime(this.activeQuizState.timeRemainingSeconds);
+                    }
+                    if (this.activeQuizState.timeRemainingSeconds <= 0) {
+                        clearInterval(this.activeQuizState.timerInterval);
+                        this.toast('Time limit reached! Auto-submitting assessment.', 'warning');
+                        this.submitActiveQuiz();
+                    }
+                }, 1000);
+            }
+
+            formatTime(seconds) {
+                const m = Math.floor(seconds / 60);
+                const s = seconds % 60;
+                return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            }
+
+            renderActiveQuizView() {
+                const state = this.activeQuizState;
+                const currentQ = state.questions[state.currentIndex];
+                const selectedOption = state.answers[currentQ.id];
+
+                return `
+                    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-md p-6 max-w-4xl mx-auto">
+                        <!-- HEADER WITH STUDENT INFO & TIMER -->
+                        <div class="flex flex-col md:flex-row items-center justify-between pb-4 mb-6 border-b border-slate-100 gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800">${state.quizTitle}</h2>
+                                <div class="flex items-center space-x-3 text-xs text-slate-500 mt-1">
+                                    <span class="font-semibold text-slate-700"><i class="fa-solid fa-user me-1 text-theme"></i>${state.studentName}</span>
+                                    <span>|</span>
+                                    <span><i class="fa-solid fa-id-badge me-1"></i>${state.studentId}</span>
+                                </div>
+                            </div>
+                            <div class="bg-amber-50 border border-amber-200 text-amber-800 font-mono font-bold px-4 py-2 rounded-xl text-lg flex items-center space-x-2">
+                                <i class="fa-solid fa-clock animate-pulse"></i>
+                                <span id="activeQuizTimer">${this.formatTime(state.timeRemainingSeconds)}</span>
+                            </div>
+                        </div>
+
+                        <!-- QUESTION PROGRESS -->
+                        <div class="flex items-center justify-between text-xs font-semibold text-slate-500 mb-4">
+                            <span>Question ${state.currentIndex + 1} of ${state.questions.length}</span>
+                            <span>${Math.round(((state.currentIndex + 1) / state.questions.length) * 100)}% Completed</span>
+                        </div>
+
+                        <!-- QUESTION PROMPT -->
+                        <div class="bg-slate-50 p-5 rounded-2xl mb-6 border border-slate-100">
+                            <h3 class="text-base font-bold text-slate-800 leading-relaxed">${currentQ.question}</h3>
+                        </div>
+
+                        <!-- OPTIONS -->
+                        <div class="space-y-3 mb-8">
+                            ${currentQ.options.map((opt, idx) => {
+                                const isChecked = selectedOption === idx;
+                                return `
+                                    <button onclick="app.selectQuizOption('${currentQ.id}', ${idx})" class="w-full text-left p-4 rounded-xl border ${isChecked ? 'border-theme bg-theme-accent ring-2 ring-emerald-500/30' : 'border-slate-200 hover:bg-slate-50'} transition flex items-center space-x-3">
+                                        <span class="w-7 h-7 rounded-full ${isChecked ? 'bg-theme text-white' : 'bg-slate-100 text-slate-600'} flex items-center justify-center text-xs font-bold shrink-0">
+                                            ${String.fromCharCode(65 + idx)}
+                                        </span>
+                                        <span class="text-sm text-slate-700 font-medium">${opt}</span>
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+
+                        <!-- NAVIGATION & SUBMIT -->
+                        <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                            <button onclick="app.prevQuizQuestion()" ${state.currentIndex === 0 ? 'disabled class="opacity-50 cursor-not-allowed px-4 py-2 rounded-xl border text-xs font-bold text-slate-400"' : 'class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50"'}>
+                                Previous
+                            </button>
+                            
+                            ${state.currentIndex === state.questions.length - 1 ? `
+                                <button onclick="app.submitActiveQuiz()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow transition">
+                                    Submit Exam
+                                </button>
+                            ` : `
+                                <button onclick="app.nextQuizQuestion()" class="bg-theme hover:bg-theme-dark text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow transition">
+                                    Next Question
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }
+
+            selectQuizOption(qId, optionIdx) {
+                if (!this.activeQuizState) return;
+                this.activeQuizState.answers[qId] = optionIdx;
+                this.render();
+            }
+
+            prevQuizQuestion() {
+                if (this.activeQuizState && this.activeQuizState.currentIndex > 0) {
+                    this.activeQuizState.currentIndex--;
+                    this.render();
+                }
+            }
+
+            nextQuizQuestion() {
+                if (this.activeQuizState && this.activeQuizState.currentIndex < this.activeQuizState.questions.length - 1) {
+                    this.activeQuizState.currentIndex++;
+                    this.render();
+                }
+            }
+
+            async submitActiveQuiz() {
+                if (!this.activeQuizState) return;
+                clearInterval(this.activeQuizState.timerInterval);
+
+                const state = this.activeQuizState;
+                let score = 0;
+                const total = state.questions.length;
+
+                const detailedResults = state.questions.map(q => {
+                    const studentAns = state.answers[q.id];
+                    const isCorrect = studentAns === q.correct_index;
+                    if (isCorrect) score++;
+                    return {
+                        question_id: q.id,
+                        question_text: q.question,
+                        options: q.options,
+                        student_answer_idx: studentAns,
+                        correct_answer_idx: q.correct_index,
+                        rationale: q.rationale,
+                        is_correct: isCorrect
+                    };
+                });
+
+                const percentage = Math.round((score / total) * 100);
+
+                const attemptRecord = {
+                    id: 'attempt_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+                    quiz_id: state.quizId,
+                    quiz_title: state.quizTitle,
+                    student_name: state.studentName,
+                    student_id: state.studentId,
+                    score: score,
+                    total_questions: total,
+                    percentage: percentage,
+                    submitted_at: new Date().toISOString(),
+                    details: detailedResults
+                };
+
+                // Clear active quiz state
+                this.activeQuizState = null;
+
+                // Non-overwriting granular insert into exam_history
+                await this.upsertItem('exam_history', attemptRecord);
+
+                this.toast('Exam submitted successfully!', 'success');
+                this.navigate('history');
+                this.openAttemptModal(attemptRecord.id);
+            }
+
+            // 2. ATTEMPT HISTORY VIEW
+            renderHistoryView() {
+                return `
+                    <div class="space-y-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800">Student Exam Attempts</h2>
+                                <p class="text-xs text-slate-500 mt-1">Non-overwriting granular student attempt history.</p>
+                            </div>
+                            <input type="text" id="historySearch" oninput="app.renderHistoryList()" placeholder="Search by student or quiz..." class="px-4 py-2 rounded-xl border border-slate-300 text-xs focus-ring w-full sm:w-64" />
+                        </div>
+
+                        <div id="historyListContainer" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                            <!-- Injected by renderHistoryList -->
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderHistoryList() {
+                const container = document.getElementById('historyListContainer');
+                if (!container) return;
+
+                const search = (document.getElementById('historySearch')?.value || '').toLowerCase();
+                const filtered = this.examHistory.filter(h => 
+                    (h.student_name || '').toLowerCase().includes(search) ||
+                    (h.student_id || '').toLowerCase().includes(search) ||
+                    (h.quiz_title || '').toLowerCase().includes(search)
+                ).sort((a,b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+
+                if (filtered.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-12 text-slate-400">
+                            <i class="fa-solid fa-clock-rotate-left text-4xl mb-3"></i>
+                            <p class="text-base font-semibold">No Exam Attempts Recorded</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase font-bold tracking-wider">
+                                    <th class="p-4">Student</th>
+                                    <th class="p-4">Quiz Title</th>
+                                    <th class="p-4">Submitted</th>
+                                    <th class="p-4">Score</th>
+                                    <th class="p-4 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm">
+                                ${filtered.map(h => `
+                                    <tr class="hover:bg-slate-50/50 transition">
+                                        <td class="p-4">
+                                            <div class="font-bold text-slate-800">${h.student_name}</div>
+                                            <div class="text-xs text-slate-400">${h.student_id}</div>
+                                        </td>
+                                        <td class="p-4 font-medium text-slate-700">${h.quiz_title}</td>
+                                        <td class="p-4 text-xs text-slate-500">${new Date(h.submitted_at).toLocaleString()}</td>
+                                        <td class="p-4">
+                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${h.percentage >= 70 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">
+                                                ${h.score}/${h.total_questions} (${h.percentage}%)
+                                            </span>
+                                        </td>
+                                        <td class="p-4 text-right">
+                                            <button onclick="app.openAttemptModal('${h.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+                                                Review Rationale
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            openAttemptModal(attemptId) {
+                const item = this.examHistory.find(h => h.id === attemptId);
+                if (!item) return;
+
+                const details = item.details || [];
+
+                const html = `
+                    <div class="p-2">
+                        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-800">Assessment Rationale Review</h3>
+                                <p class="text-xs text-slate-500">${item.quiz_title} — ${item.student_name} (${item.student_id})</p>
+                            </div>
+                            <button onclick="app.closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                        </div>
+
+                        <div class="bg-slate-50 p-4 rounded-xl flex items-center justify-between mb-6 text-xs font-semibold">
+                            <span>Score: ${item.score}/${item.total_questions}</span>
+                            <span class="text-base font-bold ${item.percentage >= 70 ? 'text-emerald-600' : 'text-red-600'}">${item.percentage}%</span>
+                            <span>Submitted: ${new Date(item.submitted_at).toLocaleTimeString()}</span>
+                        </div>
+
+                        <div class="space-y-6 max-h-[60vh] overflow-y-auto pr-1">
+                            ${details.map((d, i) => `
+                                <div class="p-4 rounded-2xl border ${d.is_correct ? 'border-emerald-200 bg-emerald-50/10' : 'border-red-200 bg-red-50/10'}">
+                                    <p class="font-bold text-sm text-slate-800 mb-3">${i + 1}. ${d.question_text}</p>
+                                    <div class="space-y-1.5 mb-3 text-xs">
+                                        ${d.options.map((opt, idx) => {
+                                            const isSelected = d.student_answer_idx === idx;
+                                            const isCorrect = d.correct_answer_idx === idx;
+                                            let badgeClass = 'text-slate-600';
+                                            if (isCorrect) badgeClass = 'text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded';
+                                            if (isSelected && !isCorrect) badgeClass = 'text-red-700 font-bold bg-red-100 px-2 py-0.5 rounded';
+
+                                            return `
+                                                <div class="flex items-center justify-between ${badgeClass}">
+                                                    <span>${String.fromCharCode(65 + idx)}. ${opt}</span>
+                                                    ${isCorrect ? '<i class="fa-solid fa-check text-emerald-600"></i>' : ''}
+                                                    ${isSelected && !isCorrect ? '<i class="fa-solid fa-xmark text-red-600"></i>' : ''}
+                                                </div>
+                                            `;
+                                        }).join('')}
+                                    </div>
+                                    <div class="bg-white p-3 rounded-xl border border-slate-200 text-xs text-slate-600">
+                                        <strong class="text-slate-800">Rationale:</strong> ${d.rationale || 'No rationale provided.'}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                this.showModal(html);
+            }
+
+            // 3. QUESTION BANK VIEW (INSTRUCTOR ONLY)
+            renderQuestionsView() {
+                if (this.role !== 'instructor') return '';
+                return `
+                    <div class="space-y-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800">Question Bank & Folders</h2>
+                                <p class="text-xs text-slate-500 mt-1">Manage individual items for granular synchronization.</p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button onclick="app.openFolderModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-2 rounded-xl text-xs transition flex items-center space-x-1">
+                                    <i class="fa-solid fa-folder-plus"></i><span>New Folder</span>
+                                </button>
+                                <button onclick="app.openBulkUploadModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-2 rounded-xl text-xs transition flex items-center space-x-1">
+                                    <i class="fa-solid fa-file-import"></i><span>Bulk Upload</span>
+                                </button>
+                                <button onclick="app.openQuestionModal()" class="bg-theme text-white font-bold px-4 py-2 rounded-xl shadow hover:bg-theme-dark transition text-xs flex items-center space-x-1">
+                                    <i class="fa-solid fa-plus"></i><span>Add Question</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            ${this.questions.length === 0 ? `
+                                <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300 text-slate-400">
+                                    <p>No questions created yet.</p>
+                                </div>
+                            ` : this.questions.map(q => {
+                                const folder = this.folders.find(f => f.id === q.folder_id);
+                                return `
+                                    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+                                        <div>
+                                            <span class="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
+                                                ${folder ? folder.name : 'Uncategorized'}
+                                            </span>
+                                            <p class="font-bold text-sm text-slate-800 my-2 line-clamp-3">${q.question}</p>
+                                            <p class="text-xs text-slate-500 line-clamp-2 mb-3"><strong>Rationale:</strong> ${q.rationale}</p>
+                                        </div>
+                                        <div class="flex items-center justify-end space-x-2 border-t border-slate-100 pt-3">
+                                            <button onclick="app.openQuestionModal('${q.id}')" class="p-1.5 text-slate-500 hover:text-slate-800"><i class="fa-solid fa-pen-to-square"></i></button>
+                                            <button onclick="app.deleteItem('questions', '${q.id}')" class="p-1.5 text-slate-500 hover:text-red-600"><i class="fa-solid fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // MODALS FOR CRUD (RESTRICTED TO INSTRUCTOR)
+            openFolderModal() {
+                if (this.role !== 'instructor') {
+                    this.toast('Admin authorization required', 'error');
+                    return;
+                }
+                const html = `
+                    <div class="p-2">
+                        <h3 class="text-lg font-bold text-slate-800 mb-4">Create Specialty Folder</h3>
+                        <div class="space-y-3 mb-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Folder Name *</label>
+                                <input type="text" id="folderNameInput" class="w-full px-4 py-2 rounded-xl border border-slate-300 text-sm focus-ring" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Description</label>
+                                <input type="text" id="folderDescInput" class="w-full px-4 py-2 rounded-xl border border-slate-300 text-sm focus-ring" />
+                            </div>
+                        </div>
+                        <div class="flex justify-end space-x-2">
+                            <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border text-xs font-semibold">Cancel</button>
+                            <button onclick="app.saveFolder()" class="px-4 py-2 rounded-xl bg-theme text-white text-xs font-bold">Save Folder</button>
+                        </div>
+                    </div>
+                `;
+                this.showModal(html);
+            }
+
+            async saveFolder() {
+                if (this.role !== 'instructor') {
+                    this.toast('Admin authorization required', 'error');
+                    return;
+                }
+                const name = document.getElementById('folderNameInput')?.value.trim();
+                const desc = document.getElementById('folderDescInput')?.value.trim();
+                if (!name) return this.toast('Folder name required', 'error');
+
+                const folder = {
+                    id: 'f_' + Date.now(),
+                    name: name,
+                    description: desc
+                };
+                await this.upsertItem('folders', folder);
+                this.closeModal();
+            }
+
+            openQuestionModal(qId = null) {
+                if (this.role !== 'instructor') {
+                    this.toast('Admin authorization required', 'error');
+                    return;
+                }
+                const q = this.questions.find(x => x.id === qId) || {
+                    folder_id: this.folders[0]?.id || '',
+                    question: '',
+                    options: ['', '', '', ''],
+                    correct_index: 0,
+                    rationale: ''
+                };
+
+                const html = `
+                    <div class="p-2">
+                        <h3 class="text-lg font-bold text-slate-800 mb-4">${qId ? 'Edit Question' : 'Add New Question'}</h3>
+                        <div class="space-y-4 mb-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Folder</label>
+                                <select id="qFolderInput" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus-ring">
+                                    ${this.folders.map(f => `<option value="${f.id}" ${q.folder_id === f.id ? 'selected' : ''}>${f.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Question Text *</label>
+                                <textarea id="qTextInput" rows="3" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus-ring">${q.question}</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Options & Correct Answer</label>
+                                <div class="space-y-2">
+                                    ${[0, 1, 2, 3].map(i => `
+                                        <div class="flex items-center space-x-2">
+                                            <input type="radio" name="correctOpt" value="${i}" ${q.correct_index === i ? 'checked' : ''} />
+                                            <input type="text" id="qOpt${i}" value="${q.options[i] || ''}" placeholder="Option ${String.fromCharCode(65 + i)}" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs focus-ring" />
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Rationale</label>
+                                <textarea id="qRationaleInput" rows="2" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus-ring">${q.rationale}</textarea>
+                            </div>
+                        </div>
+                        <div class="flex justify-end space-x-2">
+                            <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border text-xs font-semibold">Cancel</button>
+                            <button onclick="app.saveQuestion('${qId || ''}')" class="px-4 py-2 rounded-xl bg-theme text-white text-xs font-bold">Save Question</button>
+                        </div>
+                    </div>
+                `;
+                this.showModal(html);
+            }
+
+            async saveQuestion(qId) {
+                if (this.role !== 'instructor') {
+                    this.toast('Admin authorization required', 'error');
+                    return;
+                }
+                const folder_id = document.getElementById('qFolderInput')?.value;
+                const question = document.getElementById('qTextInput')?.value.trim();
+                const rationale = document.getElementById('qRationaleInput')?.value.trim();
+                const options = [
+                    document.getElementById('qOpt0')?.value.trim(),
+                    document.getElementById('qOpt1')?.value.trim(),
+                    document.getElementById('qOpt2')?.value.trim(),
+                    document.getElementById('qOpt3')?.value.trim()
+                ];
+                const correct_index = parseInt(document.querySelector('input[name="correctOpt"]:checked')?.value || '0');
+
+                if (!question || options.some(o => !o)) return this.toast('Please fill all question fields', 'error');
+
+                const item = {
+                    id: qId || 'q_' + Date.now(),
+                    folder_id,
+                    question,
+                    options,
+                    correct_index,
+                    rationale
+                };
+
+                await this.upsertItem('questions', item);
+                this.closeModal();
+            }
+
+            openQuizModal() {
+                if (this.role !== 'instructor') {
+                    this.toast('Admin authorization required', 'error');
+                    return;
+                }
+                const html = `
+                    <div class="p-2">
+                        <h3 class="text-lg font-bold text-slate-800 mb-4">Create Assessment</h3>
+                        <div class="space-y-4 mb-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Assessment Title *</label>
+                                <input type="text" id="qzTitleInput" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus-ring" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Time Limit (Minutes)</label>
+                                <input type="number" id="qzTimeInput" value="15" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus-ring" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Select Questions</label>
+                                <div class="max-h-48 overflow-y-auto border border-slate-200 rounded-xl p-3 space-y-2">
+                                    ${this.questions.map(q => `
+                                        <label class="flex items-center space-x-2 text-xs">
+                                            <input type="checkbox" name="quizQuestions" value="${q.id}" class="rounded text-theme" />
+                                            <span class="truncate">${q.question}</span>
+                                        </label>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-end space-x-2">
+                            <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border text-xs font-semibold">Cancel</button>
+                            <button onclick="app.saveQuiz()" class="px-4 py-2 rounded-xl bg-theme text-white text-xs font-bold">Publish Quiz</button>
+                        </div>
+                    </div>
+                `;
+                this.showModal(html);
+            }
+
+            async saveQuiz() {
+                if (this.role !== 'instructor') {
+                    this.toast('Admin authorization required', 'error');
+                    return;
+                }
+                const title = document.getElementById('qzTitleInput')?.value.trim();
+                const time_limit_mins = parseInt(document.getElementById('qzTimeInput')?.value || '15');
+                const selected = Array.from(document.querySelectorAll('input[name="quizQuestions"]:checked')).map(cb => cb.value);
+
+                if (!title || selected.length === 0) return this.toast('Title and at least one question required', 'error');
+
+                const item = {
+                    id: 'quiz_' + Date.now(),
+                    title,
+                    folder_id: this.questions.find(q => q.id === selected[0])?.folder_id || '',
+                    time_limit_mins,
+                    expires_at: new Date(Date.now() + 86400000 * 7).toISOString(),
+                    question_ids: selected
+                };
+
+                await this.upsertItem('quizzes', item);
+                this.closeModal();
+            }
+
+            openReactivateModal(quizId) {
+                if (this.role !== 'instructor') {
+                    this.toast('Admin authorization required', 'error');
+                    return;
+                }
+                const html = `
+                    <div class="p-2">
+                        <h3 class="text-lg font-bold text-slate-800 mb-4">Extend Quiz Deadline</h3>
+                        <p class="text-xs text-slate-500 mb-4">Choose an extension duration for this assessment.</p>
+                        <div class="grid grid-cols-3 gap-2 mb-4">
+                            <button onclick="app.extendQuiz('${quizId}', 1)" class="p-2 border rounded-xl text-xs font-bold hover:bg-slate-50">+1 Day</button>
+                            <button onclick="app.extendQuiz('${quizId}', 7)" class="p-2 border rounded-xl text-xs font-bold hover:bg-slate-50">+7 Days</button>
+                            <button onclick="app.extendQuiz('${quizId}', 30)" class="p-2 border rounded-xl text-xs font-bold hover:bg-slate-50">+30 Days</button>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Custom Expiration Date</label>
+                            <input type="datetime-local" id="customExpiryInput" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus-ring" />
+                        </div>
+                        <div class="flex justify-end space-x-2 mt-6">
+                            <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border text-xs font-semibold">Cancel</button>
+                            <button onclick="app.applyCustomExpiry('${quizId}')" class="px-4 py-2 rounded-xl bg-theme text-white text-xs font-bold">Apply Date</button>
+                        </div>
+                    </div>
+                `;
+                this.showModal(html);
+            }
+
+            async extendQuiz(quizId, days) {
+                if (this.role !== 'instructor') {
+                    this.toast('Admin authorization required', 'error');
+                    return;
+                }
+                const quiz = this.quizzes.find(q => q.id === quizId);
+                if (!quiz) return;
+                quiz.expires_at = new Date(Date.now() + 86400000 * days).toISOString();
+                await this.upsertItem('quizzes', quiz);
+                this.closeModal();
+            }
+
+            async applyCustomExpiry(quizId) {
+                if (this.role !== 'instructor') {
+                    this.toast('Admin authorization required', 'error');
+                    return;
+                }
+                const val = document.getElementById('customExpiryInput')?.value;
+                if (!val) return;
+                const quiz = this.quizzes.find(q => q.id === quizId);
+                if (!quiz) return;
+                quiz.expires_at = new Date(val).toISOString();
+                await this.upsertItem('quizzes', quiz);
+                this.closeModal();
+            }
+
+            openBulkUploadModal() {
+                if (this.role !== 'instructor') {
+                    this.toast('Admin authorization required', 'error');
+                    return;
+                }
+                const html = `
+                    <div class="p-2">
+                        <h3 class="text-lg font-bold text-slate-800 mb-2">Bulk JSON Import</h3>
+                        <p class="text-xs text-slate-500 mb-4">Paste a JSON array of question objects to import in bulk.</p>
+                        <textarea id="bulkJsonInput" rows="8" placeholder='[{"question": "...", "options": ["A","B","C","D"], "correct_index": 0, "rationale": "..."}]' class="w-full font-mono text-xs p-3 rounded-xl border border-slate-300 focus-ring mb-4"></textarea>
+                        <div class="flex justify-end space-x-2">
+                            <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border text-xs font-semibold">Cancel</button>
+                            <button onclick="app.processBulkImport()" class="px-4 py-2 rounded-xl bg-theme text-white text-xs font-bold">Import Questions</button>
+                        </div>
+                    </div>
+                `;
+                this.showModal(html);
+            }
+
+            async processBulkImport() {
+                if (this.role !== 'instructor') {
+                    this.toast('Admin authorization required', 'error');
+                    return;
+                }
+                try {
+                    const str = document.getElementById('bulkJsonInput')?.value;
+                    const parsed = JSON.parse(str);
+                    if (!Array.isArray(parsed)) throw new Error("JSON must be an array");
+
+                    let count = 0;
+                    for (const item of parsed) {
+                        if (item.question && Array.isArray(item.options)) {
+                            const qObj = {
+                                id: 'q_' + Date.now() + '_' + Math.random().toString(36).substring(2, 5),
+                                folder_id: item.folder_id || this.folders[0]?.id || 'f1',
+                                question: item.question,
+                                options: item.options,
+                                correct_index: item.correct_index || 0,
+                                rationale: item.rationale || ''
+                            };
+                            await this.upsertItem('questions', qObj);
+                            count++;
+                        }
+                    }
+                    this.toast(`Imported ${count} questions successfully`, 'success');
+                    this.closeModal();
+                } catch (e) {
+                    this.toast('Invalid JSON format: ' + e.message, 'error');
+                }
+            }
+
+            // 4. SETTINGS & SQL GUIDE VIEW (INSTRUCTOR ONLY)
+            renderSettingsView() {
+                if (this.role !== 'instructor') return '';
+                return `
+                    <div class="space-y-6">
+                        <!-- SUPABASE CONFIG -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                            <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-plug text-theme me-2"></i>Supabase Database Connection</h2>
+                            <p class="text-xs text-slate-500">Configure your Supabase project credentials to enable item-level real-time cross-device synchronization.</p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Supabase Project URL</label>
+                                    <input type="text" id="sbUrlInput" value="${this.supabaseUrl}" placeholder="https://xyz.supabase.co" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus-ring" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Supabase Anon Key</label>
+                                    <input type="password" id="sbKeyInput" value="${this.supabaseKey}" placeholder="eyJhbG..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus-ring" />
+                                </div>
+                            </div>
+                            <div class="flex justify-end space-x-2 pt-2">
+                                <button onclick="app.saveSupabaseConfig()" class="bg-theme text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-theme-dark transition">
+                                    Save Credentials & Connect
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- PASSCODE MANAGEMENT -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                            <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-key text-theme me-2"></i>Instructor Passcode Settings</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Current Passcode</label>
+                                    <input type="password" id="currPassInput" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus-ring" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">New Passcode</label>
+                                    <input type="password" id="newPassInput" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus-ring" />
+                                </div>
+                            </div>
+                            <div class="flex justify-end pt-2">
+                                <button onclick="app.updatePasscode()" class="bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-slate-900 transition">
+                                    Update Passcode
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- EXACT SQL SETUP INSTRUCTIONS -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-database text-theme me-2"></i>Supabase SQL Schema & RLS Instructions</h2>
+                                <button onclick="app.copySqlInstructions()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition flex items-center space-x-1">
+                                    <i class="fa-solid fa-copy"></i><span>Copy SQL</span>
+                                </button>
+                            </div>
+                            <p class="text-xs text-slate-500">Run this SQL script in your Supabase SQL Editor to create the required tables and allow public read/write access without overwriting whole objects.</p>
+                            
+                            <pre id="sqlBlock" class="bg-slate-900 text-emerald-400 p-4 rounded-xl text-[11px] font-mono overflow-x-auto leading-relaxed selection:bg-emerald-800 select-all">
+-- 1. Create Granular Folders Table
+CREATE TABLE IF NOT EXISTS public.folders (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT
+);
+
+-- 2. Create Granular Questions Table
+CREATE TABLE IF NOT EXISTS public.questions (
+    id TEXT PRIMARY KEY,
+    folder_id TEXT,
+    question TEXT NOT NULL,
+    options JSONB NOT NULL,
+    correct_index INT NOT NULL,
+    rationale TEXT
+);
+
+-- 3. Create Granular Quizzes Table
+CREATE TABLE IF NOT EXISTS public.quizzes (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    folder_id TEXT,
+    time_limit_mins INT DEFAULT 15,
+    expires_at TIMESTAMPTZ,
+    question_ids JSONB
+);
+
+-- 4. Create Exam Attempt History Table (Non-Overwriting)
+CREATE TABLE IF NOT EXISTS public.exam_history (
+    id TEXT PRIMARY KEY,
+    quiz_id TEXT,
+    quiz_title TEXT,
+    student_name TEXT NOT NULL,
+    student_id TEXT NOT NULL,
+    score INT,
+    total_questions INT,
+    percentage INT,
+    submitted_at TIMESTAMPTZ DEFAULT NOW(),
+    details JSONB
+);
+
+-- 5. Create App Config Table
+CREATE TABLE IF NOT EXISTS public.app_config (
+    key TEXT PRIMARY KEY,
+    value TEXT
+);
+
+-- Enable Realtime on tables
+ALTER PUBLICATION supabase_realtime ADD TABLE folders, questions, quizzes, exam_history, app_config;
+
+-- Enable Row Level Security (RLS) & Allow Anonymous Access
+ALTER TABLE public.folders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.questions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quizzes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.exam_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.app_config ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public Read Folders" ON public.folders FOR SELECT USING (true);
+CREATE POLICY "Public Insert/Update Folders" ON public.folders FOR ALL USING (true);
+
+CREATE POLICY "Public Read Questions" ON public.questions FOR SELECT USING (true);
+CREATE POLICY "Public Insert/Update Questions" ON public.questions FOR ALL USING (true);
+
+CREATE POLICY "Public Read Quizzes" ON public.quizzes FOR SELECT USING (true);
+CREATE POLICY "Public Insert/Update Quizzes" ON public.quizzes FOR ALL USING (true);
+
+CREATE POLICY "Public Read History" ON public.exam_history FOR SELECT USING (true);
+CREATE POLICY "Public Insert History" ON public.exam_history FOR ALL USING (true);
+
+CREATE POLICY "Public Config Access" ON public.app_config FOR ALL USING (true);
+                            </pre>
+                        </div>
+                    </div>
+                `;
+            }
+
+            saveSupabaseConfig() {
+                if (this.role !== 'instructor') {
+                    this.toast('Admin authorization required', 'error');
+                    return;
+                }
+                const url = document.getElementById('sbUrlInput')?.value.trim();
+                const key = document.getElementById('sbKeyInput')?.value.trim();
+
+                this.supabaseUrl = url;
+                this.supabaseKey = key;
+
+                localStorage.setItem('coma_sb_url', url);
+                localStorage.setItem('coma_sb_key', key);
+
+                this.initSupabaseClient();
+                this.loadAllData();
+                this.toast('Supabase settings updated', 'success');
+            }
+
+            async updatePasscode() {
+                if (this.role !== 'instructor') {
+                    this.toast('Admin authorization required', 'error');
+                    return;
+                }
+                const curr = document.getElementById('currPassInput')?.value;
+                const next = document.getElementById('newPassInput')?.value;
+
+                if (curr !== this.passcode) {
+                    return this.toast('Current passcode incorrect', 'error');
+                }
+                if (!next || next.length < 4) {
+                    return this.toast('New passcode must be at least 4 characters', 'warning');
+                }
+
+                this.passcode = next;
+                localStorage.setItem('coma_passcode', next);
+
+                if (this.supabase) {
+                    await this.supabase.from('app_config').upsert({ key: 'passcode', value: next });
+                }
+
+                this.toast('Passcode updated successfully', 'success');
+                document.getElementById('currPassInput').value = '';
+                document.getElementById('newPassInput').value = '';
+            }
+
+            copySqlInstructions() {
+                const sqlText = document.getElementById('sqlBlock')?.innerText;
+                if (!sqlText) return;
+
+                const textarea = document.createElement('textarea');
+                textarea.value = sqlText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    this.toast('SQL Script copied to clipboard!', 'success');
+                } catch (err) {
+                    this.toast('Failed to copy', 'error');
+                }
+                document.body.removeChild(textarea);
+            }
+
+            // MODAL & TOAST UTILITIES
+            showModal(htmlContent) {
+                const modalOverlay = document.getElementById('modalOverlay');
+                const modalBody = document.getElementById('modalBody');
+                if (modalOverlay && modalBody) {
+                    modalBody.innerHTML = htmlContent;
+                    modalOverlay.classList.remove('hidden');
+                }
+            }
+
+            closeModal() {
+                const modalOverlay = document.getElementById('modalOverlay');
+                if (modalOverlay) {
+                    modalOverlay.classList.add('hidden');
+                }
+            }
+
+            toast(message, type = 'info') {
+                const container = document.getElementById('toastContainer');
+                if (!container) return;
+
+                const toastEl = document.createElement('div');
+                let bg = 'bg-slate-800 text-white';
+                if (type === 'success') bg = 'bg-emerald-600 text-white';
+                if (type === 'error') bg = 'bg-red-600 text-white';
+                if (type === 'warning') bg = 'bg-amber-600 text-white';
+
+                toastEl.className = `${bg} px-4 py-3 rounded-xl shadow-lg text-xs font-semibold flex items-center space-x-2 transition-all duration-300 transform translate-y-2 pointer-events-auto`;
+                toastEl.innerHTML = `<span>${message}</span>`;
+
+                container.appendChild(toastEl);
+
+                setTimeout(() => {
+                    toastEl.classList.add('opacity-0', 'translate-y-4');
+                    setTimeout(() => toastEl.remove(), 300);
+                }, 3500);
+            }
+        }
+
+        // Initialize application on DOM load
+        let app;
+        window.addEventListener('DOMContentLoaded', () => {
+            app = new MedPortalApp();
+            // Attach render history listener when entering view
+            const origNav = app.navigate.bind(app);
+            app.navigate = (view) => {
+                origNav(view);
+                if (view === 'history') app.renderHistoryList();
             };
-
-            publishedQuizzes.unshift(newQuiz);
-            await saveAppData();
-            document.getElementById('createQuizForm').reset();
-            showToast('Assessment published successfully!');
-            switchTab('quizzes');
-        }
-
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast');
-            const msg = document.getElementById('toastMsg');
-            const icon = document.getElementById('toastIcon');
-            msg.innerText = message;
-            if(isError) {
-                toast.className = toast.className.replace('bg-slate-900', 'bg-red-900').replace('border-slate-700', 'border-red-700');
-                icon.setAttribute('data-lucide', 'alert-circle');
-            } else {
-                toast.className = toast.className.replace('bg-red-900', 'bg-slate-900').replace('border-red-700', 'border-slate-700');
-                icon.setAttribute('data-lucide', 'check-circle');
-            }
-            lucide.createIcons();
-            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
-            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none'); }, 3500);
-        }
-
-        function escapeHtml(str) {
-            if(!str) return '';
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
+        });
     </script>
 </body>
 </html>
