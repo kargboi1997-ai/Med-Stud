@@ -3,1639 +3,1558 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Med~Stud Portal - COMAHS</title>
-    <!-- Tailwind CSS CDN -->
+    <title>QuizLMS - Perfectionist Assessment Portal (Supabase Edition)</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Supabase JS Client v2 -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Inter Font -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        
-        /* CSS Variable Themes */
-        :root {
-            --primary: #059669;
-            --primary-dark: #047857;
-            --primary-light: #d1fae5;
-            --primary-ring: rgba(5, 150, 105, 0.3);
-            --bg-accent: #f0fdf4;
-        }
-        
-        [data-theme="sapphire"] {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --primary-light: #dbeafe;
-            --primary-ring: rgba(37, 99, 235, 0.3);
-            --bg-accent: #eff6ff;
-        }
-        
-        [data-theme="amethyst"] {
-            --primary: #7c3aed;
-            --primary-dark: #6d28d9;
-            --primary-light: #ede9fe;
-            --primary-ring: rgba(124, 58, 237, 0.3);
-            --bg-accent: #f5f3ff;
-        }
-
-        [data-theme="crimson"] {
-            --primary: #dc2626;
-            --primary-dark: #b91c1c;
-            --primary-light: #fee2e2;
-            --primary-ring: rgba(220, 38, 38, 0.3);
-            --bg-accent: #fef2f2;
-        }
-
-        [data-theme="slate"] {
-            --primary: #475569;
-            --primary-dark: #334155;
-            --primary-light: #f1f5f9;
-            --primary-ring: rgba(71, 85, 105, 0.3);
-            --bg-accent: #f8fafc;
-        }
-
-        [data-theme="amber"] {
-            --primary: #d97706;
-            --primary-dark: #b45309;
-            --primary-light: #fef3c7;
-            --primary-ring: rgba(217, 119, 6, 0.3);
-            --bg-accent: #fffbeb;
-        }
-
-        [data-theme="indigo"] {
-            --primary: #4f46e5;
-            --primary-dark: #4338ca;
-            --primary-light: #e0e7ff;
-            --primary-ring: rgba(79, 70, 229, 0.3);
-            --bg-accent: #eef2ff;
-        }
-
-        .bg-theme { background-color: var(--primary); }
-        .bg-theme-dark { background-color: var(--primary-dark); }
-        .bg-theme-light { background-color: var(--primary-light); }
-        .bg-theme-accent { background-color: var(--bg-accent); }
-        .text-theme { color: var(--primary); }
-        .border-theme { border-color: var(--primary); }
-        .focus-ring:focus { outline: none; box-shadow: 0 0 0 3px var(--primary-ring); }
-
-        /* Custom scrollbars */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-emerald-200">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
 
-    <!-- TOP INSCRIPTION HEADER -->
-    <header class="bg-theme text-white shadow-lg transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
-            <div class="flex items-center space-x-3">
-                <div class="bg-white/10 p-2.5 rounded-xl backdrop-blur-md">
-                    <i class="fa-solid me-1 fa-user-md text-2xl text-white"></i>
+    <!-- Top Navigation Header -->
+    <header class="bg-indigo-950 text-white shadow-lg sticky top-0 z-30 border-b border-indigo-800/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+            
+            <!-- Branding Section -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="app.navigateTo('dashboard')">
+                <div class="bg-gradient-to-tr from-indigo-600 to-violet-500 p-2.5 rounded-xl text-white font-black text-xl shadow-md">
+                    <i class="fa-solid fa-graduation-cap"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-extrabold tracking-tight">Med~Stud Portal</h1>
-                    <p class="text-xs text-white/90 font-medium">College of Medicine and Allied Health Sciences (COMAHS)</p>
+                    <div class="flex items-center space-x-2">
+                        <h1 class="font-extrabold text-lg leading-tight tracking-tight text-white">QuizLMS</h1>
+                        <span class="bg-amber-400/20 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-400/30">v2.5 Supabase</span>
+                    </div>
+                    <!-- Creator Identification Subtitle -->
+                    <p class="text-[11px] text-indigo-200 font-medium">
+                        Developed by <span class="text-amber-300 font-bold">Ibrahim Kargbo (Perfectionist)</span> • 2nd Year Medical Student, COMAHS, USL
+                    </p>
                 </div>
             </div>
 
-            <!-- Sync & Role Badges -->
-            <div class="flex items-center space-x-3 text-xs">
-                <div id="syncStatusBadge" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-black/20 text-white border border-white/10" title="Database Syncing State">
+            <!-- Header Controls & Mode Switcher -->
+            <div class="flex items-center justify-between md:justify-end space-x-3">
+                
+                <!-- Cloud Sync Status Indicator -->
+                <div id="syncBadge" onclick="app.openSyncModalIfAdmin()" class="flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-900/80 text-indigo-200 border border-indigo-700/60 cursor-default">
                     <span id="syncDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                    <span id="syncText" class="font-medium">Local Storage Only</span>
+                    <span id="syncStatusText">Local Storage Mode</span>
+                    <i id="syncAdminLock" class="fa-solid fa-lock text-[10px] opacity-60 ml-1"></i>
                 </div>
-                <div class="flex items-center bg-white/15 px-3 py-1.5 rounded-full border border-white/20">
-                    <i class="fa-solid fa-user-shield me-1.5"></i>
-                    <span id="roleLabel" class="font-semibold">Student Mode</span>
+
+                <!-- Current Role Switcher -->
+                <div class="flex items-center bg-indigo-900/90 p-1 rounded-xl border border-indigo-700/60 shadow-inner">
+                    <button id="roleStudentBtn" onclick="app.switchRole('student')" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-indigo-600 text-white shadow-sm">
+                        <i class="fa-solid fa-user-graduate mr-1"></i> Student
+                    </button>
+                    <button id="roleAdminBtn" onclick="app.switchRole('admin')" class="px-3 py-1 rounded-lg text-xs font-bold text-indigo-300 hover:text-white transition">
+                        <i class="fa-solid fa-user-shield mr-1"></i> Admin
+                    </button>
                 </div>
-                <button id="toggleModeBtn" onclick="app.toggleRoleModal()" class="bg-white text-slate-800 hover:bg-slate-100 font-bold px-3 py-1.5 rounded-full shadow transition-all duration-200 active:scale-95">
-                    Switch Mode
-                </button>
             </div>
+        </div>
+
+        <!-- Banner for Creator Branding Highlight -->
+        <div class="bg-indigo-900/70 text-indigo-200 text-[11px] py-1 px-4 border-t border-indigo-800/40 text-center font-medium">
+            <span class="text-amber-300 font-semibold"><i class="fa-solid fa-certificate mr-1"></i> Official Portal:</span> Created by <strong>Ibrahim Kargbo (Perfectionist)</strong>, College of Medicine and Allied Health Sciences (COMAHS), University of Sierra Leone.
         </div>
     </header>
 
-    <!-- MAIN CONTAINER -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
+        <!-- STUDENT GATEKEEPING LOGIN VIEW -->
+        <section id="studentLoginGate" class="max-w-md mx-auto my-12 bg-white rounded-2xl shadow-xl border border-slate-200/80 p-8 space-y-6">
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl mx-auto flex items-center justify-center text-2xl font-bold shadow-inner border border-indigo-100">
+                    <i class="fa-solid fa-id-card"></i>
+                </div>
+                <h2 class="text-xl font-bold text-slate-800">Student Portal Entry</h2>
+                <p class="text-xs text-slate-500">Please provide your credentials before accessing published examinations.</p>
+            </div>
 
-        <!-- NAV & CONTROLS BAR -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
-            <!-- Navigation Tabs -->
-            <div class="flex flex-wrap items-center gap-2">
-                <button onclick="app.navigate('quizzes')" id="tab-quizzes" class="nav-tab active bg-theme text-white px-4 py-2 rounded-xl font-semibold text-sm transition flex items-center space-x-2 shadow-sm">
-                    <i class="fa-solid fa-book-open"></i><span>Quizzes & Exams</span>
+            <form onsubmit="event.preventDefault(); app.loginStudent();" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Full Name <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-sm">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <input type="text" id="gateStudentName" required placeholder="e.g. John Doe" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Student ID / Reg No. <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-sm">
+                            <i class="fa-solid fa-hashtag"></i>
+                        </span>
+                        <input type="text" id="gateStudentId" required placeholder="e.g. COMAHS-2024-892" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-sm shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2">
+                    <span>Access Examination Portal</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
                 </button>
-                <button onclick="app.navigate('history')" id="tab-history" class="nav-tab bg-slate-100 text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-xl font-semibold text-sm transition flex items-center space-x-2">
-                    <i class="fa-solid fa-clock-rotate-left"></i><span>Attempt History</span>
+            </form>
+
+            <div class="pt-4 border-t border-slate-100 text-center">
+                <p class="text-[11px] text-slate-400">
+                    Need administrative access? Switch to <button onclick="app.switchRole('admin')" class="text-indigo-600 font-bold hover:underline">Admin Mode</button> using your administrative passcode.
+                </p>
+            </div>
+        </section>
+
+        <!-- STUDENT DASHBOARD VIEW -->
+        <section id="studentDashboardView" class="hidden space-y-6">
+            <!-- Student Profile Header Card -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full text-white font-bold text-lg flex items-center justify-center shadow-md">
+                        <span id="studentAvatarInitials">ST</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h2 class="text-xl font-bold text-slate-800" id="displayStudentName">Student Name</h2>
+                            <span class="bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-bold px-2 py-0.5 rounded-full">Active Session</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-0.5">
+                            Student ID: <span class="font-mono font-bold text-slate-700" id="displayStudentId">ID-000000</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <button onclick="app.logoutStudent()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition flex items-center space-x-1.5 border border-slate-200">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Change / Logout Student</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Published Quizzes Grid -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-slate-800 flex items-center">
+                        <i class="fa-solid fa-clipboard-list text-indigo-600 mr-2"></i> Published Exams & Assessments
+                    </h3>
+                    <span id="publishedCountBadge" class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full">0 Available</span>
+                </div>
+
+                <div id="publishedQuizzesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Dynamic Quizzes -->
+                </div>
+            </div>
+
+            <!-- Student Submission History -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-slate-800 flex items-center">
+                        <i class="fa-solid fa-clock-rotate-left text-indigo-600 mr-2"></i> My Exam History & Attempts
+                    </h3>
+                    <span class="text-xs text-slate-400">All submissions saved individually</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600">
+                        <thead class="bg-slate-50 text-slate-500 uppercase font-semibold text-xs border-b border-slate-200">
+                            <tr>
+                                <th class="p-3">Quiz Title</th>
+                                <th class="p-3">Date & Time</th>
+                                <th class="p-3">Score</th>
+                                <th class="p-3">Percentage</th>
+                                <th class="p-3">Status</th>
+                                <th class="p-3 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentHistoryTableBody" class="divide-y divide-slate-100">
+                            <!-- Dynamic History Rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ADMIN DASHBOARD VIEW -->
+        <section id="adminDashboardView" class="hidden space-y-6">
+            <!-- Navigation Tabs for Admin -->
+            <div class="border-b border-slate-200 flex flex-wrap gap-4 sm:gap-8">
+                <button onclick="app.switchAdminTab('quizzes')" id="tabBtnQuizzes" class="pb-3 border-b-2 border-indigo-600 font-bold text-indigo-600 text-sm flex items-center space-x-2">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Quiz Manager</span>
                 </button>
-                <button onclick="app.navigate('questions')" id="tab-questions" class="nav-tab instructor-only hidden bg-slate-100 text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-xl font-semibold text-sm transition flex items-center space-x-2">
-                    <i class="fa-solid fa-layer-group"></i><span>Question Bank</span>
+                <button onclick="app.switchAdminTab('questions')" id="tabBtnQuestions" class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-semibold text-sm flex items-center space-x-2">
+                    <i class="fa-solid fa-folder-tree"></i>
+                    <span>Question Bank & Folders</span>
                 </button>
-                <button onclick="app.navigate('settings')" id="tab-settings" class="nav-tab instructor-only hidden bg-slate-100 text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-xl font-semibold text-sm transition flex items-center space-x-2">
-                    <i class="fa-solid fa-sliders"></i><span>Settings & Sync</span>
+                <button onclick="app.switchAdminTab('results')" id="tabBtnResults" class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-semibold text-sm flex items-center space-x-2">
+                    <i class="fa-solid fa-square-poll-vertical"></i>
+                    <span>Submissions & Analytics</span>
+                </button>
+                <!-- Admin-Only Cross-Device Supabase Sync Settings Tab -->
+                <button onclick="app.switchAdminTab('sync')" id="tabBtnSync" class="pb-3 border-b-2 border-transparent text-amber-600 hover:text-amber-700 font-bold text-sm flex items-center space-x-2 ml-auto">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span>Supabase Cloud Sync</span>
                 </button>
             </div>
 
-            <!-- Global Action Bar -->
-            <div class="flex items-center space-x-2">
-                <button onclick="app.openThemeModal()" class="p-2 text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition" title="Change Visual Theme">
-                    <i class="fa-solid fa-palette text-lg"></i>
-                </button>
-            </div>
-        </div>
+            <!-- ADMIN TAB 1: QUIZ MANAGER -->
+            <div id="adminTabQuizzes" class="space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base">Published & Draft Examinations</h3>
+                        <p class="text-xs text-slate-500">Construct quizzes by selecting questions from your bank, configure timers, and publish.</p>
+                    </div>
+                    <button onclick="app.openQuizBuilderModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow transition flex items-center space-x-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Create New Exam</span>
+                    </button>
+                </div>
 
-        <!-- DYNAMIC VIEW CONTAINER -->
-        <div id="viewContainer">
-            <!-- Dynamic Content loaded via JS -->
-        </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="adminQuizzesGrid">
+                    <!-- Dynamic Admin Quizzes Cards -->
+                </div>
+            </div>
+
+            <!-- ADMIN TAB 2: QUESTION BANK & FOLDERS -->
+            <div id="adminTabQuestions" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Sidebar: Folders List -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 space-y-4 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Question Folders</h4>
+                        <button onclick="app.openCreateFolderModal()" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold flex items-center space-x-1">
+                            <i class="fa-solid fa-folder-plus"></i>
+                            <span>New Folder</span>
+                        </button>
+                    </div>
+                    <div id="folderList" class="space-y-1">
+                        <!-- Dynamic Folder List -->
+                    </div>
+                </div>
+
+                <!-- Content Area: Questions in selected Folder -->
+                <div class="lg:col-span-3 bg-white rounded-2xl border border-slate-200 p-6 space-y-6 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg flex items-center" id="currentFolderNameTitle">
+                                <i class="fa-regular fa-folder-open text-amber-500 mr-2"></i> All Questions
+                            </h3>
+                            <span class="text-xs text-slate-500" id="currentFolderCount">0 Questions stored</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="app.openBulkUploadModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center space-x-1 border border-slate-200">
+                                <i class="fa-solid fa-file-arrow-up"></i>
+                                <span>Bulk Upload</span>
+                            </button>
+                            <button onclick="app.openQuestionModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-3 py-2 rounded-xl text-xs transition flex items-center space-x-1 shadow">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Add Question</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Questions List Container -->
+                    <div id="questionsContainer" class="space-y-4">
+                        <!-- Dynamic Questions List -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADMIN TAB 3: SUBMISSIONS & ANALYTICS -->
+            <div id="adminTabResults" class="hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg">All Student Submissions & Analytics</h3>
+                            <p class="text-xs text-slate-500">Recorded individually with Student Name and Student ID credentials.</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <input type="text" id="adminResultSearch" oninput="app.renderAdminResults()" placeholder="Search Name, ID or Quiz..." class="border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none w-60">
+                            <button onclick="app.exportSubmissionsCsv()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center space-x-1">
+                                <i class="fa-solid fa-file-csv"></i>
+                                <span>Export CSV</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-600">
+                            <thead class="bg-slate-50 text-slate-500 uppercase font-semibold text-xs border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3">Student Credentials</th>
+                                    <th class="p-3">Quiz Title</th>
+                                    <th class="p-3">Timestamp</th>
+                                    <th class="p-3">Score</th>
+                                    <th class="p-3">Percentage</th>
+                                    <th class="p-3">Result</th>
+                                    <th class="p-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminSubmissionsTableBody" class="divide-y divide-slate-100">
+                                <!-- Dynamic Submissions Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADMIN TAB 4: SUPABASE SYNC SETTINGS -->
+            <div id="adminTabSync" class="hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 shadow-sm max-w-4xl">
+                    <div class="flex items-center space-x-3 text-amber-600 border-b border-slate-100 pb-4">
+                        <i class="fa-solid fa-cloud-arrow-up text-3xl"></i>
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-800">Supabase Cloud Database & Cross-Device Setup</h3>
+                            <p class="text-xs text-slate-500">Configure your Supabase project credentials to enable real-time synchronization.</p>
+                        </div>
+                    </div>
+
+                    <!-- Setup Instructions -->
+                    <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-600">
+                        <h4 class="font-bold text-slate-800 text-sm text-indigo-700">Supabase Table Structure Requirement</h4>
+                        <p>In your Supabase SQL Editor, run this query to create the table required for data storage:</p>
+                        <pre class="bg-slate-900 text-emerald-400 p-2.5 rounded-lg font-mono text-[10px] overflow-x-auto">
+CREATE TABLE quizlms_storage (
+    key TEXT PRIMARY KEY,
+    payload JSONB NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+-- Enable Row Level Security (RLS) or disable for public sync:
+ALTER TABLE quizlms_storage DISABLE ROW LEVEL SECURITY;
+</pre>
+                    </div>
+
+                    <!-- Custom Credentials Form -->
+                    <div class="bg-indigo-950 text-white p-5 rounded-2xl space-y-4 border border-indigo-800 shadow-md text-xs">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-sm text-amber-300 flex items-center">
+                                <i class="fa-solid fa-sliders mr-2"></i> Supabase Project Credentials
+                            </h4>
+                            <span class="text-[10px] bg-indigo-900 border border-indigo-700 px-2 py-0.5 rounded text-indigo-200">Admin Privileged</span>
+                        </div>
+                        <p class="text-indigo-200">Enter your Supabase Project URL and Public Anon Key below:</p>
+                        
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block font-bold mb-1 text-indigo-300">Supabase URL</label>
+                                <input type="text" id="supabaseUrlInput" placeholder="https://xyzcompany.supabase.co" class="w-full bg-slate-900 border border-indigo-700/80 rounded-xl p-2.5 text-xs font-mono text-emerald-400 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-1 text-indigo-300">Supabase Anon Key</label>
+                                <input type="password" id="supabaseKeyInput" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." class="w-full bg-slate-900 border border-indigo-700/80 rounded-xl p-2.5 text-xs font-mono text-emerald-400 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end space-x-3 pt-2">
+                            <button onclick="app.clearSupabaseConfig()" class="px-4 py-2 bg-indigo-900 hover:bg-indigo-800 text-indigo-200 rounded-xl font-semibold">Reset / Local Only</button>
+                            <button onclick="app.saveSupabaseConfig()" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-indigo-950 font-bold rounded-xl shadow">Save & Connect Supabase</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVE EXAM PLAYER VIEW -->
+        <section id="examPlayerView" class="hidden space-y-6">
+            <!-- Exam Status Header Bar -->
+            <div class="bg-indigo-950 text-white rounded-2xl shadow-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 sticky top-20 z-20 border border-indigo-800">
+                <div>
+                    <h2 class="font-bold text-lg" id="playerExamTitle">Exam Title</h2>
+                    <div class="text-xs text-indigo-200 flex items-center space-x-2 mt-0.5">
+                        <span id="playerStudentMeta">Student: Guest</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <!-- Timer -->
+                    <div class="bg-slate-900/90 px-4 py-2 rounded-xl border border-indigo-700/60 flex items-center space-x-3">
+                        <i class="fa-regular fa-clock text-amber-400 text-lg"></i>
+                        <div>
+                            <div class="text-[10px] text-indigo-300 uppercase font-bold">Time Remaining</div>
+                            <div class="font-mono text-lg font-bold text-amber-300" id="timerDisplay">00:00</div>
+                        </div>
+                    </div>
+                    <!-- Submit Early Button -->
+                    <button onclick="app.confirmEarlySubmit()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow transition">
+                        Submit Exam
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Exam Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Question Area -->
+                <div class="lg:col-span-3 bg-white rounded-2xl border border-slate-200 p-6 space-y-6 shadow-sm">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                        <span class="text-xs font-bold uppercase text-indigo-600 tracking-wider" id="playerQuestionHeader">Question 1 of 10</span>
+                        <button onclick="app.toggleMarkForReview()" id="markReviewBtn" class="text-xs text-slate-500 hover:text-amber-600 flex items-center space-x-1 border border-slate-200 px-3 py-1 rounded-lg">
+                            <i class="fa-regular fa-bookmark"></i>
+                            <span>Mark for Review</span>
+                        </button>
+                    </div>
+
+                    <!-- Question Text -->
+                    <div class="text-base font-semibold text-slate-800 leading-relaxed" id="playerQuestionText">
+                        Loading question...
+                    </div>
+
+                    <!-- Options List (Supports A to E) -->
+                    <div class="space-y-3" id="playerOptionsContainer">
+                        <!-- Dynamic Options -->
+                    </div>
+
+                    <!-- Navigation Controls -->
+                    <div class="flex items-center justify-between border-t border-slate-100 pt-6">
+                        <button id="playerPrevBtn" onclick="app.navigateQuestion(-1)" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs hover:bg-slate-50 disabled:opacity-40">
+                            Previous
+                        </button>
+                        <button id="playerNextBtn" onclick="app.navigateQuestion(1)" class="px-5 py-2 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 shadow">
+                            Next Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Navigation Palette Sidebar -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 space-y-4 shadow-sm">
+                    <h4 class="font-bold text-slate-800 text-xs border-b border-slate-100 pb-2 uppercase tracking-wider">Question Navigation</h4>
+                    <div id="questionNavGrid" class="grid grid-cols-5 gap-2">
+                        <!-- Navigation Grid Buttons -->
+                    </div>
+
+                    <div class="text-xs space-y-1.5 pt-4 border-t border-slate-100 text-slate-500">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded bg-indigo-600"></span>
+                            <span>Answered</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded bg-amber-400"></span>
+                            <span>Marked for Review</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded bg-slate-200"></span>
+                            <span>Unanswered</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SUBMISSION REVIEW VIEW -->
+        <section id="reviewAttemptView" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <button onclick="app.navigateTo('dashboard')" class="text-xs font-bold text-indigo-600 hover:underline mb-2 flex items-center">
+                            <i class="fa-solid fa-arrow-left mr-1"></i> Back to Dashboard
+                        </button>
+                        <h2 class="text-xl font-bold text-slate-800" id="reviewQuizTitle">Exam Attempt Review</h2>
+                        <span class="text-xs text-slate-500" id="reviewMetaText">Completed on --</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-center px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">Total Score</div>
+                            <div class="text-xl font-extrabold text-indigo-700" id="reviewScoreText">0/0</div>
+                        </div>
+                        <div class="text-center px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">Percentage</div>
+                            <div class="text-xl font-extrabold" id="reviewPercentageText">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Breakdown List -->
+                <div id="reviewQuestionsList" class="space-y-6">
+                    <!-- Dynamic Questions Breakdown -->
+                </div>
+            </div>
+        </section>
     </main>
 
-    <!-- FOOTER INSCRIPTION -->
-    <footer class="bg-slate-900 text-slate-300 py-6 border-t border-slate-800 mt-10">
+    <!-- Footer Branding Accent -->
+    <footer class="bg-indigo-950 text-indigo-300 text-xs border-t border-indigo-900 py-6 mt-12">
         <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
-            <p class="text-sm font-semibold tracking-wide text-slate-200">
-                Developed & Maintained By: <span class="text-emerald-400 font-bold">Ibrahim Kargbo (Perfectionist)</span>, 2nd Year Medical Student, COMAHS, USL | Community Health Officer & Clinical Instructor
+            <p class="font-bold text-white text-sm">QuizLMS Assessment & Exam Portal</p>
+            <p class="text-indigo-300">
+                Created & Owned by <span class="text-amber-300 font-bold">Ibrahim Kargbo (Perfectionist)</span> • 2nd Year Medical Student, College of Medicine and Allied Health Sciences (COMAHS), University of Sierra Leone (USL).
             </p>
-            <p class="text-xs text-slate-500">
-                &copy; <span id="yearSpan"></span> Med~Stud Portal COMAHS. Granular Realtime Synchronization Engine.
+            <p class="text-[10px] text-indigo-400 pt-2 border-t border-indigo-900/60 max-w-lg mx-auto">
+                Designed for medical and academic quiz evaluations. Supabase multi-device sync enabled for students and instructors.
             </p>
         </div>
     </footer>
 
-    <!-- MODAL CONTAINER (DYNAMIC) -->
-    <div id="modalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div id="modalBody" class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 relative border border-slate-100 transform transition-all">
-            <!-- Modal Content Injected Here -->
+    <!-- MODAL DIALOGS -->
+
+    <!-- Admin Passcode Modal -->
+    <div id="adminPasscodeModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-200">
+            <div class="flex items-center space-x-3 text-indigo-700">
+                <i class="fa-solid fa-lock text-2xl"></i>
+                <h3 class="font-bold text-lg text-slate-800">Admin Passcode Access</h3>
+            </div>
+            <p class="text-slate-500 text-xs leading-relaxed">Enter administrative security passcode to publish exams, edit question banks, and configure Supabase sync.</p>
+            <div>
+                <input type="password" id="adminPasscodeInput" placeholder="Enter Administrative Passcode" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <p id="adminPasscodeError" class="text-rose-500 text-xs mt-1 font-semibold hidden">Incorrect passcode! Access denied.</p>
+            </div>
+            <div class="flex justify-end space-x-3 pt-2">
+                <button onclick="app.toggleModal('adminPasscodeModal', false)" class="px-4 py-2 rounded-xl text-slate-600 text-xs font-bold hover:bg-slate-100">Cancel</button>
+                <button onclick="app.verifyAdminPasscode()" class="px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl hover:bg-indigo-700 shadow">Verify Passcode</button>
+            </div>
         </div>
     </div>
 
-    <!-- TOAST NOTIFICATION CONTAINER -->
-    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+    <!-- Create Folder Modal -->
+    <div id="createFolderModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-200">
+            <h3 class="font-bold text-lg text-slate-800">New Question Folder</h3>
+            <input type="text" id="folderNameInput" placeholder="Folder Name (e.g. Pharmacology 2026)" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <div class="flex justify-end space-x-3 pt-2">
+                <button onclick="app.toggleModal('createFolderModal', false)" class="px-4 py-2 rounded-xl text-slate-600 text-xs font-bold hover:bg-slate-100">Cancel</button>
+                <button onclick="app.saveFolder()" class="px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl hover:bg-indigo-700 shadow">Create Folder</button>
+            </div>
+        </div>
+    </div>
 
-    <!-- APPLICATION JAVASCRIPT -->
-    <script>
-        /**
-         * MED~STUD PORTAL (COMAHS) - SINGLE FILE APPLICATION
-         * Item-Level Granular Realtime Sync Engine for Supabase
-         */
+    <!-- Add/Edit Question Modal (Supports A-E Options) -->
+    <div id="questionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <h3 class="font-bold text-lg text-slate-800" id="questionModalTitle">Add Question to Bank</h3>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Target Folder</label>
+                    <select id="qFolderSelect" class="w-full border border-slate-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-indigo-500"></select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Question Description</label>
+                    <textarea id="qTextInput" rows="3" placeholder="Enter question text..." class="w-full border border-slate-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-600 mb-1">Option A</label>
+                        <input type="text" id="optA" class="w-full border border-slate-300 rounded-xl p-2 text-xs">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-600 mb-1">Option B</label>
+                        <input type="text" id="optB" class="w-full border border-slate-300 rounded-xl p-2 text-xs">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-600 mb-1">Option C</label>
+                        <input type="text" id="optC" class="w-full border border-slate-300 rounded-xl p-2 text-xs">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-600 mb-1">Option D</label>
+                        <input type="text" id="optD" class="w-full border border-slate-300 rounded-xl p-2 text-xs">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block font-bold text-slate-600 mb-1">Option E (Optional)</label>
+                        <input type="text" id="optE" placeholder="Optional 5th option" class="w-full border border-slate-300 rounded-xl p-2 text-xs">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-600 mb-1">Correct Option</label>
+                        <select id="correctOptionSelect" class="w-full border border-slate-300 rounded-xl p-2 text-xs">
+                            <option value="0">Option A</option>
+                            <option value="1">Option B</option>
+                            <option value="2">Option C</option>
+                            <option value="3">Option D</option>
+                            <option value="4">Option E</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-600 mb-1">Points</label>
+                        <input type="number" id="qPointsInput" value="1" min="1" class="w-full border border-slate-300 rounded-xl p-2 text-xs">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Explanation & Medical Rationale</label>
+                    <textarea id="qExplanationInput" rows="2" placeholder="Explain the correct answer rationale..." class="w-full border border-slate-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 pt-2">
+                <button onclick="app.toggleModal('questionModal', false)" class="px-4 py-2 rounded-xl text-slate-600 text-xs font-bold hover:bg-slate-100">Cancel</button>
+                <button onclick="app.saveQuestion()" class="px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl hover:bg-indigo-700 shadow">Save Question</button>
+            </div>
+        </div>
+    </div>
 
-        const DEFAULT_PASSCODE = 'Aamirah2022';
+    <!-- Bulk Import Modal -->
+    <div id="bulkUploadModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl border border-slate-200">
+            <h3 class="font-bold text-lg text-slate-800">Bulk Import Questions</h3>
+            <p class="text-xs text-slate-500">Paste JSON array containing question items.</p>
+            
+            <div class="bg-slate-900 text-emerald-400 p-3 rounded-xl font-mono text-[11px] overflow-x-auto">
+                [<br>
+                &nbsp;&nbsp;{ "text": "Question?", "options": ["A","B","C","D"], "correct": 0, "points": 1, "explanation": "Rationale" }<br>
+                ]
+            </div>
 
-        // Default local fallback dataset
-        const initialFolders = [
-            { id: 'f1', name: 'Anatomy & Physiology', description: 'Core basic medical sciences' },
-            { id: 'f2', name: 'Community Health', description: 'Public health and epidemiology' },
-            { id: 'f3', name: 'Clinical Medicine', description: 'Pathology & Pharmacology' }
-        ];
+            <textarea id="bulkJsonInput" rows="5" placeholder="Paste JSON array..." class="w-full border border-slate-300 rounded-xl p-2.5 text-xs font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
 
-        const initialQuestions = [
-            {
-                id: 'q1',
-                folder_id: 'f1',
-                question: 'Which valve prevents backflow of blood into the right atrium during ventricular contraction?',
-                options: ['Tricuspid Valve', 'Bicuspid (Mitral) Valve', 'Aortic Valve', 'Pulmonary Valve'],
-                correct_index: 0,
-                rationale: 'The tricuspid valve is situated between the right atrium and right ventricle, preventing backflow into the right atrium during ventricular systole.'
-            },
-            {
-                id: 'q2',
-                folder_id: 'f2',
-                question: 'What is the primary mode of transmission for Mycobacterium tuberculosis?',
-                options: ['Airborne Droplet Nuclei', 'Direct Blood Contact', 'Vector-borne Transmission', 'Fecal-Oral Route'],
-                correct_index: 0,
-                rationale: 'TB is spread through airborne droplet nuclei generated when persons with pulmonary or laryngeal TB cough, sneeze, or speak.'
-            }
-        ];
+            <div class="flex items-center justify-between pt-2">
+                <button onclick="app.downloadSampleJson()" class="text-xs text-indigo-600 hover:underline font-bold">
+                    <i class="fa-solid fa-download mr-1"></i> Download Sample JSON
+                </button>
+                <div class="flex space-x-3">
+                    <button onclick="app.toggleModal('bulkUploadModal', false)" class="px-3 py-1.5 rounded-xl text-slate-600 text-xs font-bold hover:bg-slate-100">Cancel</button>
+                    <button onclick="app.processBulkUpload()" class="px-4 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-xl hover:bg-indigo-700 shadow">Import Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        const initialQuizzes = [
-            {
-                id: 'quiz1',
-                title: 'General Medical Science Self-Assessment',
-                folder_id: 'f1',
-                time_limit_mins: 15,
-                expires_at: new Date(Date.now() + 86400000 * 30).toISOString(),
-                question_ids: ['q1', 'q2']
-            }
-        ];
+    <!-- Quiz Config Builder Modal -->
+    <div id="quizBuilderModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-6 space-y-4 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <h3 class="font-bold text-lg text-slate-800">Configure Examination Publication</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Exam Title</label>
+                    <input type="text" id="quizTitleInput" placeholder="e.g. Pathology Midterm 2026" class="w-full border border-slate-300 rounded-xl p-2.5">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Subject / Course</label>
+                    <input type="text" id="quizSubjectInput" placeholder="e.g. Pathology" class="w-full border border-slate-300 rounded-xl p-2.5">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Time Limit (Minutes)</label>
+                    <input type="number" id="quizDurationInput" value="15" min="1" class="w-full border border-slate-300 rounded-xl p-2.5">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Passing Mark (%)</label>
+                    <input type="number" id="quizPassGradeInput" value="70" min="1" max="100" class="w-full border border-slate-300 rounded-xl p-2.5">
+                </div>
+            </div>
 
-        class MedPortalApp {
-            constructor() {
-                this.role = 'student'; // 'student' or 'instructor'
-                this.passcode = localStorage.getItem('coma_passcode') || DEFAULT_PASSCODE;
-                this.currentTheme = localStorage.getItem('coma_theme') || 'emerald';
-                this.supabaseUrl = localStorage.getItem('coma_sb_url') || '';
-                this.supabaseKey = localStorage.getItem('coma_sb_key') || '';
-                this.supabase = null;
-                
-                // Active View
-                this.currentView = 'quizzes';
+            <!-- Question Selection Checkboxes -->
+            <div class="border-t border-slate-100 pt-4 space-y-2">
+                <h4 class="font-bold text-slate-800 text-xs">Select Questions from Question Bank</h4>
+                <div id="quizQuestionPickerList" class="space-y-2 max-h-56 overflow-y-auto custom-scrollbar border border-slate-200 rounded-xl p-3 bg-slate-50">
+                    <!-- Checkbox items -->
+                </div>
+            </div>
 
-                // App State Data
-                this.folders = [];
-                this.questions = [];
-                this.quizzes = [];
-                this.examHistory = [];
+            <div class="flex justify-end space-x-3 pt-2">
+                <button onclick="app.toggleModal('quizBuilderModal', false)" class="px-4 py-2 rounded-xl text-slate-600 text-xs font-bold hover:bg-slate-100">Cancel</button>
+                <button onclick="app.saveQuiz()" class="px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl hover:bg-indigo-700 shadow">Save Exam</button>
+            </div>
+        </div>
+    </div>
 
-                // Active Quiz Session State
-                this.activeQuizState = null;
+    <!-- Submit Early Confirmation Modal -->
+    <div id="confirmSubmitModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-200">
+            <h3 class="font-bold text-lg text-slate-800">Confirm Exam Submission</h3>
+            <div class="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-xl text-xs space-y-1">
+                <div class="font-bold">Summary:</div>
+                <div id="submitSummaryText">Answered: 0 | Remaining: 0</div>
+            </div>
+            <p class="text-xs text-slate-500">Are you sure you want to finish now? Your submission will be recorded under your name and student ID.</p>
+            <div class="flex justify-end space-x-3 pt-2">
+                <button onclick="app.toggleModal('confirmSubmitModal', false)" class="px-4 py-2 rounded-xl text-slate-600 text-xs font-bold hover:bg-slate-100">Continue Exam</button>
+                <button onclick="app.finalizeExamSubmission()" class="px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl hover:bg-emerald-700 shadow">Finalize & Submit</button>
+            </div>
+        </div>
+    </div>
 
-                this.init();
-            }
+    <!-- Supabase JS Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-            async init() {
-                document.getElementById('yearSpan').textContent = new Date().getFullYear();
-                this.applyTheme(this.currentTheme);
-                this.initSupabaseClient();
-                await this.loadAllData();
-                this.render();
-            }
+    <!-- Application Module Script with Supabase Integration -->
+    <script type="module">
+        // Global State Management
+        const state = {
+            currentRole: 'student', // 'student' | 'admin'
+            studentName: localStorage.getItem('quizlms_student_name') || '',
+            studentId: localStorage.getItem('quizlms_student_id') || '',
+            activeFolderId: 'all',
+            currentAdminTab: 'quizzes',
+            activeExam: null,
+            currentQuestionIdx: 0,
+            studentAnswers: {},
+            markedForReview: {},
+            timerInterval: null,
+            timeRemainingSeconds: 0,
 
-            // Theme Management
-            applyTheme(themeName) {
-                this.currentTheme = themeName;
-                localStorage.setItem('coma_theme', themeName);
-                if (themeName === 'emerald') {
-                    document.documentElement.removeAttribute('data-theme');
+            // Core Entities
+            folders: [
+                { id: 'f1', name: 'General Medicine' },
+                { id: 'f2', name: 'Pharmacology' }
+            ],
+            questions: [
+                {
+                    id: 'q1',
+                    folderId: 'f1',
+                    text: 'Which organelle is responsible for ATP cellular production?',
+                    options: ['Nucleus', 'Mitochondria', 'Ribosome', 'Endoplasmic Reticulum', 'Lysosome'],
+                    correct: 1,
+                    points: 1,
+                    explanation: 'Mitochondria generate energy (ATP) via oxidative phosphorylation.'
+                },
+                {
+                    id: 'q2',
+                    folderId: 'f2',
+                    text: 'What is the primary action of Beta-1 adrenergic agonists?',
+                    options: ['Bronchodilating', 'Inotropic & Chronotropic cardiac excitation', 'Vasoconstriction', 'Pupillary dilation'],
+                    correct: 1,
+                    points: 1,
+                    explanation: 'Beta-1 receptors increase heart rate and myocardial contractility.'
+                }
+            ],
+            quizzes: [
+                {
+                    id: 'qz1',
+                    title: 'COMAHS Medical Science Assessment',
+                    subject: 'General Medicine',
+                    duration: 15,
+                    passGrade: 70,
+                    published: true,
+                    questionIds: ['q1', 'q2']
+                }
+            ],
+            submissions: []
+        };
+
+        // Supabase Infrastructure
+        let supabaseClient = null;
+        let supabaseConnected = false;
+
+        async function initSupabase() {
+            try {
+                const savedUrl = localStorage.getItem('quizlms_supabase_url');
+                const savedKey = localStorage.getItem('quizlms_supabase_key');
+
+                if (savedUrl && savedKey) {
+                    supabaseClient = window.supabase.createClient(savedUrl, savedKey);
+                    
+                    // Test connection & fetch data
+                    await fetchAllSupabaseData();
+                    supabaseConnected = true;
+
+                    document.getElementById('syncBadge').classList.remove('hidden');
+                    document.getElementById('syncStatusText').innerText = 'Synced via Supabase';
+                    document.getElementById('syncDot').className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+
+                    setupSupabaseRealtime();
                 } else {
-                    document.documentElement.setAttribute('data-theme', themeName);
+                    loadLocalStorage();
                 }
-            }
-
-            openThemeModal() {
-                const themes = ['emerald', 'sapphire', 'amethyst', 'crimson', 'slate', 'amber', 'indigo'];
-                const html = `
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-palette text-theme me-2"></i>Select Color Theme</h3>
-                        <button onclick="app.closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-                    </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        ${themes.map(t => `
-                            <button onclick="app.applyTheme('${t}'); app.closeModal();" class="p-3 rounded-xl border border-slate-200 hover:border-slate-400 flex items-center space-x-3 capitalize text-sm font-semibold transition">
-                                <span class="w-5 h-5 rounded-full ${this.getThemeColorBgClass(t)}"></span>
-                                <span>${t}</span>
-                            </button>
-                        `).join('')}
-                    </div>
-                `;
-                this.showModal(html);
-            }
-
-            getThemeColorBgClass(t) {
-                const map = {
-                    emerald: 'bg-emerald-600',
-                    sapphire: 'bg-blue-600',
-                    amethyst: 'bg-purple-600',
-                    crimson: 'bg-red-600',
-                    slate: 'bg-slate-600',
-                    amber: 'bg-amber-600',
-                    indigo: 'bg-indigo-600'
-                };
-                return map[t] || 'bg-emerald-600';
-            }
-
-            // Supabase Client Setup
-            initSupabaseClient() {
-                const badge = document.getElementById('syncStatusBadge');
-                const dot = document.getElementById('syncDot');
-                const text = document.getElementById('syncText');
-
-                if (this.supabaseUrl && this.supabaseKey) {
-                    try {
-                        this.supabase = supabase.createClient(this.supabaseUrl, this.supabaseKey);
-                        dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
-                        text.textContent = 'Supabase Connected';
-                        this.setupRealtimeListeners();
-                    } catch (e) {
-                        console.error('Supabase Initialization Error:', e);
-                        dot.className = 'w-2 h-2 rounded-full bg-red-500';
-                        text.textContent = 'Sync Config Error';
-                    }
-                } else {
-                    dot.className = 'w-2 h-2 rounded-full bg-amber-400';
-                    text.textContent = 'Local Storage Only';
-                }
-            }
-
-            setupRealtimeListeners() {
-                if (!this.supabase) return;
-
-                // Subscribe to real-time changes on granular tables
-                const tables = ['folders', 'questions', 'quizzes', 'exam_history'];
-                tables.forEach(table => {
-                    this.supabase
-                        .channel(`public:${table}`)
-                        .on('postgres_changes', { event: '*', schema: 'public', table: table }, () => {
-                            this.loadTableData(table);
-                        })
-                        .subscribe();
-                });
-            }
-
-            // Granular Loaders & Local Fallbacks
-            async loadAllData() {
-                if (this.supabase) {
-                    await Promise.all([
-                        this.loadTableData('folders'),
-                        this.loadTableData('questions'),
-                        this.loadTableData('quizzes'),
-                        this.loadTableData('exam_history'),
-                        this.loadAppConfig()
-                    ]);
-                } else {
-                    this.folders = JSON.parse(localStorage.getItem('coma_folders')) || initialFolders;
-                    this.questions = JSON.parse(localStorage.getItem('coma_questions')) || initialQuestions;
-                    this.quizzes = JSON.parse(localStorage.getItem('coma_quizzes')) || initialQuizzes;
-                    this.examHistory = JSON.parse(localStorage.getItem('coma_exam_history')) || [];
-                }
-            }
-
-            async loadTableData(table) {
-                if (!this.supabase) return;
-                try {
-                    const { data, error } = await this.supabase.from(table).select('*');
-                    if (!error && data) {
-                        if (table === 'folders') this.folders = data;
-                        if (table === 'questions') this.questions = data;
-                        if (table === 'quizzes') this.quizzes = data;
-                        if (table === 'exam_history') this.examHistory = data;
-                        this.render();
-                    }
-                } catch (e) {
-                    console.error(`Error loading ${table}:`, e);
-                }
-            }
-
-            async loadAppConfig() {
-                if (!this.supabase) return;
-                try {
-                    const { data } = await this.supabase.from('app_config').select('*').eq('key', 'passcode').single();
-                    if (data && data.value) {
-                        this.passcode = data.value;
-                    }
-                } catch (e) {
-                    // Config might not exist yet
-                }
-            }
-
-            // LocalStorage Save Helpers
-            saveLocal(table) {
-                if (table === 'folders') localStorage.setItem('coma_folders', JSON.stringify(this.folders));
-                if (table === 'questions') localStorage.setItem('coma_questions', JSON.stringify(this.questions));
-                if (table === 'quizzes') localStorage.setItem('coma_quizzes', JSON.stringify(this.quizzes));
-                if (table === 'exam_history') localStorage.setItem('coma_exam_history', JSON.stringify(this.examHistory));
-            }
-
-            // Granular Upserts (No-Overwrite Logic across devices)
-            async upsertItem(table, item) {
-                // Update local array first
-                const targetArray = this[table];
-                const existingIndex = targetArray.findIndex(x => x.id === item.id);
-                if (existingIndex >= 0) {
-                    targetArray[existingIndex] = item;
-                } else {
-                    targetArray.push(item);
-                }
-                this.saveLocal(table);
-
-                if (this.supabase) {
-                    try {
-                        const { error } = await this.supabase.from(table).upsert(item);
-                        if (error) throw error;
-                        this.toast('Sync completed successfully', 'success');
-                    } catch (err) {
-                        console.error(`Supabase upsert error on ${table}:`, err);
-                        this.toast('Saved locally (Supabase Sync Error)', 'warning');
-                    }
-                } else {
-                    this.toast('Saved locally', 'info');
-                }
-                this.render();
-            }
-
-            async deleteItem(table, id) {
-                if (this.role !== 'instructor') {
-                    this.toast('Admin authorization required', 'error');
-                    return;
-                }
-                this[table] = this[table].filter(x => x.id !== id);
-                this.saveLocal(table);
-
-                if (this.supabase) {
-                    try {
-                        const { error } = await this.supabase.from(table).delete().eq('id', id);
-                        if (error) throw error;
-                        this.toast('Deleted from database', 'success');
-                    } catch (err) {
-                        console.error(`Supabase delete error on ${table}:`, err);
-                        this.toast('Deleted locally', 'warning');
-                    }
-                } else {
-                    this.toast('Deleted locally', 'info');
-                }
-                this.render();
-            }
-
-            // Navigation & Mode Switching
-            navigate(view) {
-                if ((view === 'settings' || view === 'questions') && this.role !== 'instructor') {
-                    this.toast('Admin Mode required to access this section', 'error');
-                    return;
-                }
-
-                if (this.activeQuizState && view !== 'quizzes') {
-                    if (!confirm("An assessment is currently in progress. Navigating away will cancel your attempt. Proceed?")) {
-                        return;
-                    }
-                    if (this.activeQuizState.timerInterval) {
-                        clearInterval(this.activeQuizState.timerInterval);
-                    }
-                    this.activeQuizState = null;
-                }
-                this.currentView = view;
-                document.querySelectorAll('.nav-tab').forEach(btn => {
-                    btn.className = 'nav-tab bg-slate-100 text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-xl font-semibold text-sm transition flex items-center space-x-2';
-                });
-                const activeTab = document.getElementById(`tab-${view}`);
-                if (activeTab) {
-                    activeTab.className = 'nav-tab active bg-theme text-white px-4 py-2 rounded-xl font-semibold text-sm transition flex items-center space-x-2 shadow-sm';
-                }
-                this.render();
-            }
-
-            toggleRoleModal() {
-                if (this.role === 'instructor') {
-                    this.role = 'student';
-                    this.toast('Switched to Student Mode', 'info');
-                    this.updateRoleUI();
-                    this.navigate('quizzes');
-                } else {
-                    const html = `
-                        <div class="p-2">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-lock text-theme me-2"></i>Instructor Authentication</h3>
-                                <button onclick="app.closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-                            </div>
-                            <p class="text-sm text-slate-600 mb-4">Enter administrative passcode to unlock question banking, quiz publishing, and Supabase synchronization setup.</p>
-                            <input type="password" id="passcodeInput" placeholder="Enter Passcode" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus-ring mb-4 text-base" />
-                            <div class="flex justify-end space-x-2">
-                                <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border border-slate-300 font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
-                                <button onclick="app.verifyPasscode()" class="px-4 py-2 rounded-xl bg-theme text-white font-bold hover:bg-theme-dark">Authenticate</button>
-                            </div>
-                        </div>
-                    `;
-                    this.showModal(html);
-                    setTimeout(() => document.getElementById('passcodeInput')?.focus(), 100);
-                }
-            }
-
-            verifyPasscode() {
-                const entered = document.getElementById('passcodeInput')?.value;
-                if (entered === this.passcode) {
-                    this.role = 'instructor';
-                    this.closeModal();
-                    this.toast('Instructor Access Granted', 'success');
-                    this.updateRoleUI();
-                } else {
-                    this.toast('Incorrect Passcode. Returning to Student Mode.', 'error');
-                    this.role = 'student';
-                    this.updateRoleUI();
-                    this.closeModal();
-                }
-            }
-
-            updateRoleUI() {
-                document.getElementById('roleLabel').textContent = this.role === 'instructor' ? 'Instructor Mode' : 'Student Mode';
-                const instructorOnlyEls = document.querySelectorAll('.instructor-only');
-                instructorOnlyEls.forEach(el => {
-                    if (this.role === 'instructor') el.classList.remove('hidden');
-                    else el.classList.add('hidden');
-                });
-            }
-
-            // View Renderers
-            render() {
-                this.updateRoleUI();
-                const container = document.getElementById('viewContainer');
-                if (!container) return;
-
-                if (this.activeQuizState) {
-                    container.innerHTML = this.renderActiveQuizView();
-                    return;
-                }
-
-                switch (this.currentView) {
-                    case 'quizzes':
-                        container.innerHTML = this.renderQuizzesView();
-                        break;
-                    case 'history':
-                        container.innerHTML = this.renderHistoryView();
-                        this.renderHistoryList();
-                        break;
-                    case 'questions':
-                        if (this.role !== 'instructor') {
-                            this.navigate('quizzes');
-                            return;
-                        }
-                        container.innerHTML = this.renderQuestionsView();
-                        break;
-                    case 'settings':
-                        if (this.role !== 'instructor') {
-                            this.navigate('quizzes');
-                            return;
-                        }
-                        container.innerHTML = this.renderSettingsView();
-                        break;
-                    default:
-                        container.innerHTML = this.renderQuizzesView();
-                }
-            }
-
-            // 1. QUIZZES VIEW
-            renderQuizzesView() {
-                return `
-                    <div class="space-y-6">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-800">Available Assessments</h2>
-                                <p class="text-xs text-slate-500 mt-1">Select an active quiz to start your exam session.</p>
-                            </div>
-                            ${this.role === 'instructor' ? `
-                                <button onclick="app.openQuizModal()" class="bg-theme text-white font-bold px-4 py-2.5 rounded-xl shadow hover:bg-theme-dark transition flex items-center space-x-2 text-sm">
-                                    <i class="fa-solid fa-plus"></i><span>Create New Quiz</span>
-                                </button>
-                            ` : ''}
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            ${this.quizzes.length === 0 ? `
-                                <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300 text-slate-400">
-                                    <i class="fa-solid fa-file-pen text-4xl mb-3"></i>
-                                    <p class="text-base font-semibold">No Quizzes Configured</p>
-                                    <p class="text-xs">Instructors can create quizzes from the Question Bank.</p>
-                                </div>
-                            ` : this.quizzes.map(q => {
-                                const isExpired = q.expires_at && new Date(q.expires_at) < new Date();
-                                const folder = this.folders.find(f => f.id === q.folder_id);
-                                const qCount = (q.question_ids || []).length;
-                                return `
-                                    <div class="bg-white rounded-2xl border ${isExpired ? 'border-red-200 bg-red-50/20' : 'border-slate-200/80'} p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition">
-                                        <div>
-                                            <div class="flex items-center justify-between mb-2">
-                                                <span class="text-xs font-bold px-2.5 py-1 rounded-full ${isExpired ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-800'}">
-                                                    ${isExpired ? 'Expired' : 'Active'}
-                                                </span>
-                                                <span class="text-xs text-slate-500 font-medium"><i class="fa-solid fa-folder me-1"></i>${folder ? folder.name : 'General'}</span>
-                                            </div>
-                                            <h3 class="text-lg font-bold text-slate-800 leading-snug mb-2">${q.title}</h3>
-                                            <div class="flex items-center space-x-4 text-xs text-slate-500 mb-4">
-                                                <span><i class="fa-solid fa-circle-question me-1"></i>${qCount} Questions</span>
-                                                <span><i class="fa-solid fa-clock me-1"></i>${q.time_limit_mins} Mins</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                                            ${this.role === 'instructor' ? `
-                                                <div class="flex space-x-2">
-                                                    <button onclick="app.openReactivateModal('${q.id}')" class="p-2 text-slate-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Reactivate / Extend Deadline">
-                                                        <i class="fa-solid fa-calendar-plus"></i>
-                                                    </button>
-                                                    <button onclick="app.deleteItem('quizzes', '${q.id}')" class="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete Quiz">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            ` : '<div></div>'}
-
-                                            <button onclick="app.startQuizVerification('${q.id}')" ${isExpired ? 'disabled' : ''} class="${isExpired ? 'bg-slate-300 cursor-not-allowed text-slate-500' : 'bg-theme hover:bg-theme-dark text-white'} px-4 py-2 rounded-xl text-xs font-bold shadow transition">
-                                                ${isExpired ? 'Closed' : 'Start Assessment'}
-                                            </button>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-
-            // STUDENT IDENTIFICATION VERIFICATION
-            startQuizVerification(quizId) {
-                const quiz = this.quizzes.find(q => q.id === quizId);
-                if (!quiz) return;
-
-                const html = `
-                    <div class="p-2">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-id-card text-theme me-2"></i>Student Identification Verification</h3>
-                            <button onclick="app.closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-                        </div>
-                        <p class="text-xs text-slate-500 mb-4">Please provide your details before starting <strong>${quiz.title}</strong>.</p>
-                        
-                        <div class="space-y-4 mb-6">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Full Name *</label>
-                                <input type="text" id="studentNameInput" placeholder="e.g. Ibrahim Kargbo" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus-ring text-sm" />
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Student ID / Reg No. *</label>
-                                <input type="text" id="studentIdInput" placeholder="e.g. COMAHS-MED-2026-042" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus-ring text-sm" />
-                            </div>
-                        </div>
-
-                        <div class="flex justify-end space-x-2">
-                            <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border border-slate-300 font-semibold text-slate-600 hover:bg-slate-50 text-xs">Cancel</button>
-                            <button onclick="app.launchQuiz('${quizId}')" class="px-5 py-2.5 rounded-xl bg-theme text-white font-bold hover:bg-theme-dark text-xs shadow">Begin Assessment</button>
-                        </div>
-                    </div>
-                `;
-                this.showModal(html);
-            }
-
-            launchQuiz(quizId) {
-                const name = document.getElementById('studentNameInput')?.value.trim();
-                const studentId = document.getElementById('studentIdInput')?.value.trim();
-
-                if (!name || !studentId) {
-                    this.toast('Full Name and Student ID are required!', 'error');
-                    return;
-                }
-
-                const quiz = this.quizzes.find(q => q.id === quizId);
-                if (!quiz) return;
-
-                const qList = (quiz.question_ids || []).map(qid => this.questions.find(q => q.id === qid)).filter(Boolean);
-
-                if (qList.length === 0) {
-                    this.toast('This quiz contains no questions yet.', 'warning');
-                    this.closeModal();
-                    return;
-                }
-
-                this.activeQuizState = {
-                    quizId: quiz.id,
-                    quizTitle: quiz.title,
-                    studentName: name,
-                    studentId: studentId,
-                    questions: qList,
-                    answers: {}, // questionId -> selectedIndex
-                    currentIndex: 0,
-                    timeRemainingSeconds: (quiz.time_limit_mins || 10) * 60,
-                    timerInterval: null
-                };
-
-                this.closeModal();
-                this.startQuizTimer();
-                this.render();
-            }
-
-            startQuizTimer() {
-                if (!this.activeQuizState) return;
-                this.activeQuizState.timerInterval = setInterval(() => {
-                    if (!this.activeQuizState) return;
-                    this.activeQuizState.timeRemainingSeconds--;
-                    const timerEl = document.getElementById('activeQuizTimer');
-                    if (timerEl) {
-                        timerEl.textContent = this.formatTime(this.activeQuizState.timeRemainingSeconds);
-                    }
-                    if (this.activeQuizState.timeRemainingSeconds <= 0) {
-                        clearInterval(this.activeQuizState.timerInterval);
-                        this.toast('Time limit reached! Auto-submitting assessment.', 'warning');
-                        this.submitActiveQuiz();
-                    }
-                }, 1000);
-            }
-
-            formatTime(seconds) {
-                const m = Math.floor(seconds / 60);
-                const s = seconds % 60;
-                return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-            }
-
-            renderActiveQuizView() {
-                const state = this.activeQuizState;
-                const currentQ = state.questions[state.currentIndex];
-                const selectedOption = state.answers[currentQ.id];
-
-                return `
-                    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-md p-6 max-w-4xl mx-auto">
-                        <!-- HEADER WITH STUDENT INFO & TIMER -->
-                        <div class="flex flex-col md:flex-row items-center justify-between pb-4 mb-6 border-b border-slate-100 gap-4">
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-800">${state.quizTitle}</h2>
-                                <div class="flex items-center space-x-3 text-xs text-slate-500 mt-1">
-                                    <span class="font-semibold text-slate-700"><i class="fa-solid fa-user me-1 text-theme"></i>${state.studentName}</span>
-                                    <span>|</span>
-                                    <span><i class="fa-solid fa-id-badge me-1"></i>${state.studentId}</span>
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <button onclick="app.confirmEarlySubmit()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow transition flex items-center space-x-1.5">
-                                    <i class="fa-solid fa-paper-plane"></i>
-                                    <span>Submit & Review Early</span>
-                                </button>
-                                <div class="bg-amber-50 border border-amber-200 text-amber-800 font-mono font-bold px-4 py-2 rounded-xl text-lg flex items-center space-x-2">
-                                    <i class="fa-solid fa-clock animate-pulse"></i>
-                                    <span id="activeQuizTimer">${this.formatTime(state.timeRemainingSeconds)}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- QUESTION PROGRESS -->
-                        <div class="flex items-center justify-between text-xs font-semibold text-slate-500 mb-4">
-                            <span>Question ${state.currentIndex + 1} of ${state.questions.length}</span>
-                            <span>${Math.round(((state.currentIndex + 1) / state.questions.length) * 100)}% Completed</span>
-                        </div>
-
-                        <!-- QUESTION PROMPT -->
-                        <div class="bg-slate-50 p-5 rounded-2xl mb-6 border border-slate-100">
-                            <h3 class="text-base font-bold text-slate-800 leading-relaxed">${currentQ.question}</h3>
-                        </div>
-
-                        <!-- OPTIONS -->
-                        <div class="space-y-3 mb-8">
-                            ${currentQ.options.map((opt, idx) => {
-                                const isChecked = selectedOption === idx;
-                                return `
-                                    <button onclick="app.selectQuizOption('${currentQ.id}', ${idx})" class="w-full text-left p-4 rounded-xl border ${isChecked ? 'border-theme bg-theme-accent ring-2 ring-emerald-500/30' : 'border-slate-200 hover:bg-slate-50'} transition flex items-center space-x-3">
-                                        <span class="w-7 h-7 rounded-full ${isChecked ? 'bg-theme text-white' : 'bg-slate-100 text-slate-600'} flex items-center justify-center text-xs font-bold shrink-0">
-                                            ${String.fromCharCode(65 + idx)}
-                                        </span>
-                                        <span class="text-sm text-slate-700 font-medium">${opt}</span>
-                                    </button>
-                                `;
-                            }).join('')}
-                        </div>
-
-                        <!-- NAVIGATION & SUBMIT -->
-                        <div class="flex items-center justify-between pt-4 border-t border-slate-100">
-                            <button onclick="app.prevQuizQuestion()" ${state.currentIndex === 0 ? 'disabled class="opacity-50 cursor-not-allowed px-4 py-2 rounded-xl border text-xs font-bold text-slate-400"' : 'class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50"'}>
-                                Previous
-                            </button>
-                            
-                            ${state.currentIndex === state.questions.length - 1 ? `
-                                <button onclick="app.confirmEarlySubmit()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow transition flex items-center space-x-1.5">
-                                    <i class="fa-solid fa-check-circle"></i>
-                                    <span>Submit & Review Exam</span>
-                                </button>
-                            ` : `
-                                <button onclick="app.nextQuizQuestion()" class="bg-theme hover:bg-theme-dark text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow transition">
-                                    Next Question
-                                </button>
-                            `}
-                        </div>
-                    </div>
-                `;
-            }
-
-            selectQuizOption(qId, optionIdx) {
-                if (!this.activeQuizState) return;
-                this.activeQuizState.answers[qId] = optionIdx;
-                this.render();
-            }
-
-            prevQuizQuestion() {
-                if (this.activeQuizState && this.activeQuizState.currentIndex > 0) {
-                    this.activeQuizState.currentIndex--;
-                    this.render();
-                }
-            }
-
-            nextQuizQuestion() {
-                if (this.activeQuizState && this.activeQuizState.currentIndex < this.activeQuizState.questions.length - 1) {
-                    this.activeQuizState.currentIndex++;
-                    this.render();
-                }
-            }
-
-            confirmEarlySubmit() {
-                if (!this.activeQuizState) return;
-                const total = this.activeQuizState.questions.length;
-                const answeredCount = Object.keys(this.activeQuizState.answers).length;
-                const unanswered = total - answeredCount;
-
-                let msg = `Are you sure you want to submit your exam now?`;
-                if (unanswered > 0) {
-                    msg = `You have ${unanswered} unanswered question(s) remaining out of ${total}. Are you sure you want to submit early?`;
-                }
-
-                const html = `
-                    <div class="p-2">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-paper-plane text-theme me-2"></i>Confirm Submission</h3>
-                            <button onclick="app.closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-                        </div>
-                        <p class="text-sm text-slate-600 mb-4">${msg}</p>
-                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs text-slate-500 mb-6 space-y-1">
-                            <div>• Total Questions: <strong class="text-slate-700">${total}</strong></div>
-                            <div>• Answered: <strong class="text-emerald-600">${answeredCount}</strong></div>
-                            <div>• Unanswered: <strong class="${unanswered > 0 ? 'text-red-600' : 'text-slate-700'}">${unanswered}</strong></div>
-                        </div>
-                        <div class="flex justify-end space-x-2">
-                            <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border border-slate-300 font-semibold text-slate-600 hover:bg-slate-50 text-xs">Continue Exam</button>
-                            <button onclick="app.closeModal(); app.submitActiveQuiz();" class="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 text-xs shadow">Yes, Submit & Review</button>
-                        </div>
-                    </div>
-                `;
-                this.showModal(html);
-            }
-
-            async submitActiveQuiz() {
-                if (!this.activeQuizState) return;
-                if (this.activeQuizState.timerInterval) {
-                    clearInterval(this.activeQuizState.timerInterval);
-                }
-
-                const state = this.activeQuizState;
-                let score = 0;
-                const total = state.questions.length;
-
-                const detailedResults = state.questions.map(q => {
-                    const studentAns = state.answers[q.id];
-                    const isCorrect = studentAns === q.correct_index;
-                    if (isCorrect) score++;
-                    return {
-                        question_id: q.id,
-                        question_text: q.question,
-                        options: q.options,
-                        student_answer_idx: studentAns,
-                        correct_answer_idx: q.correct_index,
-                        rationale: q.rationale,
-                        is_correct: isCorrect
-                    };
-                });
-
-                const percentage = Math.round((score / total) * 100);
-
-                const attemptRecord = {
-                    id: 'attempt_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
-                    quiz_id: state.quizId,
-                    quiz_title: state.quizTitle,
-                    student_name: state.studentName,
-                    student_id: state.studentId,
-                    score: score,
-                    total_questions: total,
-                    percentage: percentage,
-                    submitted_at: new Date().toISOString(),
-                    details: detailedResults
-                };
-
-                // Clear active quiz state
-                this.activeQuizState = null;
-
-                // Sync item to exam_history in Supabase (synced across all devices)
-                await this.upsertItem('exam_history', attemptRecord);
-
-                this.toast('Exam submitted successfully! Result synced across devices.', 'success');
-                this.navigate('history');
-                this.openAttemptModal(attemptRecord.id);
-            }
-
-            // 2. ATTEMPT HISTORY VIEW
-            renderHistoryView() {
-                return `
-                    <div class="space-y-6">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-800">Student Exam Attempts</h2>
-                                <p class="text-xs text-slate-500 mt-1">Review attempts submitted across all synced devices.</p>
-                            </div>
-                            <input type="text" id="historySearch" oninput="app.renderHistoryList()" placeholder="Search student or quiz..." class="px-4 py-2 rounded-xl border border-slate-300 text-xs focus-ring w-full sm:w-64" />
-                        </div>
-
-                        <div id="historyListContainer" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                            <!-- Injected by renderHistoryList -->
-                        </div>
-                    </div>
-                `;
-            }
-
-            renderHistoryList() {
-                const container = document.getElementById('historyListContainer');
-                if (!container) return;
-
-                const search = (document.getElementById('historySearch')?.value || '').toLowerCase();
-                const filtered = this.examHistory.filter(h => 
-                    (h.student_name || '').toLowerCase().includes(search) ||
-                    (h.student_id || '').toLowerCase().includes(search) ||
-                    (h.quiz_title || '').toLowerCase().includes(search)
-                ).sort((a,b) => new Date(b.submitted_at) - new Date(a.submitted_at));
-
-                if (filtered.length === 0) {
-                    container.innerHTML = `
-                        <div class="text-center py-12 text-slate-400">
-                            <i class="fa-solid fa-clock-rotate-left text-4xl mb-3"></i>
-                            <p class="text-base font-semibold">No Exam Attempts Found</p>
-                            <p class="text-xs mt-1">Submit an assessment to record your performance.</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                container.innerHTML = `
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase font-bold tracking-wider">
-                                    <th class="p-4">Student</th>
-                                    <th class="p-4">Quiz Title</th>
-                                    <th class="p-4">Submitted At</th>
-                                    <th class="p-4">Score</th>
-                                    <th class="p-4 text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100 text-sm">
-                                ${filtered.map(h => `
-                                    <tr class="hover:bg-slate-50/50 transition">
-                                        <td class="p-4">
-                                            <div class="font-bold text-slate-800">${h.student_name}</div>
-                                            <div class="text-xs text-slate-400">${h.student_id}</div>
-                                        </td>
-                                        <td class="p-4 font-medium text-slate-700">${h.quiz_title}</td>
-                                        <td class="p-4 text-xs text-slate-500">${new Date(h.submitted_at).toLocaleString()}</td>
-                                        <td class="p-4">
-                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${h.percentage >= 70 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">
-                                                ${h.score}/${h.total_questions} (${h.percentage}%)
-                                            </span>
-                                        </td>
-                                        <td class="p-4 text-right">
-                                            <button onclick="app.openAttemptModal('${h.id}')" class="bg-theme hover:bg-theme-dark text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition">
-                                                Review Rationale
-                                            </button>
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-            }
-
-            openAttemptModal(attemptId) {
-                const item = this.examHistory.find(h => h.id === attemptId);
-                if (!item) return;
-
-                const details = item.details || [];
-
-                const html = `
-                    <div class="p-2">
-                        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-800">Assessment Review & Rationale</h3>
-                                <p class="text-xs text-slate-500">${item.quiz_title} — ${item.student_name} (${item.student_id})</p>
-                            </div>
-                            <button onclick="app.closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-                        </div>
-
-                        <div class="bg-slate-50 p-4 rounded-xl flex items-center justify-between mb-6 text-xs font-semibold">
-                            <span>Score: ${item.score}/${item.total_questions}</span>
-                            <span class="text-base font-bold ${item.percentage >= 70 ? 'text-emerald-600' : 'text-red-600'}">${item.percentage}%</span>
-                            <span>Submitted: ${new Date(item.submitted_at).toLocaleTimeString()}</span>
-                        </div>
-
-                        <div class="space-y-6 max-h-[60vh] overflow-y-auto pr-1">
-                            ${details.map((d, i) => `
-                                <div class="p-4 rounded-2xl border ${d.is_correct ? 'border-emerald-200 bg-emerald-50/10' : 'border-red-200 bg-red-50/10'}">
-                                    <p class="font-bold text-sm text-slate-800 mb-3">${i + 1}. ${d.question_text}</p>
-                                    <div class="space-y-1.5 mb-3 text-xs">
-                                        ${d.options.map((opt, idx) => {
-                                            const isSelected = d.student_answer_idx === idx;
-                                            const isCorrect = d.correct_answer_idx === idx;
-                                            let badgeClass = 'text-slate-600';
-                                            if (isCorrect) badgeClass = 'text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded';
-                                            if (isSelected && !isCorrect) badgeClass = 'text-red-700 font-bold bg-red-100 px-2 py-0.5 rounded';
-
-                                            return `
-                                                <div class="flex items-center justify-between ${badgeClass}">
-                                                    <span>${String.fromCharCode(65 + idx)}. ${opt}</span>
-                                                    ${isCorrect ? '<i class="fa-solid fa-check text-emerald-600"></i>' : ''}
-                                                    ${isSelected && !isCorrect ? '<i class="fa-solid fa-xmark text-red-600"></i>' : ''}
-                                                </div>
-                                            `;
-                                        }).join('')}
-                                    </div>
-                                    <div class="bg-white p-3 rounded-xl border border-slate-200 text-xs text-slate-600">
-                                        <strong class="text-slate-800">Rationale:</strong> ${d.rationale || 'No rationale provided.'}
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-                this.showModal(html);
-            }
-
-            // 3. QUESTION BANK VIEW (INSTRUCTOR ONLY)
-            renderQuestionsView() {
-                if (this.role !== 'instructor') return '';
-                return `
-                    <div class="space-y-6">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-800">Question Bank & Folders</h2>
-                                <p class="text-xs text-slate-500 mt-1">Manage individual questions for cross-device synchronization.</p>
-                            </div>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <button onclick="app.openFolderModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-2 rounded-xl text-xs transition flex items-center space-x-1">
-                                    <i class="fa-solid fa-folder-plus"></i><span>New Folder</span>
-                                </button>
-                                <button onclick="app.openBulkUploadModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-2 rounded-xl text-xs transition flex items-center space-x-1">
-                                    <i class="fa-solid fa-file-import"></i><span>Bulk Upload</span>
-                                </button>
-                                <button onclick="app.openQuestionModal()" class="bg-theme text-white font-bold px-4 py-2 rounded-xl shadow hover:bg-theme-dark transition text-xs flex items-center space-x-1">
-                                    <i class="fa-solid fa-plus"></i><span>Add Question</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            ${this.questions.length === 0 ? `
-                                <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300 text-slate-400">
-                                    <p>No questions created yet.</p>
-                                </div>
-                            ` : this.questions.map(q => {
-                                const folder = this.folders.find(f => f.id === q.folder_id);
-                                return `
-                                    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition">
-                                        <div>
-                                            <span class="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
-                                                ${folder ? folder.name : 'Uncategorized'}
-                                            </span>
-                                            <p class="font-bold text-sm text-slate-800 my-2 line-clamp-3">${q.question}</p>
-                                            <p class="text-xs text-slate-500 line-clamp-2 mb-3"><strong>Rationale:</strong> ${q.rationale}</p>
-                                        </div>
-                                        <div class="flex items-center justify-end space-x-2 border-t border-slate-100 pt-3">
-                                            <button onclick="app.openQuestionModal('${q.id}')" class="p-1.5 text-slate-500 hover:text-slate-800"><i class="fa-solid fa-pen-to-square"></i></button>
-                                            <button onclick="app.deleteItem('questions', '${q.id}')" class="p-1.5 text-slate-500 hover:text-red-600"><i class="fa-solid fa-trash"></i></button>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-
-            // MODALS FOR CRUD (INSTRUCTOR ONLY)
-            openFolderModal() {
-                if (this.role !== 'instructor') {
-                    this.toast('Admin authorization required', 'error');
-                    return;
-                }
-                const html = `
-                    <div class="p-2">
-                        <h3 class="text-lg font-bold text-slate-800 mb-4">Create Specialty Folder</h3>
-                        <div class="space-y-3 mb-6">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Folder Name *</label>
-                                <input type="text" id="folderNameInput" class="w-full px-4 py-2 rounded-xl border border-slate-300 text-sm focus-ring" />
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Description</label>
-                                <input type="text" id="folderDescInput" class="w-full px-4 py-2 rounded-xl border border-slate-300 text-sm focus-ring" />
-                            </div>
-                        </div>
-                        <div class="flex justify-end space-x-2">
-                            <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border text-xs font-semibold">Cancel</button>
-                            <button onclick="app.saveFolder()" class="px-4 py-2 rounded-xl bg-theme text-white text-xs font-bold">Save Folder</button>
-                        </div>
-                    </div>
-                `;
-                this.showModal(html);
-            }
-
-            async saveFolder() {
-                if (this.role !== 'instructor') {
-                    this.toast('Admin authorization required', 'error');
-                    return;
-                }
-                const name = document.getElementById('folderNameInput')?.value.trim();
-                const desc = document.getElementById('folderDescInput')?.value.trim();
-                if (!name) return this.toast('Folder name required', 'error');
-
-                const folder = {
-                    id: 'f_' + Date.now(),
-                    name: name,
-                    description: desc
-                };
-                await this.upsertItem('folders', folder);
-                this.closeModal();
-            }
-
-            openQuestionModal(qId = null) {
-                if (this.role !== 'instructor') {
-                    this.toast('Admin authorization required', 'error');
-                    return;
-                }
-                const q = this.questions.find(x => x.id === qId) || {
-                    folder_id: this.folders[0]?.id || '',
-                    question: '',
-                    options: ['', '', '', ''],
-                    correct_index: 0,
-                    rationale: ''
-                };
-
-                const html = `
-                    <div class="p-2">
-                        <h3 class="text-lg font-bold text-slate-800 mb-4">${qId ? 'Edit Question' : 'Add New Question'}</h3>
-                        <div class="space-y-4 mb-6">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Folder</label>
-                                <select id="qFolderInput" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus-ring">
-                                    ${this.folders.map(f => `<option value="${f.id}" ${q.folder_id === f.id ? 'selected' : ''}>${f.name}</option>`).join('')}
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Question Text *</label>
-                                <textarea id="qTextInput" rows="3" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus-ring">${q.question}</textarea>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Options & Correct Answer</label>
-                                <div class="space-y-2">
-                                    ${[0, 1, 2, 3].map(i => `
-                                        <div class="flex items-center space-x-2">
-                                            <input type="radio" name="correctOpt" value="${i}" ${q.correct_index === i ? 'checked' : ''} />
-                                            <input type="text" id="qOpt${i}" value="${q.options[i] || ''}" placeholder="Option ${String.fromCharCode(65 + i)}" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs focus-ring" />
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Rationale</label>
-                                <textarea id="qRationaleInput" rows="2" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus-ring">${q.rationale}</textarea>
-                            </div>
-                        </div>
-                        <div class="flex justify-end space-x-2">
-                            <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border text-xs font-semibold">Cancel</button>
-                            <button onclick="app.saveQuestion('${qId || ''}')" class="px-4 py-2 rounded-xl bg-theme text-white text-xs font-bold">Save Question</button>
-                        </div>
-                    </div>
-                `;
-                this.showModal(html);
-            }
-
-            async saveQuestion(qId) {
-                if (this.role !== 'instructor') {
-                    this.toast('Admin authorization required', 'error');
-                    return;
-                }
-                const folder_id = document.getElementById('qFolderInput')?.value;
-                const question = document.getElementById('qTextInput')?.value.trim();
-                const rationale = document.getElementById('qRationaleInput')?.value.trim();
-                const options = [
-                    document.getElementById('qOpt0')?.value.trim(),
-                    document.getElementById('qOpt1')?.value.trim(),
-                    document.getElementById('qOpt2')?.value.trim(),
-                    document.getElementById('qOpt3')?.value.trim()
-                ];
-                const correct_index = parseInt(document.querySelector('input[name="correctOpt"]:checked')?.value || '0');
-
-                if (!question || options.some(o => !o)) return this.toast('Please fill all question fields', 'error');
-
-                const item = {
-                    id: qId || 'q_' + Date.now(),
-                    folder_id,
-                    question,
-                    options,
-                    correct_index,
-                    rationale
-                };
-
-                await this.upsertItem('questions', item);
-                this.closeModal();
-            }
-
-            openQuizModal() {
-                if (this.role !== 'instructor') {
-                    this.toast('Admin authorization required', 'error');
-                    return;
-                }
-                const html = `
-                    <div class="p-2">
-                        <h3 class="text-lg font-bold text-slate-800 mb-4">Create Assessment</h3>
-                        <div class="space-y-4 mb-6">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Assessment Title *</label>
-                                <input type="text" id="qzTitleInput" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus-ring" />
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Time Limit (Minutes)</label>
-                                <input type="number" id="qzTimeInput" value="15" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus-ring" />
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Select Questions</label>
-                                <div class="max-h-48 overflow-y-auto border border-slate-200 rounded-xl p-3 space-y-2">
-                                    ${this.questions.map(q => `
-                                        <label class="flex items-center space-x-2 text-xs">
-                                            <input type="checkbox" name="quizQuestions" value="${q.id}" class="rounded text-theme" />
-                                            <span class="truncate">${q.question}</span>
-                                        </label>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex justify-end space-x-2">
-                            <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border text-xs font-semibold">Cancel</button>
-                            <button onclick="app.saveQuiz()" class="px-4 py-2 rounded-xl bg-theme text-white text-xs font-bold">Publish Quiz</button>
-                        </div>
-                    </div>
-                `;
-                this.showModal(html);
-            }
-
-            async saveQuiz() {
-                if (this.role !== 'instructor') {
-                    this.toast('Admin authorization required', 'error');
-                    return;
-                }
-                const title = document.getElementById('qzTitleInput')?.value.trim();
-                const time_limit_mins = parseInt(document.getElementById('qzTimeInput')?.value || '15');
-                const selected = Array.from(document.querySelectorAll('input[name="quizQuestions"]:checked')).map(cb => cb.value);
-
-                if (!title || selected.length === 0) return this.toast('Title and at least one question required', 'error');
-
-                const item = {
-                    id: 'quiz_' + Date.now(),
-                    title,
-                    folder_id: this.questions.find(q => q.id === selected[0])?.folder_id || '',
-                    time_limit_mins,
-                    expires_at: new Date(Date.now() + 86400000 * 7).toISOString(),
-                    question_ids: selected
-                };
-
-                await this.upsertItem('quizzes', item);
-                this.closeModal();
-            }
-
-            openReactivateModal(quizId) {
-                if (this.role !== 'instructor') {
-                    this.toast('Admin authorization required', 'error');
-                    return;
-                }
-                const html = `
-                    <div class="p-2">
-                        <h3 class="text-lg font-bold text-slate-800 mb-4">Extend Quiz Deadline</h3>
-                        <p class="text-xs text-slate-500 mb-4">Choose an extension duration for this assessment.</p>
-                        <div class="grid grid-cols-3 gap-2 mb-4">
-                            <button onclick="app.extendQuiz('${quizId}', 1)" class="p-2 border rounded-xl text-xs font-bold hover:bg-slate-50">+1 Day</button>
-                            <button onclick="app.extendQuiz('${quizId}', 7)" class="p-2 border rounded-xl text-xs font-bold hover:bg-slate-50">+7 Days</button>
-                            <button onclick="app.extendQuiz('${quizId}', 30)" class="p-2 border rounded-xl text-xs font-bold hover:bg-slate-50">+30 Days</button>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Custom Expiration Date</label>
-                            <input type="datetime-local" id="customExpiryInput" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus-ring" />
-                        </div>
-                        <div class="flex justify-end space-x-2 mt-6">
-                            <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border text-xs font-semibold">Cancel</button>
-                            <button onclick="app.applyCustomExpiry('${quizId}')" class="px-4 py-2 rounded-xl bg-theme text-white text-xs font-bold">Apply Date</button>
-                        </div>
-                    </div>
-                `;
-                this.showModal(html);
-            }
-
-            async extendQuiz(quizId, days) {
-                if (this.role !== 'instructor') {
-                    this.toast('Admin authorization required', 'error');
-                    return;
-                }
-                const quiz = this.quizzes.find(q => q.id === quizId);
-                if (!quiz) return;
-                quiz.expires_at = new Date(Date.now() + 86400000 * days).toISOString();
-                await this.upsertItem('quizzes', quiz);
-                this.closeModal();
-            }
-
-            async applyCustomExpiry(quizId) {
-                if (this.role !== 'instructor') {
-                    this.toast('Admin authorization required', 'error');
-                    return;
-                }
-                const val = document.getElementById('customExpiryInput')?.value;
-                if (!val) return;
-                const quiz = this.quizzes.find(q => q.id === quizId);
-                if (!quiz) return;
-                quiz.expires_at = new Date(val).toISOString();
-                await this.upsertItem('quizzes', quiz);
-                this.closeModal();
-            }
-
-            openBulkUploadModal() {
-                if (this.role !== 'instructor') {
-                    this.toast('Admin authorization required', 'error');
-                    return;
-                }
-                const html = `
-                    <div class="p-2">
-                        <h3 class="text-lg font-bold text-slate-800 mb-2">Bulk JSON Import</h3>
-                        <p class="text-xs text-slate-500 mb-4">Paste a JSON array of question objects to import in bulk.</p>
-                        <textarea id="bulkJsonInput" rows="8" placeholder='[{"question": "...", "options": ["A","B","C","D"], "correct_index": 0, "rationale": "..."}]' class="w-full font-mono text-xs p-3 rounded-xl border border-slate-300 focus-ring mb-4"></textarea>
-                        <div class="flex justify-end space-x-2">
-                            <button onclick="app.closeModal()" class="px-4 py-2 rounded-xl border text-xs font-semibold">Cancel</button>
-                            <button onclick="app.processBulkImport()" class="px-4 py-2 rounded-xl bg-theme text-white text-xs font-bold">Import Questions</button>
-                        </div>
-                    </div>
-                `;
-                this.showModal(html);
-            }
-
-            async processBulkImport() {
-                if (this.role !== 'instructor') {
-                    this.toast('Admin authorization required', 'error');
-                    return;
-                }
-                try {
-                    const str = document.getElementById('bulkJsonInput')?.value;
-                    const parsed = JSON.parse(str);
-                    if (!Array.isArray(parsed)) throw new Error("JSON must be an array");
-
-                    let count = 0;
-                    for (const item of parsed) {
-                        if (item.question && Array.isArray(item.options)) {
-                            const qObj = {
-                                id: 'q_' + Date.now() + '_' + Math.random().toString(36).substring(2, 5),
-                                folder_id: item.folder_id || this.folders[0]?.id || 'f1',
-                                question: item.question,
-                                options: item.options,
-                                correct_index: item.correct_index || 0,
-                                rationale: item.rationale || ''
-                            };
-                            await this.upsertItem('questions', qObj);
-                            count++;
-                        }
-                    }
-                    this.toast(`Imported ${count} questions successfully`, 'success');
-                    this.closeModal();
-                } catch (e) {
-                    this.toast('Invalid JSON format: ' + e.message, 'error');
-                }
-            }
-
-            // 4. SETTINGS & SYNC DOCUMENTATION VIEW (INSTRUCTOR ONLY)
-            renderSettingsView() {
-                if (this.role !== 'instructor') return '';
-                return `
-                    <div class="space-y-6">
-                        <!-- DETAILED STEP-BY-STEP SYNCHRONIZATION GUIDE -->
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-                            <h2 class="text-lg font-bold text-slate-800 flex items-center">
-                                <i class="fa-solid fa-arrows-rotate text-theme me-2"></i>Supabase Synchronization Process (Detailed Explanation)
-                            </h2>
-                            <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-xs text-emerald-900 space-y-2">
-                                <p class="font-bold text-sm">How Automatic Cross-Device Realtime Sync Works:</p>
-                                <ol class="list-decimal list-inside space-y-1.5 leading-relaxed">
-                                    <li><strong>Granular Item Storage:</strong> Every question, folder, quiz, and student attempt is stored as an independent row with a unique primary key in Supabase rather than a monolithic single JSON object.</li>
-                                    <li><strong>Non-Overwriting Upserts:</strong> When a student submits a quiz on Device A, a new record is added to <code>exam_history</code>. It does NOT overwrite other students' attempts.</li>
-                                    <li><strong>Realtime WebSockets:</strong> Once configured, the client subscribes to Supabase Postgres Changes via WebSockets (<code>supabase.channel()</code>).</li>
-                                    <li><strong>Auto-Refresh:</strong> When any device updates the database, Supabase broadcasts an event instantly to all open devices, triggering automatic re-fetches and live UI updates without requiring page reloads.</li>
-                                </ol>
-                            </div>
-                        </div>
-
-                        <!-- SUPABASE CONFIG -->
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-                            <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-plug text-theme me-2"></i>Supabase Connection Settings</h2>
-                            <p class="text-xs text-slate-500">Enter your Supabase Project URL and Anon API Key to activate realtime syncing.</p>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1">Supabase Project URL</label>
-                                    <input type="text" id="sbUrlInput" value="${this.supabaseUrl}" placeholder="https://xyz.supabase.co" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus-ring" />
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1">Supabase Anon Key</label>
-                                    <input type="password" id="sbKeyInput" value="${this.supabaseKey}" placeholder="eyJhbG..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus-ring" />
-                                </div>
-                            </div>
-                            <div class="flex justify-end space-x-2 pt-2">
-                                <button onclick="app.saveSupabaseConfig()" class="bg-theme text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-theme-dark transition">
-                                    Save Credentials & Connect
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- PASSCODE MANAGEMENT -->
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-                            <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-key text-theme me-2"></i>Instructor Passcode Settings</h2>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1">Current Passcode</label>
-                                    <input type="password" id="currPassInput" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus-ring" />
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1">New Passcode</label>
-                                    <input type="password" id="newPassInput" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus-ring" />
-                                </div>
-                            </div>
-                            <div class="flex justify-end pt-2">
-                                <button onclick="app.updatePasscode()" class="bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-slate-900 transition">
-                                    Update Passcode
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- EXACT SQL SETUP INSTRUCTIONS -->
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-                            <div class="flex items-center justify-between">
-                                <h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-database text-theme me-2"></i>Supabase SQL Schema & RLS Script</h2>
-                                <button onclick="app.copySqlInstructions()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition flex items-center space-x-1">
-                                    <i class="fa-solid fa-copy"></i><span>Copy SQL</span>
-                                </button>
-                            </div>
-                            <p class="text-xs text-slate-500">Run this SQL script in your Supabase SQL Editor to create tables, enable Realtime, and establish open access policies.</p>
-                            
-                            <pre id="sqlBlock" class="bg-slate-900 text-emerald-400 p-4 rounded-xl text-[11px] font-mono overflow-x-auto leading-relaxed selection:bg-emerald-800 select-all">
--- 1. Create Granular Folders Table
-CREATE TABLE IF NOT EXISTS public.folders (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    description TEXT
-);
-
--- 2. Create Granular Questions Table
-CREATE TABLE IF NOT EXISTS public.questions (
-    id TEXT PRIMARY KEY,
-    folder_id TEXT,
-    question TEXT NOT NULL,
-    options JSONB NOT NULL,
-    correct_index INT NOT NULL,
-    rationale TEXT
-);
-
--- 3. Create Granular Quizzes Table
-CREATE TABLE IF NOT EXISTS public.quizzes (
-    id TEXT PRIMARY KEY,
-    title TEXT NOT NULL,
-    folder_id TEXT,
-    time_limit_mins INT DEFAULT 15,
-    expires_at TIMESTAMPTZ,
-    question_ids JSONB
-);
-
--- 4. Create Exam Attempt History Table (Non-Overwriting)
-CREATE TABLE IF NOT EXISTS public.exam_history (
-    id TEXT PRIMARY KEY,
-    quiz_id TEXT,
-    quiz_title TEXT,
-    student_name TEXT NOT NULL,
-    student_id TEXT NOT NULL,
-    score INT,
-    total_questions INT,
-    percentage INT,
-    submitted_at TIMESTAMPTZ DEFAULT NOW(),
-    details JSONB
-);
-
--- 5. Create App Config Table
-CREATE TABLE IF NOT EXISTS public.app_config (
-    key TEXT PRIMARY KEY,
-    value TEXT
-);
-
--- Enable Realtime on all tables
-ALTER PUBLICATION supabase_realtime ADD TABLE folders, questions, quizzes, exam_history, app_config;
-
--- Enable Row Level Security (RLS) & Policies
-ALTER TABLE public.folders ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.questions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.quizzes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.exam_history ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.app_config ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Public Read Folders" ON public.folders FOR SELECT USING (true);
-CREATE POLICY "Public Write Folders" ON public.folders FOR ALL USING (true);
-
-CREATE POLICY "Public Read Questions" ON public.questions FOR SELECT USING (true);
-CREATE POLICY "Public Write Questions" ON public.questions FOR ALL USING (true);
-
-CREATE POLICY "Public Read Quizzes" ON public.quizzes FOR SELECT USING (true);
-CREATE POLICY "Public Write Quizzes" ON public.quizzes FOR ALL USING (true);
-
-CREATE POLICY "Public Read History" ON public.exam_history FOR SELECT USING (true);
-CREATE POLICY "Public Insert History" ON public.exam_history FOR ALL USING (true);
-
-CREATE POLICY "Public Config Access" ON public.app_config FOR ALL USING (true);
-                            </pre>
-                        </div>
-                    </div>
-                `;
-            }
-
-            saveSupabaseConfig() {
-                if (this.role !== 'instructor') {
-                    this.toast('Admin authorization required', 'error');
-                    return;
-                }
-                const url = document.getElementById('sbUrlInput')?.value.trim();
-                const key = document.getElementById('sbKeyInput')?.value.trim();
-
-                this.supabaseUrl = url;
-                this.supabaseKey = key;
-
-                localStorage.setItem('coma_sb_url', url);
-                localStorage.setItem('coma_sb_key', key);
-
-                this.initSupabaseClient();
-                this.loadAllData();
-                this.toast('Supabase settings updated & synced', 'success');
-            }
-
-            async updatePasscode() {
-                if (this.role !== 'instructor') {
-                    this.toast('Admin authorization required', 'error');
-                    return;
-                }
-                const curr = document.getElementById('currPassInput')?.value;
-                const next = document.getElementById('newPassInput')?.value;
-
-                if (curr !== this.passcode) {
-                    return this.toast('Current passcode incorrect', 'error');
-                }
-                if (!next || next.length < 4) {
-                    return this.toast('New passcode must be at least 4 characters', 'warning');
-                }
-
-                this.passcode = next;
-                localStorage.setItem('coma_passcode', next);
-
-                if (this.supabase) {
-                    await this.supabase.from('app_config').upsert({ key: 'passcode', value: next });
-                }
-
-                this.toast('Passcode updated successfully', 'success');
-                document.getElementById('currPassInput').value = '';
-                document.getElementById('newPassInput').value = '';
-            }
-
-            copySqlInstructions() {
-                const sqlText = document.getElementById('sqlBlock')?.innerText;
-                if (!sqlText) return;
-
-                const textarea = document.createElement('textarea');
-                textarea.value = sqlText;
-                document.body.appendChild(textarea);
-                textarea.select();
-                try {
-                    document.execCommand('copy');
-                    this.toast('SQL Script copied to clipboard!', 'success');
-                } catch (err) {
-                    this.toast('Failed to copy', 'error');
-                }
-                document.body.removeChild(textarea);
-            }
-
-            // MODAL & TOAST UTILITIES
-            showModal(htmlContent) {
-                const modalOverlay = document.getElementById('modalOverlay');
-                const modalBody = document.getElementById('modalBody');
-                if (modalOverlay && modalBody) {
-                    modalBody.innerHTML = htmlContent;
-                    modalOverlay.classList.remove('hidden');
-                }
-            }
-
-            closeModal() {
-                const modalOverlay = document.getElementById('modalOverlay');
-                if (modalOverlay) {
-                    modalOverlay.classList.add('hidden');
-                }
-            }
-
-            toast(message, type = 'info') {
-                const container = document.getElementById('toastContainer');
-                if (!container) return;
-
-                const toastEl = document.createElement('div');
-                let bg = 'bg-slate-800 text-white';
-                if (type === 'success') bg = 'bg-emerald-600 text-white';
-                if (type === 'error') bg = 'bg-red-600 text-white';
-                if (type === 'warning') bg = 'bg-amber-600 text-white';
-
-                toastEl.className = `${bg} px-4 py-3 rounded-xl shadow-lg text-xs font-semibold flex items-center space-x-2 transition-all duration-300 transform translate-y-2 pointer-events-auto`;
-                toastEl.innerHTML = `<span>${message}</span>`;
-
-                container.appendChild(toastEl);
-
-                setTimeout(() => {
-                    toastEl.classList.add('opacity-0', 'translate-y-4');
-                    setTimeout(() => toastEl.remove(), 300);
-                }, 3500);
+            } catch (err) {
+                console.warn('Supabase init fallback to local memory:', err);
+                loadLocalStorage();
             }
         }
 
-        // Initialize application on DOM load
-        let app;
-        window.addEventListener('DOMContentLoaded', () => {
-            app = new MedPortalApp();
-            // Attach render history listener when entering view
-            const origNav = app.navigate.bind(app);
-            app.navigate = (view) => {
-                origNav(view);
-                if (view === 'history') app.renderHistoryList();
-            };
-        });
+        async function fetchAllSupabaseData() {
+            if (!supabaseClient) return;
+            const { data, error } = await supabaseClient.from('quizlms_storage').select('*');
+            if (error) {
+                console.error('Error fetching Supabase data:', error);
+                return;
+            }
+            if (data && data.length > 0) {
+                data.forEach(row => {
+                    if (row.key === 'folders') state.folders = row.payload;
+                    if (row.key === 'questions') state.questions = row.payload;
+                    if (row.key === 'quizzes') state.quizzes = row.payload;
+                    if (row.key === 'submissions') state.submissions = row.payload;
+                });
+            }
+            app.render();
+        }
+
+        function setupSupabaseRealtime() {
+            if (!supabaseClient) return;
+            supabaseClient
+                .channel('public:quizlms_storage')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'quizlms_storage' }, payload => {
+                    if (payload.new && payload.new.key) {
+                        state[payload.new.key] = payload.new.payload;
+                        app.render();
+                    }
+                })
+                .subscribe();
+        }
+
+        async function syncToSupabase(keyName, dataArray) {
+            // Always update local cache first
+            localStorage.setItem('quizlms_' + keyName, JSON.stringify(dataArray));
+            if (!supabaseConnected || !supabaseClient) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('quizlms_storage')
+                    .upsert({ key: keyName, payload: dataArray, updated_at: new Date() });
+                if (error) console.error('Supabase upsert error:', error);
+            } catch (e) {
+                console.error('Cloud write exception:', e);
+            }
+        }
+
+        function loadLocalStorage() {
+            try {
+                const f = localStorage.getItem('quizlms_folders');
+                const q = localStorage.getItem('quizlms_questions');
+                const qz = localStorage.getItem('quizlms_quizzes');
+                const sub = localStorage.getItem('quizlms_submissions');
+
+                if (f) state.folders = JSON.parse(f);
+                if (q) state.questions = JSON.parse(q);
+                if (qz) state.quizzes = JSON.parse(qz);
+                if (sub) state.submissions = JSON.parse(sub);
+            } catch (e) {
+                console.error('Local storage load error:', e);
+            }
+            app.render();
+        }
+
+        // Window Application API Object
+        window.app = {
+            init() {
+                initSupabase();
+                this.render();
+            },
+
+            render() {
+                if (state.currentRole === 'student') {
+                    document.getElementById('adminDashboardView').classList.add('hidden');
+                    document.getElementById('examPlayerView').classList.add('hidden');
+                    document.getElementById('reviewAttemptView').classList.add('hidden');
+
+                    if (!state.studentName || !state.studentId) {
+                        document.getElementById('studentLoginGate').classList.remove('hidden');
+                        document.getElementById('studentDashboardView').classList.add('hidden');
+                    } else {
+                        document.getElementById('studentLoginGate').classList.add('hidden');
+                        document.getElementById('studentDashboardView').classList.remove('hidden');
+                        this.renderStudentDashboard();
+                    }
+                } else {
+                    document.getElementById('studentLoginGate').classList.add('hidden');
+                    document.getElementById('studentDashboardView').classList.add('hidden');
+                    document.getElementById('adminDashboardView').classList.remove('hidden');
+                    document.getElementById('examPlayerView').classList.add('hidden');
+                    document.getElementById('reviewAttemptView').classList.add('hidden');
+                    this.renderAdminDashboard();
+                }
+            },
+
+            loginStudent() {
+                const name = document.getElementById('gateStudentName').value.trim();
+                const id = document.getElementById('gateStudentId').value.trim();
+                if (!name || !id) return;
+
+                state.studentName = name;
+                state.studentId = id;
+                localStorage.setItem('quizlms_student_name', name);
+                localStorage.setItem('quizlms_student_id', id);
+                this.render();
+            },
+
+            logoutStudent() {
+                state.studentName = '';
+                state.studentId = '';
+                localStorage.removeItem('quizlms_student_name');
+                localStorage.removeItem('quizlms_student_id');
+                this.render();
+            },
+
+            switchRole(role) {
+                if (role === 'admin' && state.currentRole !== 'admin') {
+                    this.toggleModal('adminPasscodeModal', true);
+                } else if (role === 'student') {
+                    state.currentRole = 'student';
+                    document.getElementById('roleStudentBtn').className = "px-3 py-1 rounded-lg text-xs font-bold transition bg-indigo-600 text-white shadow-sm";
+                    document.getElementById('roleAdminBtn').className = "px-3 py-1 rounded-lg text-xs font-bold text-indigo-300 hover:text-white transition";
+                    document.getElementById('syncAdminLock').classList.remove('hidden');
+                    this.render();
+                }
+            },
+
+            verifyAdminPasscode() {
+                const pass = document.getElementById('adminPasscodeInput').value;
+                if (pass === 'Aamirah2022') {
+                    state.currentRole = 'admin';
+                    document.getElementById('adminPasscodeError').classList.add('hidden');
+                    document.getElementById('adminPasscodeInput').value = '';
+                    this.toggleModal('adminPasscodeModal', false);
+
+                    document.getElementById('roleAdminBtn').className = "px-3 py-1 rounded-lg text-xs font-bold transition bg-indigo-600 text-white shadow-sm";
+                    document.getElementById('roleStudentBtn').className = "px-3 py-1 rounded-lg text-xs font-bold text-indigo-300 hover:text-white transition";
+                    document.getElementById('syncAdminLock').classList.add('hidden');
+                    this.render();
+                } else {
+                    document.getElementById('adminPasscodeError').classList.remove('hidden');
+                }
+            },
+
+            openSyncModalIfAdmin() {
+                if (state.currentRole === 'admin') {
+                    this.switchAdminTab('sync');
+                }
+            },
+
+            toggleModal(modalId, show) {
+                const el = document.getElementById(modalId);
+                if (show) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            },
+
+            navigateTo(view) {
+                if (view === 'dashboard') {
+                    if (state.timerInterval) clearInterval(state.timerInterval);
+                    this.render();
+                }
+            },
+
+            // Student Dashboard Renderers
+            renderStudentDashboard() {
+                document.getElementById('displayStudentName').innerText = state.studentName;
+                document.getElementById('displayStudentId').innerText = state.studentId;
+                document.getElementById('studentAvatarInitials').innerText = state.studentName.substring(0, 2).toUpperCase();
+
+                const published = state.quizzes.filter(q => q.published);
+                document.getElementById('publishedCountBadge').innerText = `${published.length} Available`;
+
+                const grid = document.getElementById('publishedQuizzesGrid');
+                grid.innerHTML = published.map(q => `
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
+                        <div class="space-y-2">
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-indigo-50 text-indigo-700 border border-indigo-100">${q.subject || 'General'}</span>
+                            <h4 class="font-bold text-slate-800 text-base leading-snug">${q.title}</h4>
+                            <div class="flex items-center space-x-4 text-xs text-slate-500 pt-1">
+                                <span><i class="fa-regular fa-clock mr-1 text-slate-400"></i>${q.duration} Mins</span>
+                                <span><i class="fa-solid fa-list-check mr-1 text-slate-400"></i>${q.questionIds ? q.questionIds.length : 0} Items</span>
+                                <span><i class="fa-solid fa-bullseye mr-1 text-slate-400"></i>Pass: ${q.passGrade}%</span>
+                            </div>
+                        </div>
+                        <button onclick="app.startExam('${q.id}')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs transition flex items-center justify-center space-x-1 shadow">
+                            <span>Attempt Examination</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
+                `).join('');
+
+                if (published.length === 0) {
+                    grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400 text-xs">No active published exams available right now.</div>`;
+                }
+
+                // Render Submissions History for logged in student ID
+                const userSubmissions = state.submissions.filter(s => s.studentId === state.studentId);
+                const historyBody = document.getElementById('studentHistoryTableBody');
+                historyBody.innerHTML = userSubmissions.map(s => `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-3 font-semibold text-slate-800">${s.quizTitle}</td>
+                        <td class="p-3 text-xs text-slate-500">${new Date(s.timestamp).toLocaleString()}</td>
+                        <td class="p-3 font-mono font-bold text-indigo-700">${s.score}/${s.totalPoints}</td>
+                        <td class="p-3 font-bold text-slate-700">${s.percentage}%</td>
+                        <td class="p-3">
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${s.passed ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                ${s.passed ? 'PASSED' : 'FAILED'}
+                            </span>
+                        </td>
+                        <td class="p-3 text-right">
+                            <button onclick="app.reviewSubmission('${s.id}')" class="text-indigo-600 hover:text-indigo-800 font-bold text-xs border border-indigo-200 px-2.5 py-1 rounded-lg bg-indigo-50/50">
+                                Review Answers
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                if (userSubmissions.length === 0) {
+                    historyBody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-slate-400 text-xs">No examination attempts logged for student ID: ${state.studentId}.</td></tr>`;
+                }
+            },
+
+            // Admin Dashboard & Folder Navigation
+            switchAdminTab(tab) {
+                state.currentAdminTab = tab;
+                ['quizzes', 'questions', 'results', 'sync'].forEach(t => {
+                    const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
+                    const view = document.getElementById(`adminTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
+                    if (t === tab) {
+                        btn.className = t === 'sync' 
+                            ? "pb-3 border-b-2 border-amber-500 font-bold text-amber-600 text-sm flex items-center space-x-2 ml-auto" 
+                            : "pb-3 border-b-2 border-indigo-600 font-bold text-indigo-600 text-sm flex items-center space-x-2";
+                        view.classList.remove('hidden');
+                    } else {
+                        btn.className = t === 'sync'
+                            ? "pb-3 border-b-2 border-transparent text-amber-600 hover:text-amber-700 font-bold text-sm flex items-center space-x-2 ml-auto"
+                            : "pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-semibold text-sm flex items-center space-x-2";
+                        view.classList.add('hidden');
+                    }
+                });
+                this.renderAdminDashboard();
+            },
+
+            renderAdminDashboard() {
+                if (state.currentAdminTab === 'quizzes') this.renderAdminQuizzes();
+                else if (state.currentAdminTab === 'questions') this.renderAdminQuestions();
+                else if (state.currentAdminTab === 'results') this.renderAdminResults();
+            },
+
+            renderAdminQuizzes() {
+                const grid = document.getElementById('adminQuizzesGrid');
+                grid.innerHTML = state.quizzes.map(q => `
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-slate-100 text-slate-700">${q.subject}</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${q.published ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                                    ${q.published ? 'Published' : 'Draft'}
+                                </span>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-base leading-snug">${q.title}</h4>
+                            <div class="text-xs text-slate-500 space-y-1">
+                                <div><i class="fa-regular fa-clock mr-1 text-slate-400"></i>Timer: ${q.duration} Mins</div>
+                                <div><i class="fa-solid fa-list-check mr-1 text-slate-400"></i>Questions: ${q.questionIds ? q.questionIds.length : 0} Item(s)</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between border-t border-slate-100 pt-3 space-x-2">
+                            <button onclick="app.togglePublishQuiz('${q.id}')" class="flex-1 py-1.5 rounded-xl text-xs font-bold ${q.published ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}">
+                                ${q.published ? 'Unpublish' : 'Publish to Portal'}
+                            </button>
+                            <button onclick="app.deleteQuiz('${q.id}')" class="p-2 text-slate-400 hover:text-rose-600 transition">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            renderAdminQuestions() {
+                const folderContainer = document.getElementById('folderList');
+                folderContainer.innerHTML = `
+                    <button onclick="app.selectFolder('all')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between ${state.activeFolderId === 'all' ? 'bg-indigo-50 text-indigo-700 font-bold' : 'text-slate-600 hover:bg-slate-50'}">
+                        <span><i class="fa-solid fa-folder mr-2 ${state.activeFolderId === 'all' ? 'text-indigo-600' : 'text-slate-400'}"></i>All Questions</span>
+                        <span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">${state.questions.length}</span>
+                    </button>
+                ` + state.folders.map(f => {
+                    const count = state.questions.filter(q => q.folderId === f.id).length;
+                    return `
+                        <div class="flex items-center justify-between group rounded-xl ${state.activeFolderId === f.id ? 'bg-indigo-50 text-indigo-700 font-bold' : 'text-slate-600 hover:bg-slate-50'}">
+                            <button onclick="app.selectFolder('${f.id}')" class="flex-grow text-left px-3 py-2 text-xs font-semibold flex items-center space-x-2">
+                                <i class="fa-solid fa-folder text-amber-400"></i>
+                                <span class="truncate">${f.name}</span>
+                            </button>
+                            <span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full mr-2">${count}</span>
+                            <button onclick="app.deleteFolder('${f.id}')" class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-600 p-1 mr-1 transition">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+
+                const filtered = state.activeFolderId === 'all' ? state.questions : state.questions.filter(q => q.folderId === state.activeFolderId);
+                const currentFolder = state.folders.find(f => f.id === state.activeFolderId);
+                document.getElementById('currentFolderNameTitle').innerHTML = `<i class="fa-regular fa-folder-open text-amber-500 mr-2"></i> ${currentFolder ? currentFolder.name : 'All Questions'}`;
+                document.getElementById('currentFolderCount').innerText = `${filtered.length} Question items`;
+
+                const qContainer = document.getElementById('questionsContainer');
+                qContainer.innerHTML = filtered.map((q, idx) => `
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+                        <div class="flex items-start justify-between">
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-bold uppercase px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded">${q.points || 1} Pt(s)</span>
+                                <h5 class="font-bold text-slate-800 text-sm leading-relaxed">${idx + 1}. ${q.text}</h5>
+                            </div>
+                            <button onclick="app.deleteQuestion('${q.id}')" class="text-slate-400 hover:text-rose-600 text-xs p-1">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                            ${q.options.map((opt, oIdx) => `
+                                <div class="p-2 rounded-lg border ${oIdx === q.correct ? 'bg-emerald-50 border-emerald-300 text-emerald-900 font-bold' : 'bg-white border-slate-200 text-slate-600'}">
+                                    <span class="mr-1 font-bold">${['A','B','C','D','E'][oIdx]}.</span> ${opt}
+                                </div>
+                            `).join('')}
+                        </div>
+                        ${q.explanation ? `<div class="text-[11px] text-slate-600 bg-white p-2.5 rounded-lg border border-slate-200"><strong>Rationale:</strong> ${q.explanation}</div>` : ''}
+                    </div>
+                `).join('');
+
+                if (filtered.length === 0) {
+                    qContainer.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">No questions stored in this folder.</div>`;
+                }
+            },
+
+            selectFolder(id) {
+                state.activeFolderId = id;
+                this.renderAdminQuestions();
+            },
+
+            openCreateFolderModal() {
+                document.getElementById('folderNameInput').value = '';
+                this.toggleModal('createFolderModal', true);
+            },
+
+            saveFolder() {
+                const name = document.getElementById('folderNameInput').value.trim();
+                if (!name) return;
+                const newFolder = { id: 'f_' + Date.now(), name };
+                state.folders.push(newFolder);
+                syncToSupabase('folders', state.folders);
+                this.toggleModal('createFolderModal', false);
+                this.renderAdminQuestions();
+            },
+
+            deleteFolder(id) {
+                state.folders = state.folders.filter(f => f.id !== id);
+                state.questions = state.questions.filter(q => q.folderId !== id);
+                syncToSupabase('folders', state.folders);
+                syncToSupabase('questions', state.questions);
+                if (state.activeFolderId === id) state.activeFolderId = 'all';
+                this.renderAdminQuestions();
+            },
+
+            openQuestionModal() {
+                const select = document.getElementById('qFolderSelect');
+                select.innerHTML = state.folders.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+                document.getElementById('qTextInput').value = '';
+                document.getElementById('optA').value = '';
+                document.getElementById('optB').value = '';
+                document.getElementById('optC').value = '';
+                document.getElementById('optD').value = '';
+                document.getElementById('optE').value = '';
+                document.getElementById('qExplanationInput').value = '';
+                this.toggleModal('questionModal', true);
+            },
+
+            saveQuestion() {
+                const text = document.getElementById('qTextInput').value.trim();
+                const optA = document.getElementById('optA').value.trim();
+                const optB = document.getElementById('optB').value.trim();
+                const optC = document.getElementById('optC').value.trim();
+                const optD = document.getElementById('optD').value.trim();
+                const optE = document.getElementById('optE').value.trim();
+                
+                if (!text || !optA || !optB) return;
+
+                const optionsList = [optA, optB, optC, optD, optE].filter(o => o !== '');
+
+                const newQ = {
+                    id: 'q_' + Date.now(),
+                    folderId: document.getElementById('qFolderSelect').value,
+                    text: text,
+                    options: optionsList,
+                    correct: parseInt(document.getElementById('correctOptionSelect').value),
+                    points: parseInt(document.getElementById('qPointsInput').value) || 1,
+                    explanation: document.getElementById('qExplanationInput').value.trim()
+                };
+
+                state.questions.push(newQ);
+                syncToSupabase('questions', state.questions);
+                this.toggleModal('questionModal', false);
+                this.renderAdminQuestions();
+            },
+
+            deleteQuestion(id) {
+                state.questions = state.questions.filter(q => q.id !== id);
+                syncToSupabase('questions', state.questions);
+                this.renderAdminQuestions();
+            },
+
+            openBulkUploadModal() {
+                document.getElementById('bulkJsonInput').value = '';
+                this.toggleModal('bulkUploadModal', true);
+            },
+
+            downloadSampleJson() {
+                const sample = [
+                    {
+                        text: "Which antibiotic inhibits cell wall synthesis?",
+                        options: ["Penicillin", "Ciprofloxacin", "Doxycycline", "Gentamicin"],
+                        correct: 0,
+                        points: 1,
+                        explanation: "Penicillin inhibits peptidoglycan cross-linking in bacterial cell walls."
+                    }
+                ];
+                const blob = new Blob([JSON.stringify(sample, null, 2)], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'question_bank_sample.json';
+                a.click();
+            },
+
+            processBulkUpload() {
+                try {
+                    const text = document.getElementById('bulkJsonInput').value.trim();
+                    const parsed = JSON.parse(text);
+                    if (Array.isArray(parsed)) {
+                        parsed.forEach(q => {
+                            const newQ = {
+                                id: 'q_' + Date.now() + Math.random().toString(36).substr(2, 4),
+                                folderId: state.activeFolderId === 'all' ? (state.folders[0]?.id || 'f1') : state.activeFolderId,
+                                text: q.text || 'Untitled Question',
+                                options: q.options || ['Option A', 'Option B'],
+                                correct: q.correct || 0,
+                                points: q.points || 1,
+                                explanation: q.explanation || ''
+                            };
+                            state.questions.push(newQ);
+                        });
+                        syncToSupabase('questions', state.questions);
+                        this.toggleModal('bulkUploadModal', false);
+                        this.renderAdminQuestions();
+                    }
+                } catch (e) {
+                    alert('Invalid JSON formatting.');
+                }
+            },
+
+            openQuizBuilderModal() {
+                const container = document.getElementById('quizQuestionPickerList');
+                container.innerHTML = state.questions.map(q => `
+                    <label class="flex items-start space-x-2 text-xs p-1.5 hover:bg-white rounded-lg cursor-pointer border border-transparent hover:border-slate-200">
+                        <input type="checkbox" value="${q.id}" class="quiz-q-checkbox mt-0.5 rounded text-indigo-600">
+                        <span class="text-slate-700 font-semibold">${q.text}</span>
+                    </label>
+                `).join('');
+                
+                document.getElementById('quizTitleInput').value = '';
+                document.getElementById('quizSubjectInput').value = '';
+                this.toggleModal('quizBuilderModal', true);
+            },
+
+            saveQuiz() {
+                const title = document.getElementById('quizTitleInput').value.trim();
+                const subject = document.getElementById('quizSubjectInput').value.trim();
+                const duration = parseInt(document.getElementById('quizDurationInput').value) || 15;
+                const passGrade = parseInt(document.getElementById('quizPassGradeInput').value) || 70;
+
+                const selectedQIds = Array.from(document.querySelectorAll('.quiz-q-checkbox:checked')).map(cb => cb.value);
+                if (!title || selectedQIds.length === 0) return;
+
+                const newQuiz = {
+                    id: 'qz_' + Date.now(),
+                    title,
+                    subject: subject || 'General Medicine',
+                    duration,
+                    passGrade,
+                    published: false,
+                    questionIds: selectedQIds
+                };
+
+                state.quizzes.push(newQuiz);
+                syncToSupabase('quizzes', state.quizzes);
+                this.toggleModal('quizBuilderModal', false);
+                this.renderAdminQuizzes();
+            },
+
+            togglePublishQuiz(id) {
+                const quiz = state.quizzes.find(q => q.id === id);
+                if (quiz) {
+                    quiz.published = !quiz.published;
+                    syncToSupabase('quizzes', state.quizzes);
+                    this.renderAdminQuizzes();
+                }
+            },
+
+            deleteQuiz(id) {
+                state.quizzes = state.quizzes.filter(q => q.id !== id);
+                syncToSupabase('quizzes', state.quizzes);
+                this.renderAdminQuizzes();
+            },
+
+            // Admin Results & Export
+            renderAdminResults() {
+                const search = (document.getElementById('adminResultSearch')?.value || '').toLowerCase();
+                const filtered = state.submissions.filter(s => 
+                    s.studentName.toLowerCase().includes(search) || 
+                    s.studentId.toLowerCase().includes(search) ||
+                    s.quizTitle.toLowerCase().includes(search)
+                );
+
+                const body = document.getElementById('adminSubmissionsTableBody');
+                body.innerHTML = filtered.map(s => `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-3">
+                            <div class="font-bold text-slate-800">${s.studentName}</div>
+                            <div class="text-xs font-mono text-slate-400">ID: ${s.studentId}</div>
+                        </td>
+                        <td class="p-3 text-slate-700 font-medium">${s.quizTitle}</td>
+                        <td class="p-3 text-xs text-slate-500">${new Date(s.timestamp).toLocaleString()}</td>
+                        <td class="p-3 font-mono font-bold text-indigo-700">${s.score}/${s.totalPoints}</td>
+                        <td class="p-3 font-bold text-slate-700">${s.percentage}%</td>
+                        <td class="p-3">
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${s.passed ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                ${s.passed ? 'PASSED' : 'FAILED'}
+                            </span>
+                        </td>
+                        <td class="p-3 text-right">
+                            <button onclick="app.reviewSubmission('${s.id}')" class="text-indigo-600 hover:text-indigo-800 font-bold text-xs">
+                                View Attempt
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                if (filtered.length === 0) {
+                    body.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-slate-400 text-xs">No submission records match search.</td></tr>`;
+                }
+            },
+
+            exportSubmissionsCsv() {
+                if (state.submissions.length === 0) return;
+                let csv = 'Student Name,Student ID,Quiz Title,Timestamp,Score,Total Points,Percentage,Passed\n';
+                state.submissions.forEach(s => {
+                    csv += `"${s.studentName}","${s.studentId}","${s.quizTitle}","${s.timestamp}",${s.score},${s.totalPoints},${s.percentage},${s.passed}\n`;
+                });
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `quiz_submissions_report_${Date.now()}.csv`;
+                a.click();
+            },
+
+            // Supabase Config Handlers (Admin Only)
+            saveSupabaseConfig() {
+                const url = document.getElementById('supabaseUrlInput').value.trim();
+                const key = document.getElementById('supabaseKeyInput').value.trim();
+                if (!url || !key) return;
+
+                localStorage.setItem('quizlms_supabase_url', url);
+                localStorage.setItem('quizlms_supabase_key', key);
+                alert('Supabase credentials saved successfully! Reloading portal...');
+                window.location.reload();
+            },
+
+            clearSupabaseConfig() {
+                localStorage.removeItem('quizlms_supabase_url');
+                localStorage.removeItem('quizlms_supabase_key');
+                window.location.reload();
+            },
+
+            // Timed Exam Execution Engine
+            startExam(quizId) {
+                const quiz = state.quizzes.find(q => q.id === quizId);
+                if (!quiz) return;
+
+                state.activeExam = quiz;
+                state.currentQuestionIdx = 0;
+                state.studentAnswers = {};
+                state.markedForReview = {};
+                state.timeRemainingSeconds = quiz.duration * 60;
+
+                document.getElementById('studentDashboardView').classList.add('hidden');
+                document.getElementById('examPlayerView').classList.remove('hidden');
+                document.getElementById('playerExamTitle').innerText = quiz.title;
+                document.getElementById('playerStudentMeta').innerText = `Student: ${state.studentName} (${state.studentId})`;
+
+                this.startTimer();
+                this.renderPlayerQuestion();
+            },
+
+            startTimer() {
+                if (state.timerInterval) clearInterval(state.timerInterval);
+                this.updateTimerDisplay();
+
+                state.timerInterval = setInterval(() => {
+                    state.timeRemainingSeconds--;
+                    this.updateTimerDisplay();
+
+                    if (state.timeRemainingSeconds <= 0) {
+                        clearInterval(state.timerInterval);
+                        this.finalizeExamSubmission(true);
+                    }
+                }, 1000);
+            },
+
+            updateTimerDisplay() {
+                const m = Math.floor(state.timeRemainingSeconds / 60);
+                const s = state.timeRemainingSeconds % 60;
+                document.getElementById('timerDisplay').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            },
+
+            renderPlayerQuestion() {
+                const quiz = state.activeExam;
+                const qId = quiz.questionIds[state.currentQuestionIdx];
+                const question = state.questions.find(q => q.id === qId);
+
+                document.getElementById('playerQuestionHeader').innerText = `Question ${state.currentQuestionIdx + 1} of ${quiz.questionIds.length}`;
+                document.getElementById('playerQuestionText').innerText = question ? question.text : 'Question not available.';
+
+                const optContainer = document.getElementById('playerOptionsContainer');
+                optContainer.innerHTML = question ? question.options.map((opt, idx) => {
+                    const isSelected = state.studentAnswers[qId] === idx;
+                    return `
+                        <div onclick="app.selectOption('${qId}', ${idx})" class="p-3.5 rounded-xl border border-slate-200 hover:border-indigo-400 transition cursor-pointer flex items-center space-x-3 ${isSelected ? 'bg-indigo-50 border-indigo-600 font-bold' : 'bg-white'}">
+                            <div class="w-5 h-5 rounded-full border flex items-center justify-center text-xs ${isSelected ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-300 text-transparent'}">
+                                <i class="fa-solid fa-check text-[10px]"></i>
+                            </div>
+                            <span class="text-xs text-slate-700">${['A','B','C','D','E'][idx]}. ${opt}</span>
+                        </div>
+                    `;
+                }).join('') : '';
+
+                document.getElementById('playerPrevBtn').disabled = state.currentQuestionIdx === 0;
+                document.getElementById('playerNextBtn').innerText = state.currentQuestionIdx === quiz.questionIds.length - 1 ? 'Finish Exam' : 'Next Question';
+
+                this.renderQuestionNavGrid();
+            },
+
+            selectOption(qId, optIdx) {
+                state.studentAnswers[qId] = optIdx;
+                this.renderPlayerQuestion();
+            },
+
+            toggleMarkForReview() {
+                const qId = state.activeExam.questionIds[state.currentQuestionIdx];
+                state.markedForReview[qId] = !state.markedForReview[qId];
+                this.renderQuestionNavGrid();
+            },
+
+            navigateQuestion(step) {
+                const newIdx = state.currentQuestionIdx + step;
+                if (newIdx >= 0 && newIdx < state.activeExam.questionIds.length) {
+                    state.currentQuestionIdx = newIdx;
+                    this.renderPlayerQuestion();
+                }
+            },
+
+            renderQuestionNavGrid() {
+                const grid = document.getElementById('questionNavGrid');
+                grid.innerHTML = state.activeExam.questionIds.map((qId, idx) => {
+                    const isAnswered = state.studentAnswers[qId] !== undefined;
+                    const isMarked = state.markedForReview[qId];
+                    const isCurrent = state.currentQuestionIdx === idx;
+
+                    let bgClass = "bg-slate-100 text-slate-700 border-slate-200";
+                    if (isAnswered) bgClass = "bg-indigo-600 text-white border-indigo-600 font-bold";
+                    if (isMarked) bgClass = "bg-amber-400 text-slate-900 border-amber-400 font-bold";
+
+                    return `
+                        <button onclick="app.jumpToQuestion(${idx})" class="h-9 w-full rounded-lg text-xs border flex items-center justify-center transition ${bgClass} ${isCurrent ? 'ring-2 ring-indigo-900 ring-offset-1' : ''}">
+                            ${idx + 1}
+                        </button>
+                    `;
+                }).join('');
+            },
+
+            jumpToQuestion(idx) {
+                state.currentQuestionIdx = idx;
+                this.renderPlayerQuestion();
+            },
+
+            confirmEarlySubmit() {
+                const total = state.activeExam.questionIds.length;
+                const answeredCount = Object.keys(state.studentAnswers).length;
+                document.getElementById('submitSummaryText').innerText = `Answered: ${answeredCount} | Remaining: ${total - answeredCount}`;
+                this.toggleModal('confirmSubmitModal', true);
+            },
+
+            finalizeExamSubmission(autoSubmitted = false) {
+                if (state.timerInterval) clearInterval(state.timerInterval);
+                this.toggleModal('confirmSubmitModal', false);
+
+                const quiz = state.activeExam;
+                let score = 0;
+                let totalPoints = 0;
+
+                quiz.questionIds.forEach(qId => {
+                    const q = state.questions.find(item => item.id === qId);
+                    if (q) {
+                        totalPoints += (q.points || 1);
+                        if (state.studentAnswers[qId] === q.correct) {
+                            score += (q.points || 1);
+                        }
+                    }
+                });
+
+                const percentage = totalPoints > 0 ? Math.round((score / totalPoints) * 100) : 0;
+                const passed = percentage >= quiz.passGrade;
+
+                const newSubmission = {
+                    id: 'sub_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                    quizId: quiz.id,
+                    quizTitle: quiz.title,
+                    studentName: state.studentName,
+                    studentId: state.studentId,
+                    timestamp: new Date().toISOString(),
+                    score,
+                    totalPoints,
+                    percentage,
+                    passed,
+                    studentAnswers: { ...state.studentAnswers }
+                };
+
+                state.submissions.push(newSubmission);
+                syncToSupabase('submissions', state.submissions);
+
+                this.reviewSubmission(newSubmission.id);
+            },
+
+            reviewSubmission(submissionId) {
+                const sub = state.submissions.find(s => s.id === submissionId);
+                if (!sub) return;
+
+                const quiz = state.quizzes.find(q => q.id === sub.quizId);
+
+                document.getElementById('examPlayerView').classList.add('hidden');
+                document.getElementById('studentDashboardView').classList.add('hidden');
+                document.getElementById('adminDashboardView').classList.add('hidden');
+                document.getElementById('reviewAttemptView').classList.remove('hidden');
+
+                document.getElementById('reviewQuizTitle').innerText = sub.quizTitle;
+                document.getElementById('reviewMetaText').innerText = `Student: ${sub.studentName} (${sub.studentId}) | Date: ${new Date(sub.timestamp).toLocaleString()}`;
+                document.getElementById('reviewScoreText').innerText = `${sub.score}/${sub.totalPoints}`;
+                document.getElementById('reviewPercentageText').innerText = `${sub.percentage}%`;
+                document.getElementById('reviewPercentageText').className = `text-xl font-extrabold ${sub.passed ? 'text-emerald-600' : 'text-rose-600'}`;
+
+                const list = document.getElementById('reviewQuestionsList');
+                list.innerHTML = (quiz ? quiz.questionIds : []).map((qId, idx) => {
+                    const q = state.questions.find(item => item.id === qId);
+                    if (!q) return '';
+
+                    const selected = sub.studentAnswers[qId];
+                    const isCorrect = selected === q.correct;
+
+                    return `
+                        <div class="bg-slate-50 border rounded-2xl p-5 space-y-3 ${isCorrect ? 'border-emerald-200 bg-emerald-50/20' : 'border-rose-200 bg-rose-50/20'}">
+                            <div class="flex items-start justify-between">
+                                <span class="font-bold text-slate-800 text-sm">${idx + 1}. ${q.text}</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                    ${isCorrect ? 'Correct' : 'Incorrect'}
+                                </span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                                ${q.options.map((opt, oIdx) => {
+                                    let style = "bg-white border-slate-200 text-slate-600";
+                                    if (oIdx === q.correct) style = "bg-emerald-100 border-emerald-400 text-emerald-900 font-bold";
+                                    if (selected === oIdx && !isCorrect) style = "bg-rose-100 border-rose-400 text-rose-900 font-bold";
+                                    return `
+                                        <div class="p-2.5 rounded-xl border ${style} flex items-center justify-between">
+                                            <span>${['A','B','C','D','E'][oIdx]}. ${opt}</span>
+                                            ${selected === oIdx ? '<span class="text-[9px] font-bold uppercase px-1.5 py-0.5 bg-slate-800 text-white rounded">Your Pick</span>' : ''}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                            ${q.explanation ? `<div class="text-xs text-slate-600 bg-white p-3 rounded-xl border border-slate-200"><strong>Rationale:</strong> ${q.explanation}</div>` : ''}
+                        </div>
+                    `;
+                }).join('');
+            }
+        };
+
+        window.onload = function() {
+            app.init();
+        };
     </script>
 </body>
 </html>
