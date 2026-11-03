@@ -328,7 +328,7 @@
                         <i class="fa-solid fa-cloud-arrow-up text-3xl"></i>
                         <div>
                             <h3 class="font-bold text-lg text-slate-800">Supabase Cloud Database & Multi-Device Sync</h3>
-                            <p class="text-xs text-slate-500">Sync all 800 medical questions and student exam submissions across devices.</p>
+                            <p class="text-xs text-slate-500">Sync all 1,200 medical questions and student exam submissions across devices.</p>
                         </div>
                     </div>
 
@@ -626,21 +626,76 @@ ALTER TABLE quizlms_storage DISABLE ROW LEVEL SECURITY;
         </div>
     </div>
 
-    <!-- Quiz Config Builder Modal -->
+    <!-- Quiz Config Builder / Editor Modal -->
     <div id="quizBuilderModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-6 space-y-4 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <h3 class="font-bold text-lg text-slate-800" id="quizBuilderModalTitle">Create / Edit Examination</h3>
+            <input type="hidden" id="editingQuizId" value="">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Exam Title</label>
+                    <input type="text" id="quizTitleInput" placeholder="e.g. Endocrine Physiology Board Exam" class="w-full border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Subject Category</label>
+                    <input type="text" id="quizSubjectInput" placeholder="e.g. Endocrine Physiology" class="w-full border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Duration (Minutes)</label>
+                    <input type="number" id="quizDurationInput" value="60" min="5" class="w-full border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Passing Grade (%)</label>
+                    <input type="number" id="quizPassGradeInput" value="75" min="1" max="100" class="w-full border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
+
+            <div class="space-y-2 pt-2 border-t border-slate-100">
+                <div class="flex items-center justify-between">
+                    <label class="font-bold text-xs text-slate-700 uppercase tracking-wider">Select Questions from Question Bank</label>
+                    <select id="builderFolderFilter" onchange="app.filterBuilderQuestions()" class="border border-slate-300 rounded-lg p-1 text-xs">
+                        <option value="all">All Folders</option>
+                    </select>
+                </div>
+                <div id="quizQuestionPickerList" class="bg-slate-50 border border-slate-200 rounded-xl p-3 max-h-56 overflow-y-auto custom-scrollbar space-y-2">
+                    <!-- Dynamic Question Checkboxes -->
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-2">
+                <button onclick="app.toggleModal('quizBuilderModal', false)" class="px-4 py-2 rounded-xl text-slate-600 text-xs font-bold hover:bg-slate-100">Cancel</button>
+                <button onclick="app.saveQuizFromBuilder()" class="px-5 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl hover:bg-indigo-700 shadow">Save Examination</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Submit Modal -->
+    <div id="confirmSubmitModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl border border-slate-200 text-center">
+            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-full mx-auto flex items-center justify-center text-xl font-bold">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="font-bold text-lg text-slate-800">Submit Examination?</h3>
+            <p class="text-slate-500 text-xs" id="submitSummaryText">Are you sure you want to finish and submit your attempt?</p>
+            <div class="flex justify-center space-x-3 pt-2">
+                <button onclick="app.toggleModal('confirmSubmitModal', false)" class="px-4 py-2 rounded-xl text-slate-600 text-xs font-bold bg-slate-100 hover:bg-slate-200">Resume Exam</button>
+                <button onclick="app.finalizeExamSubmission(false)" class="px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl hover:bg-emerald-700 shadow">Confirm Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Supabase UMD Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <!-- 1,200 PRESET QUESTION GENERATOR SCRIPT & APPLICATION ENGINE -->
     <script type="module">
         // Helper function to dynamically generate 150 structured, high-yield MBChB board questions per topic
-        // Distributes correct answers evenly across options 0-4 (A, B, C, D, E = 20% each)
         function generateTopicQuestions(folderId, topicName, keyTerms) {
             const list = [];
             for (let i = 1; i <= 150; i++) {
                 const term = keyTerms[(i - 1) % keyTerms.length];
-                
-                // Deterministic pseudo-random rotation to strictly equalize A, B, C, D, E distribution (20% each)
                 const correctIdx = (i - 1) % 5;
-                
-                // Prepare uniform-length options
                 const rawOptions = [
                     `${term.a}`,
                     `${term.b}`,
@@ -648,12 +703,8 @@ ALTER TABLE quizlms_storage DISABLE ROW LEVEL SECURITY;
                     `${term.d}`,
                     `${term.e}`
                 ];
-                
-                // Rotate options array so correct answer lands at correctIdx
                 const correctText = rawOptions[term.correct];
                 const reorderedOptions = [...rawOptions];
-                
-                // Swap so correct answer is at correctIdx
                 const temp = reorderedOptions[correctIdx];
                 const originalPos = reorderedOptions.indexOf(correctText);
                 reorderedOptions[correctIdx] = correctText;
@@ -672,7 +723,6 @@ ALTER TABLE quizlms_storage DISABLE ROW LEVEL SECURITY;
             return list;
         }
 
-        // Expanded 8 Topic Concepts & High-Yield Key Terms Definitions
         const endocrineTerms = [
             { concept: "Insulin & GLUT Transporters", a: "Stimulates GLUT4 translocation to membrane in skeletal muscle", b: "Inhibits hepatic glycogen synthase enzyme activity directly", c: "Increases pancreatic alpha-cell glucagon secretion rate", d: "Promotes skeletal muscle myofibrillar protein degradation", e: "Suppresses adipocyte triacylglycerol esterification rate", correct: 0, rationale: "Insulin binds RTK dimer, activating PI3K/Akt pathway to mobilize GLUT4 storage vesicles into membranes of muscle and fat." },
             { concept: "Thyroid Hormone Synthesis & TPO", a: "Thyroid peroxidase oxidizes iodide and organifies tyrosine", b: "TSH suppresses thyroid peroxidase gene transcription rate", c: "T3 is synthesized exclusively within thyroid follicular cells", d: "Calcitonin directly inhibits thyroid peroxidase enzyme activity", e: "TRH binds directly to thyroid follicular plasma membranes", correct: 0, rationale: "TPO is the crucial apical follicular membrane enzyme inhibited by propylthiouracil (PTU) and methimazole." },
@@ -737,7 +787,6 @@ ALTER TABLE quizlms_storage DISABLE ROW LEVEL SECURITY;
             { concept: "Mode of Genetic Inheritance", a: "Autosomal Recessive shows horizontal pedigree; Autosomal Dominant shows vertical pedigree", b: "Mitochondrial disorders display strict paternal inheritance pattern", c: "X-linked recessive diseases display direct male-to-male transmission", d: "Autosomal dominant diseases require two mutant alleles for phenotype", e: "X-linked dominant conditions affect males far more severely than females", correct: 0, rationale: "Autosomal recessive affects siblings in same generation (horizontal); Autosomal dominant appears across consecutive generations (vertical)." }
         ];
 
-        // Construct 8 Preset Folders
         const presetFolders = [
             { id: 'f_endo', name: 'Endocrine Physiology' },
             { id: 'f_gi', name: 'GI Physiology' },
@@ -749,7 +798,6 @@ ALTER TABLE quizlms_storage DISABLE ROW LEVEL SECURITY;
             { id: 'f_genetics', name: 'Genetics and Molecular Medical Biochemistry' }
         ];
 
-        // Construct 1,200 High-Yield Questions (150 per folder)
         const presetQuestions = [
             ...generateTopicQuestions('f_endo', 'Endocrine Physiology', endocrineTerms),
             ...generateTopicQuestions('f_gi', 'GI Physiology', giTerms),
@@ -761,12 +809,10 @@ ALTER TABLE quizlms_storage DISABLE ROW LEVEL SECURITY;
             ...generateTopicQuestions('f_genetics', 'Genetics and Molecular Medical Biochemistry', biochemistryTerms)
         ];
 
-        // Helper to get first 75 questions of a folder
         function getFolder75Questions(folderId) {
             return presetQuestions.filter(q => q.folderId === folderId).slice(0, 75).map(q => q.id);
         }
 
-        // 8 Pre-Published Quizzes (1 for each Folder with 75 Questions each)
         const presetQuizzes = [
             {
                 id: 'qz_pub_endo',
@@ -842,7 +888,6 @@ ALTER TABLE quizlms_storage DISABLE ROW LEVEL SECURITY;
             }
         ];
 
-        // Application Global State
         const state = {
             currentRole: 'student',
             studentName: localStorage.getItem('quizlms_student_name') || '',
@@ -856,7 +901,6 @@ ALTER TABLE quizlms_storage DISABLE ROW LEVEL SECURITY;
             timerInterval: null,
             timeRemainingSeconds: 0,
             
-            // Pagination state for admin question bank
             qPage: 1,
             qPerPage: 10,
 
@@ -1155,6 +1199,11 @@ ALTER TABLE quizlms_storage DISABLE ROW LEVEL SECURITY;
                         </div>
 
                         <div class="flex items-center justify-between border-t border-slate-100 pt-3 space-x-2">
+                            ${!q.published ? `
+                                <button onclick="app.openQuizBuilderModal('${q.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100">
+                                    Edit Draft
+                                </button>
+                            ` : ''}
                             <button onclick="app.togglePublishQuiz('${q.id}')" class="flex-1 py-1.5 rounded-xl text-xs font-bold ${q.published ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}">
                                 ${q.published ? 'Unpublish' : 'Publish to Portal'}
                             </button>
@@ -1194,7 +1243,6 @@ ALTER TABLE quizlms_storage DISABLE ROW LEVEL SECURITY;
                 document.getElementById('currentFolderNameTitle').innerHTML = `<i class="fa-regular fa-folder-open text-amber-500 mr-2"></i> ${currentFolder ? currentFolder.name : 'All Questions'}`;
                 document.getElementById('currentFolderCount').innerText = `${filtered.length} Stored Board Questions`;
 
-                // Pagination calculation
                 const totalPages = Math.ceil(filtered.length / state.qPerPage) || 1;
                 if (state.qPage > totalPages) state.qPage = totalPages;
                 
@@ -1365,52 +1413,86 @@ ALTER TABLE quizlms_storage DISABLE ROW LEVEL SECURITY;
                 }
             },
 
-            openQuizBuilderModal() {
+            openQuizBuilderModal(quizId = null) {
                 const filterSelect = document.getElementById('builderFolderFilter');
                 if (filterSelect) {
                     filterSelect.innerHTML = `<option value="all">Show All Folders</option>` + state.folders.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
                 }
 
-                this.filterBuilderQuestions();
-                
-                document.getElementById('quizTitleInput').value = '';
-                document.getElementById('quizSubjectInput').value = '';
+                document.getElementById('editingQuizId').value = quizId || '';
+                document.getElementById('quizBuilderModalTitle').innerText = quizId ? 'Edit Draft Examination' : 'Create New Examination';
+
+                if (quizId) {
+                    const quiz = state.quizzes.find(q => q.id === quizId);
+                    if (quiz) {
+                        document.getElementById('quizTitleInput').value = quiz.title;
+                        document.getElementById('quizSubjectInput').value = quiz.subject;
+                        document.getElementById('quizDurationInput').value = quiz.duration;
+                        document.getElementById('quizPassGradeInput').value = quiz.passGrade;
+                        this.filterBuilderQuestions(quiz.questionIds || []);
+                    }
+                } else {
+                    document.getElementById('quizTitleInput').value = '';
+                    document.getElementById('quizSubjectInput').value = '';
+                    document.getElementById('quizDurationInput').value = 60;
+                    document.getElementById('quizPassGradeInput').value = 75;
+                    this.filterBuilderQuestions([]);
+                }
+
                 this.toggleModal('quizBuilderModal', true);
             },
 
-            filterBuilderQuestions() {
+            filterBuilderQuestions(preselectedIds = []) {
                 const filterVal = document.getElementById('builderFolderFilter')?.value || 'all';
                 const filtered = filterVal === 'all' ? state.questions : state.questions.filter(q => q.folderId === filterVal);
 
                 const container = document.getElementById('quizQuestionPickerList');
-                container.innerHTML = filtered.map(q => `
-                    <label class="flex items-start space-x-2 text-xs p-1.5 hover:bg-white rounded-lg cursor-pointer border border-transparent hover:border-slate-200">
-                        <input type="checkbox" value="${q.id}" class="quiz-q-checkbox mt-0.5 rounded text-indigo-600">
-                        <span class="text-slate-700 font-semibold">${q.text}</span>
-                    </label>
-                `).join('');
+                container.innerHTML = filtered.map(q => {
+                    const isChecked = preselectedIds.includes(q.id) ? 'checked' : '';
+                    return `
+                        <label class="flex items-start space-x-2 text-xs p-1.5 hover:bg-white rounded-lg cursor-pointer border border-transparent hover:border-slate-200">
+                            <input type="checkbox" value="${q.id}" ${isChecked} class="quiz-q-checkbox mt-0.5 rounded text-indigo-600">
+                            <span class="text-slate-700 font-semibold">${q.text}</span>
+                        </label>
+                    `;
+                }).join('');
             },
 
-            saveQuiz() {
+            saveQuizFromBuilder() {
+                const editingId = document.getElementById('editingQuizId').value;
                 const title = document.getElementById('quizTitleInput').value.trim();
                 const subject = document.getElementById('quizSubjectInput').value.trim();
                 const duration = parseInt(document.getElementById('quizDurationInput').value) || 30;
                 const passGrade = parseInt(document.getElementById('quizPassGradeInput').value) || 75;
 
                 const selectedQIds = Array.from(document.querySelectorAll('.quiz-q-checkbox:checked')).map(cb => cb.value);
-                if (!title || selectedQIds.length === 0) return;
+                if (!title || selectedQIds.length === 0) {
+                    alert('Please provide an exam title and select at least one question.');
+                    return;
+                }
 
-                const newQuiz = {
-                    id: 'qz_' + Date.now(),
-                    title,
-                    subject: subject || 'Medical Science',
-                    duration,
-                    passGrade,
-                    published: false,
-                    questionIds: selectedQIds
-                };
+                if (editingId) {
+                    const quiz = state.quizzes.find(q => q.id === editingId);
+                    if (quiz) {
+                        quiz.title = title;
+                        quiz.subject = subject || 'Medical Science';
+                        quiz.duration = duration;
+                        quiz.passGrade = passGrade;
+                        quiz.questionIds = selectedQIds;
+                    }
+                } else {
+                    const newQuiz = {
+                        id: 'qz_' + Date.now(),
+                        title,
+                        subject: subject || 'Medical Science',
+                        duration,
+                        passGrade,
+                        published: false,
+                        questionIds: selectedQIds
+                    };
+                    state.quizzes.push(newQuiz);
+                }
 
-                state.quizzes.push(newQuiz);
                 syncToSupabase('quizzes', state.quizzes);
                 this.toggleModal('quizBuilderModal', false);
                 this.renderAdminQuizzes();
